@@ -94,6 +94,7 @@ class Jornada(models.Model):
         choices=[
             ('pendiente', 'Pendiente'),
             ('activa', 'Activa'),
+            ('en_curso', 'En curso'),
             ('finalizada', 'Finalizada'),
             ('cancelada', 'Cancelada'),
         ],
@@ -118,13 +119,27 @@ class Jornada(models.Model):
         return self.titulo
 
 class Inscripcion(models.Model):
-    id = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    jornada = models.ForeignKey(Jornada, on_delete=models.CASCADE)
+    id_inscripcion = models.AutoField(primary_key=True)  # ← nombre correcto
+    usuario = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        db_column='id_usuario'   # ← le dice a Django que la columna se llama id_usuario
+    )
+    jornada = models.ForeignKey(
+        Jornada,
+        on_delete=models.CASCADE,
+        db_column='jornada_id'   # ← coincide con tu BD
+    )
     fecha_inscripcion = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(
+        max_length=10,
+        choices=[('activa', 'Activa'), ('cancelada', 'Cancelada')],
+        default='activa'
+    )
 
     class Meta:
         db_table = 'core_inscripcion'
+        managed = False  # ← importante, la tabla ya existe
 
 
 
@@ -157,6 +172,13 @@ class Puntaje(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='puntajes')
     puntos = models.IntegerField(default=0)
     fecha = models.DateTimeField(auto_now_add=True)
+    motivo = models.CharField(max_length=255, null=True, blank=True)
+    jornada = models.ForeignKey(
+        Jornada,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         db_table = 'core_puntaje'
@@ -180,4 +202,39 @@ class Notificacion(models.Model):
 
     def __str__(self):
         return f"Notificación {self.id_notificacion} - {self.tipo}"
+
+
+class Asistencia(models.Model):
+    id_asistencia = models.AutoField(primary_key=True)
+    inscripcion = models.ForeignKey(
+        Inscripcion,
+        on_delete=models.CASCADE,
+        db_column='id_inscripcion'
+    )
+    nombre_usuario = models.CharField(max_length=100, null=True, blank=True)
+    presente = models.BooleanField(default=False)
+    puntos_asignados = models.IntegerField(null=True, blank=True)
+    observaciones = models.TextField(null=True, blank=True)
+    last_update = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'asistencia'
+        managed = True
+
+
+class AccionDestacada(models.Model):
+    id = models.AutoField(primary_key=True)
+    inscripcion = models.ForeignKey(
+        Inscripcion,
+        on_delete=models.CASCADE,
+        db_column='inscripcion_id'
+    )
+    descripcion = models.CharField(max_length=255)
+    puntos_sugeridos = models.IntegerField(default=5)
+    validada = models.BooleanField(default=False)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'core_accion_destacada'
+        managed = True
 
