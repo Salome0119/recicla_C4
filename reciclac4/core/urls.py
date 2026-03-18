@@ -16,6 +16,8 @@ urlpatterns = [
 
     # ADMINISTRADOR: 6 páginas
     path("admi/asistencia/", views.admi_asistencia, name="admi_asistencia"),
+    path('admi/acciones/validar/', views.admi_validar_acciones, name='admi_validar_acciones'),
+    path('admi/asistencia/validar/', views.admi_validar_asistencia, name='admi_validar_asistencia'),
     path("admi/creacionjornadas/", views.admi_creacion_jornadas, name="admi_creacion_jornadas"),
     path("admi/foro/", views.admi_publicacion_foro, name="admi_publicacion_foro"),
     path("admi/recoleccion/", views.admi_recoleccion, name="admi_recoleccion"),

@@ -718,7 +718,73 @@ def admi_inicio(request):
 
 @rol_required('administrador')
 def admi_asistencia(request):
-    return render(request, "administrador/asistencia.html")
+    from datetime import timedelta
+    from django.utils import timezone
+    from .models import Asistencia
+
+    # Mostrar todas las jornadas excepto las canceladas
+    jornadas_finalizadas = Jornada.objects.exclude(estado='cancelada').order_by('-fecha')
+
+    jornada_id = request.GET.get('jornada_id') or request.POST.get('jornada_id')
+    jornada = None
+    inscripciones = []
+
+    if jornada_id:
+        jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+
+        # Verificar que no hayan pasado más de 48 horas
+        limite = jornada.last_update + timedelta(hours=48)
+        if timezone.now() > limite:
+            messages.error(request, "Ya pasaron las 48 horas limite para asignar puntos a esta jornada.")
+            return redirect("admi_asistencia")
+
+        inscripciones = Inscripcion.objects.filter(
+            jornada=jornada,
+            estado='activa'
+        ).select_related('usuario')
+
+    if request.method == "POST" and jornada:
+        # Guardar asistencia solo (sin puntos)
+        for inscripcion in inscripciones:
+            presente = request.POST.get(f"presente_{inscripcion.id_inscripcion}") == "1"
+            observaciones = request.POST.get(f"obs_{inscripcion.id_inscripcion}", "")
+            nombre_usuario = f"{inscripcion.usuario.nombre} {inscripcion.usuario.apellido}"
+
+            # Guardar asistencia
+            Asistencia.objects.update_or_create(
+                inscripcion=inscripcion,
+                defaults={
+                    "presente": presente,
+                    "observaciones": observaciones,
+                    "nombre_usuario": nombre_usuario
+                }
+            )
+
+        messages.success(request, "Asistencia registrada correctamente. Los puntos se asignarán al validar.")
+        return redirect("admi_asistencia")
+
+    # Agregar informacion de puntos a las inscripciones
+    for ins in inscripciones:
+        # Buscar asistencia
+        asistencia = Asistencia.objects.filter(inscripcion=ins).first()
+        ins.asistencia_obj = asistencia
+        
+        # Usar puntos de la tabla asistencia si existen
+        if asistencia and asistencia.puntos_asignados:
+            ins.puntaje_asignado = asistencia.puntos_asignados
+        else:
+            # Buscar en la tabla de puntajes si ya tiene puntos
+            puntaje = Puntaje.objects.filter(
+                usuario=ins.usuario,
+                jornada=jornada
+            ).first()
+            ins.puntaje_asignado = puntaje.puntos if puntaje else None
+
+    return render(request, "administrador/asistencia.html", {
+        "jornadas_finalizadas": jornadas_finalizadas,
+        "jornada": jornada,
+        "inscripciones": inscripciones
+    })
 
 # CONFIGURACION
 @rol_required('administrador')
@@ -914,6 +980,92 @@ def admi_modificar_jornada(request, jornada_id):
         form = JornadaForm(instance=jornada)
 
     return render(request, "administrador/modificar_jornada.html", {"form": form, "jornada": jornada})
+
+
+@rol_required('administrador')
+def admi_validar_acciones(request):
+    from .models import AccionDestacada
+
+    acciones_pendientes = AccionDestacada.objects.filter(
+        validada=False
+    ).select_related('inscripcion__usuario', 'inscripcion__jornada')
+
+    if request.method == "POST":
+        accion_id = request.POST.get("accion_id")
+        accion = get_object_or_404(AccionDestacada, id=accion_id)
+
+        # Validar y asignar puntos
+        accion.validada = True
+        accion.save()
+
+        Puntaje.objects.create(
+            usuario=accion.inscripcion.usuario,
+            puntos=accion.puntos_sugeridos,
+            motivo=f"Accion destacada: {accion.descripcion}",
+            jornada=accion.inscripcion.jornada
+        )
+
+        messages.success(request, f"Accion validada y {accion.puntos_sugeridos} puntos asignados a {accion.inscripcion.usuario.nombre}.")
+        return redirect("admi_validar_acciones")
+
+    return render(request, "administrador/validar_acciones.html", {
+        "acciones_pendientes": acciones_pendientes
+    })
+
+
+@rol_required('administrador')
+def admi_validar_asistencia(request):
+    from datetime import timedelta
+    from django.utils import timezone
+    
+    jornada_id = request.GET.get('jornada_id') or request.POST.get('jornada_id')
+    
+    if not jornada_id:
+        messages.error(request, "No se especificó la jornada.")
+        return redirect("admi_asistencia")
+    
+    jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+    
+    # Verificar que no hayan pasado más de 48 horas
+    limite = jornada.last_update + timedelta(hours=48)
+    if timezone.now() > limite:
+        messages.error(request, "Ya pasaron las 48 horas limite para asignar puntos a esta jornada.")
+        return redirect("admi_asistencia")
+    
+    puntos_residente = 10
+    puntos_organizador = 20
+    
+    inscripciones = Inscripcion.objects.filter(
+        jornada=jornada,
+        estado='activa'
+    ).select_related('usuario')
+    
+    for inscripcion in inscripciones:
+        asistencia = Asistencia.objects.filter(inscripcion=inscripcion).first()
+        if asistencia and asistencia.presente:
+            usuario = inscripcion.usuario
+            puntos = puntos_organizador if usuario.rol == "organizador" else puntos_residente
+            
+            # Actualizar puntos en la tabla asistencia
+            asistencia.puntos_asignados = puntos
+            asistencia.save(update_fields=['puntos_asignados'])
+            
+            # Verificar que no tenga ya puntos por esta jornada
+            ya_tiene = Puntaje.objects.filter(
+                usuario=usuario,
+                jornada=jornada
+            ).exists()
+            
+            if not ya_tiene:
+                Puntaje.objects.create(
+                    usuario=usuario,
+                    puntos=puntos,
+                    motivo=f"Asistencia validada a jornada: {jornada.titulo}",
+                    jornada=jornada
+                )
+    
+    messages.success(request, "Asistencia validada y puntos asignados correctamente.")
+    return redirect("admi_asistencia")
 
 
 @rol_required('organizador')
@@ -1592,14 +1744,14 @@ def admi_modificar_jornada(request, jornada_id):
 # ---------------------------
 @rol_required('residente')
 def residente_lista_jornadas(request):
-    # Fecha de corte: solo mostrar jornadas creadas después de esta fecha
-    FECHA_CORTE = timezone.make_aware(datetime(2025, 11, 23))
+    jornadas = Jornada.objects.exclude(
+        estado='cancelada'
+    ).order_by('fecha')
 
-    # Filtrar por fecha_creacion mayor o igual a la fecha de corte
-    jornadas = Jornada.objects.filter(
-        fecha_creacion__gte=FECHA_CORTE,
-        estado='activa'  # opcional, si solo quieres mostrar jornadas activas
-    ).order_by('fecha')  # ordenadas por fecha de la jornada
+    for j in jornadas:
+        j.inscritos_activos = Inscripcion.objects.filter(
+            jornada=j, estado='activa'
+        ).count()
 
     return render(request, "residente/lista_jornadas.html", {
         "jornadas": jornadas
@@ -1682,8 +1834,89 @@ def residente_inicio(request):
 @rol_required('residente')
 def residente_inscripcion(request, id_jornada):
     jornada = get_object_or_404(Jornada, id_jornada=id_jornada)
-    # lógica de inscripción...
-    return render(request, "residente/inscripcion.html", {"jornada": jornada})
+    usuario_id = request.session.get("usuario_id")
+    usuario = get_object_or_404(Usuario, id_usuario=usuario_id)
+
+    # Bloquear inscripción a jornadas no activas
+    if jornada.estado != 'activa':
+        messages.error(request, "No puedes inscribirte en esta jornada porque esta " + jornada.estado + ".")
+        return render(request, "residente/inscripcion.html", {
+            "jornada": jornada,
+            "usuario": usuario
+        })
+
+    if request.method == "POST":
+
+        # Verificar si ya está inscrito
+        ya_inscrito = Inscripcion.objects.filter(
+            usuario=usuario,
+            jornada=jornada,
+            estado='activa'
+        ).exists()
+
+        if ya_inscrito:
+            messages.error(request, "Ya estas inscrito en esta jornada.")
+            return render(request, "residente/inscripcion.html", {
+                "jornada": jornada,
+                "usuario": usuario
+            })
+
+        # Verificar cupo máximo
+        inscritos_activos = Inscripcion.objects.filter(
+            jornada=jornada,
+            estado='activa'
+        ).count()
+
+        if jornada.cupo_maximo and inscritos_activos >= jornada.cupo_maximo:
+            messages.error(request, "Lo sentimos, esta jornada ya alcanzo el cupo maximo.")
+            return render(request, "residente/inscripcion.html", {
+                "jornada": jornada,
+                "usuario": usuario
+            })
+
+        # Guardar inscripción
+        Inscripcion.objects.create(
+            usuario=usuario,
+            jornada=jornada,
+            estado='activa'
+        )
+
+        mensaje = (
+            f"Hola {usuario.nombre}!\n\n"
+            f"Tu inscripcion a la jornada fue exitosa. Aqui estan los detalles:\n\n"
+            f"Jornada: {jornada.titulo}\n"
+            f"Fecha: {jornada.fecha}\n"
+            f"Hora: {jornada.hora}\n"
+            f"Lugar: {jornada.direccion}, {jornada.barrio}\n"
+            f"Tipo de material: {jornada.tipo_material}\n\n"
+            f"Te esperamos. Recuerda llegar a tiempo.\n"
+            f"Equipo Recicla Comuna 4"
+        )
+
+        Notificacion.objects.create(
+            usuario=usuario,
+            tipo="inscripcion",
+            mensaje=mensaje
+        )
+
+        send_mail(
+            subject="Confirmacion de inscripcion - Recicla Comuna 4",
+            message=mensaje,
+            from_email="reciclacomuna@gmail.com",
+            recipient_list=[usuario.correo],
+            fail_silently=True,
+        )
+
+        return render(request, "residente/inscripcion.html", {
+            "jornada": jornada,
+            "usuario": usuario,
+            "inscripcion_exitosa": True
+        })
+
+    return render(request, "residente/inscripcion.html", {
+        "jornada": jornada,
+        "usuario": usuario
+    })
 
 @rol_required('residente')
 def residente_configuracion(request):
@@ -1939,7 +2172,42 @@ def organizador_inicio(request):
 
 @rol_required('organizador')
 def organizador_asistencia(request):
-    return render(request, "organizador/asistencia.html")
+    from .models import AccionDestacada
+    # Mostrar todas las jornadas excepto las canceladas
+    jornadas_finalizadas = Jornada.objects.exclude(estado='cancelada').order_by('-fecha')
+
+    jornada_id = request.GET.get('jornada_id') or request.POST.get('jornada_id')
+    jornada = None
+    inscripciones = []
+
+    if jornada_id:
+        jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+        inscripciones = Inscripcion.objects.filter(
+            jornada=jornada,
+            estado='activa'
+        ).select_related('usuario')
+
+    if request.method == "POST" and jornada:
+        for inscripcion in inscripciones:
+            descripcion = request.POST.get(f"accion_{inscripcion.id_inscripcion}", "").strip()
+            puntos = request.POST.get(f"puntos_{inscripcion.id_inscripcion}", 5)
+
+            if descripcion:
+                AccionDestacada.objects.create(
+                    inscripcion=inscripcion,
+                    descripcion=descripcion,
+                    puntos_sugeridos=puntos,
+                    validada=False
+                )
+
+        messages.success(request, "Acciones destacadas registradas. El administrador las validara.")
+        return redirect("organizador_asistencia")
+
+    return render(request, "organizador/asistencia.html", {
+        "jornadas_finalizadas": jornadas_finalizadas,
+        "jornada": jornada,
+        "inscripciones": inscripciones
+    })
 
 # CONFIGURACION
 @rol_required('organizador')
