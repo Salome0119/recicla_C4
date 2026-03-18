@@ -1,0 +1,119 @@
+{% extends "organizador/base.html" %}
+{% load static %}
+{% block titulo %}Recicla Comuna 4 - Registro de Asistencia{% endblock%}
+{% block cuerpo %}
+<link rel="stylesheet" href="{% static 'organizador/css/estilos.css' %}">
+<link rel="stylesheet" href="{% static 'organizador/css/estilos asistencia.css' %}">
+
+{% include 'organizador/header.html' %}
+<main>
+  <div class="wrapper">
+    <div class="form-container">
+      <h1>Registro de Asistencia</h1>
+
+      <form method="POST" action="">
+        {% csrf_token %}
+
+        <!-- RF1.2.1 -->
+        <div class="card">
+          <h2>Marcar asistencia</h2>
+          <select id="asistencia" name="asistencia" required>
+            <option value="presente">Asistió</option>
+            <option value="ausente">Faltó</option>
+            <option value="tarde">Llegó tarde</option>
+          </select>
+        </div>
+
+        <!-- RF1.2.2 -->
+        <div class="card">
+          <h2>Observaciones</h2>
+          <textarea id="observaciones" name="observaciones" placeholder="Escribe observaciones si el usuario llegó tarde o no asistió"></textarea>
+        </div>
+
+        <!-- RF1.2.3 -->
+        <div class="card">
+          <h2>Generar reporte</h2>
+          <label class="checkbox">
+            <input type="checkbox" id="reporte" name="reporte">
+            <span>Generar reporte de asistencia por jornada</span>
+          </label>
+        </div>
+
+        <button type="submit">Guardar Registro</button>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+{% include 'organizador/footer.html' %}
+<!-- Script -->
+
+<script>
+const openSidebarBtn = document.getElementById('openSidebar');
+const closeSidebarBtn = document.getElementById('closeSidebar');
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.getElementById('mainContent');
+
+function openSidebar() {
+    sidebar.classList.add('active');
+    mainContent.style.transform = 'translateX(260px)';
+}
+function closeSidebar() {
+    sidebar.classList.remove('active');
+    mainContent.style.transform = 'translateX(0)';
+}
+
+openSidebarBtn.addEventListener('click', () => {
+    if(sidebar.classList.contains('active')) closeSidebar();
+    else openSidebar();
+});
+
+if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+
+// Submenú toggle
+document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+        e.preventDefault();           // Evita que siga el enlace
+        e.stopPropagation();          // Evita que el clic cierre el sidebar
+        toggle.parentElement.classList.toggle('active');
+    });
+});
+
+// Enlaces normales cierran el sidebar
+sidebar.querySelectorAll('a').forEach(a => {
+    if(!a.classList.contains('submenu-toggle')) {
+        a.addEventListener('click', closeSidebar);
+    }
+});
+
+// Close on Escape
+document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && sidebar.classList.contains('active')) closeSidebar();
+});
+
+document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+  const parent = toggle.parentElement; // li.submenu-parent
+  const submenu = parent.querySelector('.submenu');
+
+  toggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // evita que el clic cierre otro menú
+    submenu.classList.toggle('active'); // solo alterna la visibilidad de este submenú
+  });
+});
+
+// Cerrar submenús si se hace clic fuera
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.submenu.active').forEach(sm => {
+    if (!sm.parentElement.contains(e.target)) {
+      sm.classList.remove('active');
+    }
+  });
+});
+
+</script>
+
+
+
+{% endblock %}

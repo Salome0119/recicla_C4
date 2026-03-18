@@ -1,0 +1,15 @@
+<!-- core/templates/administrador/usuarios_form.html -->
+{% extends "administrador/base.html" %}
+{% load static %}
+{% block cuerpo %}
+<div class="page-container">
+  <h1>{% if crear %}Crear usuario{% else %}Editar usuario{% endif %}</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <label>Contraseña (si quieres crear/actualizar)</label>
+    <input type="password" name="password_plain" />
+    <button class="btn-save" type="submit">{% if crear %}Crear{% else %}Guardar{% endif %}</button>
+  </form>
+</div>
+{% endblock %}

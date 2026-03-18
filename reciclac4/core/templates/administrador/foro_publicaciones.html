@@ -1,0 +1,132 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+<link rel="stylesheet" href="{% static 'administrador/css/publicacion_foro.css' %}">
+{% endblock %}
+
+{% block cuerpo %}
+
+
+
+<style>
+    /* ====== ESTILOS DE LOS BOTONES DE INTERACCIÓN ====== */
+
+    .foro-actions {
+        margin-top: 15px;
+        padding: 12px;
+        background: #f8f8f8;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 80px;
+    }
+
+    .foro-reacciones button,
+    .foro-otros button {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        margin-right: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.2s ease;
+    }
+
+    .btn-like {
+        background: #e1f3ff;
+    }
+    .btn-like:hover {
+        background: #c8e7ff;
+    }
+
+    .btn-dislike {
+        background: #ffe3e3;
+    }
+    .btn-dislike:hover {
+        background: #ffc7c7;
+    }
+
+    .btn-love {
+        background: #ffe2f0;
+    }
+    .btn-love:hover {
+        background: #ffc8e2;
+    }
+
+    .btn-comentar {
+        background: #f2f2f2;
+    }
+    .btn-comentar:hover {
+        background: #e0e0e0;
+    }
+
+    .btn-denunciar {
+        background: #ffeacc;
+        color: #b33a00;
+        font-weight: bold;
+    }
+    .btn-denunciar:hover {
+        background: #ffd8a1;
+    }
+</style>
+
+
+{% include "administrador/header.html" %}
+
+<main class="page-container foro-page">
+
+    <section class="foro-hero">
+        <h1>💬 Foro Comunitario</h1>
+        <p>Publicaciones realizadas por los administradores y organizadores de la Comuna 4.</p>
+    </section>
+
+    <section class="foro-lista">
+        {% if publicaciones %}
+            {% for pub in publicaciones %}
+            <div class="foro-card">
+                <h3>{{ pub.titulo }}</h3>
+
+                <p class="foro-contenido">
+                    {{ pub.contenido|linebreaksbr }}
+                </p>
+
+                <div class="foro-footer">
+                    <span>👤 {{ pub.id_usuario.nombre }} {{ pub.id_usuario.apellido }}</span>
+                    <span>📅 {{ pub.fecha_publicacion|date:"d/m/Y H:i" }}</span>
+                </div>
+            </div>
+
+            <!-- 🔽 Botones por FUERA de la tarjeta -->
+            <div class="foro-actions">
+
+                <div class="foro-reacciones">
+                    <button class="btn-like">👍 Me gusta</button>
+                    <button class="btn-dislike">👎 No me gusta</button>
+                    <button class="btn-love">❤️ Me encanta</button>
+                </div>
+
+                <div class="foro-otros">
+                    <button class="btn-comentar">💬 Comentar</button>
+                    <button class="btn-denunciar">🚫 Denunciar contenido</button>
+                </div>
+
+            </div>
+
+            {% endfor %}
+        {% else %}
+            <p class="no-pub">No hay publicaciones en el foro.</p>
+        {% endif %}
+    </section>
+
+</main>
+
+
+
+{% include "administrador/footer.html" %}
+
+{% endblock %}

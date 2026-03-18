@@ -1,0 +1,355 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+
+{% block titulo %}Notificaciones — Administrador{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+{% endblock %}
+
+{% block cuerpo %}
+
+<!-- HEADER ADMIN -->
+{% include 'administrador/header.html' %}
+
+<div class="page-container">
+
+<h2 class="titulo">📢 Gestión de Notificaciones</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<div class="contenedor-notificaciones">
+
+    <!-- FORMULARIO DE ENVÍO -->
+    <div class="card-form">
+        <h3>➕ Enviar Notificación</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <label>Enviar por:</label>
+            <select name="destino" id="destino" required>
+                <option value="usuario">Usuario</option>
+                <option value="barrio">Barrio</option>
+                <option value="todos_barrios">Todos los barrios</option>
+                <option value="rol">Rol</option>
+            </select>
+
+            <div id="campo-usuario">
+                <label>Enviar a:</label>
+                <select name="usuario_id" id="usuario_id">
+                    <option value="">Seleccione un usuario</option>
+                    {% for u in usuarios %}
+                        <option value="{{ u.id_usuario }}">{{ u.nombre }} — {{ u.correo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="campo-barrio" style="display:none;">
+                <label>Enviar al barrio:</label>
+                <select name="barrio_envio" id="barrio_envio">
+                    <option value="">Seleccione un barrio</option>
+                    {% for barrio in barrios %}
+                        <option value="{{ barrio }}">{{ barrio }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="campo-rol" style="display:none;">
+                <label>Enviar al rol:</label>
+                <select name="rol_envio" id="rol_envio">
+                    <option value="">Seleccione un rol</option>
+                    {% for rol in roles %}
+                        <option value="{{ rol }}">{{ rol|capfirst }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <label>Tipo:</label>
+            <select name="tipo" required>
+                <option value="">Seleccione un tipo</option>
+                <option value="general">General</option>
+                <option value="jornada">Jornada</option>
+                <option value="foro">Foro</option>
+            </select>
+
+            <label>Mensaje:</label>
+            <textarea name="mensaje" rows="4" required></textarea>
+
+            <button class="btn">Enviar Notificación</button>
+        </form>
+    </div>
+
+    <!-- LISTADO + FILTROS -->
+    <div class="card-lista">
+        <h3>📄 Notificaciones Enviadas</h3>
+
+        <!-- FILTROS -->
+        <form method="GET" class="filtros">
+
+            <input type="text" name="buscar" placeholder="Buscar..." value="{{ query }}">
+
+            <select name="tipo">
+                <option value="">Todos los tipos</option>
+                <option value="general" {% if tipo_filtro == "general" %}selected{% endif %}>General</option>
+                <option value="jornada" {% if tipo_filtro == "jornada" %}selected{% endif %}>Jornada</option>
+                <option value="foro" {% if tipo_filtro == "foro" %}selected{% endif %}>Foro</option>
+            </select>
+
+            <select name="usuario">
+                <option value="">Todos los usuarios</option>
+                {% for u in usuarios %}
+                    <option value="{{ u.id_usuario }}" {% if usuario_filtro|add:"" == u.id_usuario|add:"" %}selected{% endif %}>
+                        {{ u.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <select name="barrio">
+                <option value="">Todos los barrios</option>
+                {% for barrio in barrios %}
+                    <option value="{{ barrio }}" {% if barrio_filtro == barrio %}selected{% endif %}>{{ barrio }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="rol">
+                <option value="">Todos los roles</option>
+                {% for rol in roles %}
+                    <option value="{{ rol }}" {% if rol_filtro == rol %}selected{% endif %}>{{ rol|capfirst }}</option>
+                {% endfor %}
+            </select>
+
+            <button class="btn">Filtrar</button>
+
+        </form>
+
+        <!-- TABLA -->
+        <table class="tabla">
+            <tr>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Barrio</th>
+                <th>Tipo</th>
+                <th>Mensaje</th>
+                <th>Fecha</th>
+            </tr>
+
+            {% for n in notificaciones %}
+            <tr>
+                <td>{{ n.usuario.nombre }}</td>
+                <td>{{ n.usuario.rol|capfirst }}</td>
+                <td>{{ n.usuario.barrio|default:"-" }}</td>
+                <td>{{ n.tipo|capfirst }}</td>
+                <td>{{ n.mensaje }}</td>
+                <td>{{ n.fecha_envio|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay notificaciones</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="paginacion">
+            {% if page_obj.has_previous %}
+                <a class="btn-paginacion" href="?buscar={{ query }}&tipo={{ tipo_filtro }}&usuario={{ usuario_filtro }}&barrio={{ barrio_filtro }}&rol={{ rol_filtro }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+
+            <span class="pagina-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a class="btn-paginacion" href="?buscar={{ query }}&tipo={{ tipo_filtro }}&usuario={{ usuario_filtro }}&barrio={{ barrio_filtro }}&rol={{ rol_filtro }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- FOOTER ADMIN -->
+{% include 'administrador/footer.html' %}
+
+<style>
+/* ===========================
+   Notificaciones: estilo administrador
+   =========================== */
+
+.titulo {
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    color: var(--dark);
+}
+
+.contenedor-notificaciones {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 25px;
+    margin-top: 20px;
+}
+.card-form {
+    background: #ecf7f1ff;
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    max-width: 350px;  /* Limita el ancho */
+    width: 100%; 
+    height:500px      /* Para que sea responsiva */
+}
+/* Tarjetas */
+.card-form, .card-lista {
+    background: #f3f3f3ff;
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Encabezados de tarjeta */
+.card-form h3, .card-lista h3 {
+    margin-bottom: 15px;
+    color: var(--secondary);
+}
+
+/* Formularios */
+label {
+    font-weight: 600;
+    margin-top: 10px;
+    display: block;
+    color: var(--dark);
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--radius);
+    border: 1px solid #ccc;
+    margin-bottom: 12px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark);
+}
+
+textarea { resize: vertical; }
+
+.btn {
+    background: var(--primary);
+    color: white;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn:hover {
+    background: var(--secondary);
+    transform: translateY(-2px);
+}
+
+/* Filtros */
+.filtros {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+/* Tabla */
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla th, .tabla td {
+    border-bottom: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.tabla th {
+    background: var(--bg-2);
+    color: var(--dark);
+    font-weight: 700;
+}
+
+.tabla td {
+    color: var(--muted);
+}
+
+.tabla tr:hover {
+    background: rgba(46,204,113,0.08);
+}
+
+.paginacion {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-paginacion {
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-paginacion:hover {
+    background: var(--secondary);
+    transform: translateY(-2px);
+}
+
+.pagina-info {
+    font-weight: 600;
+    color: var(--dark);
+}
+</style>
+
+<script>
+const destino = document.getElementById("destino");
+const campoUsuario = document.getElementById("campo-usuario");
+const campoBarrio = document.getElementById("campo-barrio");
+const campoRol = document.getElementById("campo-rol");
+const usuarioId = document.getElementById("usuario_id");
+const barrioEnvio = document.getElementById("barrio_envio");
+const rolEnvio = document.getElementById("rol_envio");
+
+function actualizarDestino() {
+    campoUsuario.style.display = "none";
+    campoBarrio.style.display = "none";
+    campoRol.style.display = "none";
+
+    usuarioId.required = false;
+    barrioEnvio.required = false;
+    rolEnvio.required = false;
+
+    if (destino.value === "usuario") {
+        campoUsuario.style.display = "block";
+        usuarioId.required = true;
+    } else if (destino.value === "barrio") {
+        campoBarrio.style.display = "block";
+        barrioEnvio.required = true;
+    } else if (destino.value === "todos_barrios") {
+        campoUsuario.style.display = "none";
+        campoBarrio.style.display = "none";
+        campoRol.style.display = "none";
+    } else if (destino.value === "rol") {
+        campoRol.style.display = "block";
+        rolEnvio.required = true;
+    }
+}
+
+destino.addEventListener("change", actualizarDestino);
+actualizarDestino();
+</script>
+
+{% endblock %}

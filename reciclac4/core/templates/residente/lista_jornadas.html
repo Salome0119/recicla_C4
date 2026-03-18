@@ -1,0 +1,34 @@
+{% extends "residente/base.html" %}
+{% load static %}
+
+{% block titulo %}Jornadas disponibles{% endblock %}
+
+{% block cuerpo %}
+<link rel="stylesheet" href="{% static 'residente/css/estilos_residentes.css' %}">
+<link rel="stylesheet" href="{% static 'residente/css/listaj.css' %}">
+
+{% include "residente/header.html" %}
+<main class="page-container">
+    <h1>📅 Jornadas de Reciclaje</h1>
+
+    {% if jornadas %}
+        <ul class="lista-jornadas">
+            {% for j in jornadas %}
+    <li class="jornada-item">
+        <h2>{{ j.titulo }}</h2>
+        <p><strong>Fecha:</strong> {{ j.fecha }}</p>
+        <p><strong>Hora:</strong> {{ j.hora }}</p>
+        <p><strong>Barrio:</strong> {{ j.barrio }}</p>
+        <a href="{% url 'residente_ver_jornada' j.id_jornada %}" class="btn-ver">
+            Ver detalles
+        </a>
+    </li>
+{% endfor %}
+
+
+    {% else %}
+        <p>No hay jornadas creadas aún.</p>
+    {% endif %}
+</main>
+{% include "residente/footer.html" %}
+{% endblock %}
