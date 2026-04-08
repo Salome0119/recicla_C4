@@ -7,91 +7,379 @@
 
 {% block cuerpo %}
 
-<style>
-/* ======== ESTILOS DE NOTIFICACIONES (COMPATIBLE CON estilos_residentes.css) ======== */
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function crearModal(tipo, url) {
+        const existente = document.getElementById('modal-confirm-overlay');
+        if (existente) existente.remove();
+        
+        const overlay = document.createElement('div');
+        overlay.id = 'modal-confirm-overlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+        
+        const titulo = tipo === 'todas' ? '¿Eliminar todas las notificaciones?' : '¿Eliminar esta notificación?';
+        const mensaje = tipo === 'todas' ? 'Esta acción no se puede deshacer.' : '¿Estás seguro de que deseas eliminar esta notificación?';
+        
+        overlay.innerHTML = '<div style="background:#fff;padding:30px;border-radius:16px;max-width:400px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);font-family:sans-serif;">' +
+            '<div style="font-size:3rem;margin-bottom:15px;">🗑️</div>' +
+            '<h3 style="margin:0 0 10px;color:#2c3e50;">' + titulo + '</h3>' +
+            '<p style="color:#666;margin-bottom:25px;">' + mensaje + '</p>' +
+            '<div style="display:flex;gap:15px;justify-content:center;">' +
+            '<button id="modal-cancel" style="padding:12px 24px;border:2px solid #ddd;background:#fff;border-radius:8px;cursor:pointer;font-weight:600;color:#555;">Cancelar</button>' +
+            '<button id="modal-confirm" style="padding:12px 24px;border:none;background:#e74c3c;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;">Eliminar</button>' +
+            '</div></div>';
+        
+        document.body.appendChild(overlay);
+        
+        document.getElementById('modal-cancel').onclick = function() { overlay.remove(); };
+        document.getElementById('modal-confirm').onclick = function() { 
+            overlay.remove();
+            window.location.href = url;
+        };
+    }
+    
+    document.querySelectorAll('.btn-eliminar').forEach(function(btn) {
+        btn.onclick = function(e) {
+            e.preventDefault();
+            crearModal('una', this.getAttribute('href'));
+        };
+    });
+    
+    const btnTodas = document.querySelector('.btn-eliminar-todas');
+    if (btnTodas) {
+        btnTodas.onclick = function(e) {
+            e.preventDefault();
+            crearModal('todas', this.getAttribute('href'));
+        };
+    }
+});
+</script>
 
+<style>
 .notificaciones-wrapper {
     max-width: 900px;
-    margin: 100px auto 40px; /* el margin-top compensa el header */
+    margin: 100px auto 40px;
     padding: 0 20px;
-    padding-bottom: 100px; /* espacio para que el footer quede abajo */
+    padding-bottom: 100px;
 }
 
-h2 {
+.notificaciones-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.notificaciones-header h2 {
     color: var(--dark);
     font-size: 1.9rem;
-    margin-bottom: 25px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Contenedor general */
+.btn-eliminar-todas {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+}
+
+.btn-eliminar-todas:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
+}
+
 .notificaciones-container {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
 }
 
-/* Tarjeta */
 .notificacion {
     background: white;
-    padding: 18px 20px;
-    border-radius: var(--radius);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    border-left: 6px solid var(--primary);
-    transition: transform .2s ease, box-shadow .2s ease;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #eee;
+    display: flex;
 }
 
 .notificacion:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 
-/* Título del tipo */
-.notificacion strong {
-    font-size: 1.15rem;
-    color: var(--secondary);
+.notificacion-icono {
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    font-size: 1.5rem;
+    flex-shrink: 0;
 }
 
-/* Mensaje */
-.notificacion p {
-    margin: 10px 0 6px;
-    color: var(--muted);
-    font-size: 0.95rem;
+.notificacion-icono.info { background: linear-gradient(135deg, #3498db, #2980b9); }
+.notificacion-icono.jornada { background: linear-gradient(135deg, #27ae60, #1e8449); }
+.notificacion-icono.advertencia { background: linear-gradient(135deg, #f39c12, #e67e22); }
+.notificacion-icono.inscripcion { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+.notificacion-content {
+    flex: 1;
+    padding: 20px;
 }
 
-/* Fecha */
-.notificacion span {
-    display: inline-block;
-    margin-top: 4px;
+.notificacion-tipo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
     font-size: 0.8rem;
-    color: #7d8a88;
+    font-weight: 600;
+    margin-bottom: 10px;
+    background: #e8f5e9;
+    color: #27ae60;
+}
+
+.notificacion-tipo.jornada { background: #e8f8f5; color: #27ae60; }
+.notificacion-tipo.info { background: #ebf5fb; color: #3498db; }
+.notificacion-tipo.advertencia { background: #fef9e7; color: #f39c12; }
+.notificacion-tipo.inscripcion { background: #f5eef8; color: #9b59b6; }
+
+.notificacion strong {
+    display: block;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.notificacion p {
+    margin: 0 0 12px;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.notificacion-fecha {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #95a5a6;
+}
+
+.notificacion-acciones {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: #f9f9f9;
+    border-left: 1px solid #eee;
+}
+
+.btn-eliminar {
+    background: transparent;
+    color: #e74c3c;
+    border: 2px solid #e74c3c;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-eliminar:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+.mensaje-exito {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #a3d9a5;
+    font-weight: 500;
+}
+
+.pagination {
+    margin-top: 35px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.current {
+    padding: 10px 16px;
+    color: #555;
+    font-weight: 500;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.btn-page {
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-page:hover {
+    background: var(--secondary);
+    transform: translateY(-2px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #ddd;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.empty-state p {
+    color: #95a5a6;
+    font-size: 1.1rem;
+}
+
+.filtro-pill {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filtro-pill a {
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.filtro-pill a.active {
+    background: var(--primary);
+    color: white;
+}
+
+.filtro-pill a:not(.active) {
+    background: #f0f0f0;
+    color: #555;
+}
+
+.filtro-pill a:not(.active):hover {
+    background: #e0e0e0;
 }
 </style>
 
-<!-- ========== HEADER ========== -->
 {% include 'residente/header.html' %}
 
-<!-- ========== CONTENIDO ========== -->
 <div class="notificaciones-wrapper">
-    <h2>📬 Mis Notificaciones</h2>
+    <div class="notificaciones-header">
+        <h2>🔔 Mis Notificaciones</h2>
+        {% if notificaciones.paginator.count > 0 %}
+        <a href="{% url 'residente_eliminar_todas_notificaciones' %}" class="btn-eliminar-todas">
+            <i class="fas fa-trash-alt"></i> Eliminar todas
+        </a>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mensaje-exito">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
     <div class="notificaciones-container">
         {% if notificaciones %}
             {% for n in notificaciones %}
                 <div class="notificacion">
-                    <strong>{{ n.tipo }}</strong>
-                    <p>{{ n.mensaje }}</p>
-                    <span>{{ n.fecha_envio|date:"d/m/Y H:i" }}</span>
+                    {% if 'jornada' in n.tipo|lower %}
+                        <div class="notificacion-icono jornada">📅</div>
+                    {% elif 'inscripcion' in n.tipo|lower %}
+                        <div class="notificacion-icono inscripcion">✅</div>
+                    {% elif 'recordatorio' in n.tipo|lower or 'aviso' in n.tipo|lower %}
+                        <div class="notificacion-icono advertencia">⚠️</div>
+                    {% else %}
+                        <div class="notificacion-icono info">ℹ️</div>
+                    {% endif %}
+                    
+                    <div class="notificacion-content">
+                        {% if 'jornada' in n.tipo|lower %}
+                            <span class="notificacion-tipo jornada"><i class="fas fa-recycle"></i> Jornada</span>
+                        {% elif 'inscripcion' in n.tipo|lower %}
+                            <span class="notificacion-tipo inscripcion"><i class="fas fa-check-circle"></i> Inscripción</span>
+                        {% elif 'recordatorio' in n.tipo|lower %}
+                            <span class="notificacion-tipo advertencia"><i class="fas fa-bell"></i> Recordatorio</span>
+                        {% else %}
+                            <span class="notificacion-tipo info"><i class="fas fa-info-circle"></i> Información</span>
+                        {% endif %}
+                        
+                        <strong>{{ n.tipo }}</strong>
+                        <p>{{ n.mensaje }}</p>
+                        <div class="notificacion-fecha">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ n.fecha_envio|date:"d/m/Y H:i" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="notificacion-acciones">
+                        <a href="{% url 'residente_eliminar_notificacion' n.id_notificacion %}" class="btn-eliminar">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </a>
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
-            <p style="color: var(--muted); font-weight: 500;">
-                No tienes notificaciones por ahora.
-            </p>
+            <div class="empty-state">
+                <i class="fas fa-bell-slash"></i>
+                <p>No tienes notificaciones por ahora.</p>
+            </div>
         {% endif %}
     </div>
+    
+    {% if notificaciones.has_other_pages %}
+    <div class="pagination">
+        {% if notificaciones.has_previous %}
+        <a href="?page={{ notificaciones.previous_page_number }}" class="btn-page">Anterior</a>
+        {% endif %}
+        
+        <span class="current">Página {{ notificaciones.number }} de {{ notificaciones.paginator.num_pages }}</span>
+        
+        {% if notificaciones.has_next %}
+        <a href="?page={{ notificaciones.next_page_number }}" class="btn-page">Siguiente</a>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 
-<!-- ========== FOOTER ========== -->
 {% include 'residente/footer.html' %}
 {% endblock %}

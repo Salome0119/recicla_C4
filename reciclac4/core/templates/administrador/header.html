@@ -20,12 +20,12 @@
 
   <nav class="header-right">
     <ul>
-      <li><a href="{% url 'admi_inicio' %}">🏠 Inicio</a></li>
-      <li><a href="{% url 'admi_educacion' %}">🌟 Educación</a></li>
+      <li><a href="{% url 'admi_inicio' %}">Inicio</a></li>
+      <li><a href="{% url 'admi_educacion' %}">Educación</a></li>
 
       <li class="submenu-parent">
         <a href="javascript:void(0);" class="submenu-toggle">
-          💬 Foro <i class="fas fa-chevron-down"></i>
+          Foro <i class="fas fa-chevron-down"></i>
         </a>
         <ul class="submenu">
           <li><a href="{% url 'admi_publicacion_foro' %}">Nueva Publicación</a></li>
@@ -33,22 +33,12 @@
         </ul>
       </li>
 
-      <li><a href="{% url 'admi_contacto' %}">✉️ Contacto</a></li>
+      <li><a href="{% url 'admi_contacto' %}">Contacto</a></li>
 
       <li><a href="{% url 'perfil_admin' %}" class="btn-profile">Perfil <i class="fas fa-user-circle"></i></a></li>
     </ul>
   </nav>
 </header>
-
-{% if messages %}
-<div class="messages">
-    {% for message in messages %}
-        <div class="alert {{ message.tags }}">
-            {{ message }}
-        </div>
-    {% endfor %}
-</div>
-{% endif %}
 
 <!-- Overlay -->
 <div id="overlay" aria-hidden="true"></div>
@@ -64,7 +54,7 @@
 
   <ul>
     <li class="submenu-parent">
-      <a href="#" class="submenu-toggle" id="toggle-jornadas">📅 Jornadas <i class="fas fa-chevron-down"></i></a>
+      <a href="#" class="submenu-toggle" id="toggle-jornadas">Jornadas <i class="fas fa-chevron-down"></i></a>
       <ul class="submenu">
         <li><a href="{% url 'admi_creacion_jornadas' %}">📝 Formulario de Jornada</a></li>
         <li><a href="{% url 'admi_asistencia' %}">📝 Registro de asistencia</a></li>

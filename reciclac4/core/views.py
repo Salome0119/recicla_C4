@@ -158,8 +158,8 @@ NUEVA SOLICITUD DE USUARIO QUE REQUIERE APROBACIÓN:
             send_mail(
                 subject=f"🔔 Nueva solicitud de {rol} - Recicla Comuna 4",
                 message=mensaje_admin,
-                from_email="salohenao19@gmail.com",
-                recipient_list=["salohenao19@gmail.com"],
+                from_email="reciclacomuna@gmail.com",
+                recipient_list=["reciclacomuna@gmail.com"],
                 fail_silently=False,
             )
 
@@ -718,12 +718,20 @@ def admi_inicio(request):
 
 @rol_required('administrador')
 def admi_asistencia(request):
-    from datetime import timedelta
+    from datetime import timedelta, datetime
     from django.utils import timezone
     from .models import Asistencia
 
+    # Obtener filtro de estado
+    filtro_estado = request.GET.get('estado', '')
+    
     # Mostrar todas las jornadas excepto las canceladas
-    jornadas_finalizadas = Jornada.objects.exclude(estado='cancelada').order_by('-fecha')
+    jornadas_query = Jornada.objects.exclude(estado='cancelada').order_by('-fecha')
+    
+    if filtro_estado:
+        jornadas_query = jornadas_query.filter(estado=filtro_estado)
+    
+    jornadas_finalizadas = jornadas_query
 
     jornada_id = request.GET.get('jornada_id') or request.POST.get('jornada_id')
     jornada = None
@@ -732,11 +740,18 @@ def admi_asistencia(request):
     if jornada_id:
         jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
 
-        # Verificar que no hayan pasado más de 48 horas
-        limite = jornada.last_update + timedelta(hours=48)
-        if timezone.now() > limite:
-            messages.error(request, "Ya pasaron las 48 horas limite para asignar puntos a esta jornada.")
-            return redirect("admi_asistencia")
+        # Verificar que no hayan pasado más de 48 horas desde la fecha y hora de la jornada
+        if jornada.fecha:
+            from datetime import datetime
+            if jornada.hora:
+                fecha_hora_jornada = datetime.combine(jornada.fecha, jornada.hora)
+            else:
+                fecha_hora_jornada = datetime.combine(jornada.fecha, datetime.min.time())
+            fecha_hora_jornada = timezone.make_aware(fecha_hora_jornada)
+            limite = fecha_hora_jornada + timedelta(hours=48)
+            if timezone.now() > limite:
+                messages.error(request, "Ya pasaron las 48 horas limite para asignar puntos a esta jornada.")
+                return redirect("admi_asistencia")
 
         inscripciones = Inscripcion.objects.filter(
             jornada=jornada,
@@ -783,7 +798,8 @@ def admi_asistencia(request):
     return render(request, "administrador/asistencia.html", {
         "jornadas_finalizadas": jornadas_finalizadas,
         "jornada": jornada,
-        "inscripciones": inscripciones
+        "inscripciones": inscripciones,
+        "filtro_estado": filtro_estado
     })
 
 # CONFIGURACION
@@ -1017,6 +1033,7 @@ def admi_validar_acciones(request):
 def admi_validar_asistencia(request):
     from datetime import timedelta
     from django.utils import timezone
+    from .models import Asistencia
     
     jornada_id = request.GET.get('jornada_id') or request.POST.get('jornada_id')
     
@@ -1024,47 +1041,67 @@ def admi_validar_asistencia(request):
         messages.error(request, "No se especificó la jornada.")
         return redirect("admi_asistencia")
     
-    jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
-    
-    # Verificar que no hayan pasado más de 48 horas
-    limite = jornada.last_update + timedelta(hours=48)
-    if timezone.now() > limite:
-        messages.error(request, "Ya pasaron las 48 horas limite para asignar puntos a esta jornada.")
+    try:
+        jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+    except Exception as e:
+        messages.error(request, f"Error al obtener la jornada: {str(e)}")
         return redirect("admi_asistencia")
+    
+    # Usar fecha de la jornada como referencia
+    if jornada.fecha:
+        # Combinar fecha y hora de la jornada para calcular el límite
+        fecha_hora_jornada = jornada.fecha
+        if jornada.hora:
+            from datetime import datetime
+            fecha_hora_jornada = datetime.combine(jornada.fecha, jornada.hora)
+            fecha_hora_jornada = timezone.make_aware(fecha_hora_jornada)
+        else:
+            from datetime import datetime
+            fecha_hora_jornada = datetime.combine(jornada.fecha, datetime.min.time())
+            fecha_hora_jornada = timezone.make_aware(fecha_hora_jornada)
+        
+        limite = fecha_hora_jornada + timedelta(hours=48)
+        if timezone.now() > limite:
+            messages.error(request, "Ya pasaron las 48 horas limite para asignar puntos a esta jornada.")
+            return redirect("admi_asistencia")
     
     puntos_residente = 10
     puntos_organizador = 20
     
-    inscripciones = Inscripcion.objects.filter(
-        jornada=jornada,
-        estado='activa'
-    ).select_related('usuario')
-    
-    for inscripcion in inscripciones:
-        asistencia = Asistencia.objects.filter(inscripcion=inscripcion).first()
-        if asistencia and asistencia.presente:
-            usuario = inscripcion.usuario
-            puntos = puntos_organizador if usuario.rol == "organizador" else puntos_residente
-            
-            # Actualizar puntos en la tabla asistencia
-            asistencia.puntos_asignados = puntos
-            asistencia.save(update_fields=['puntos_asignados'])
-            
-            # Verificar que no tenga ya puntos por esta jornada
-            ya_tiene = Puntaje.objects.filter(
-                usuario=usuario,
-                jornada=jornada
-            ).exists()
-            
-            if not ya_tiene:
-                Puntaje.objects.create(
+    try:
+        inscripciones = Inscripcion.objects.filter(
+            jornada=jornada,
+            estado='activa'
+        ).select_related('usuario')
+        
+        for inscripcion in inscripciones:
+            asistencia = Asistencia.objects.filter(inscripcion=inscripcion).first()
+            if asistencia and asistencia.presente:
+                usuario = inscripcion.usuario
+                puntos = puntos_organizador if usuario.rol == "organizador" else puntos_residente
+                
+                # Actualizar puntos en la tabla asistencia
+                asistencia.puntos_asignados = puntos
+                asistencia.save(update_fields=['puntos_asignados'])
+                
+                # Verificar que no tenga ya puntos por esta jornada
+                ya_tiene = Puntaje.objects.filter(
                     usuario=usuario,
-                    puntos=puntos,
-                    motivo=f"Asistencia validada a jornada: {jornada.titulo}",
                     jornada=jornada
-                )
+                ).exists()
+                
+                if not ya_tiene:
+                    Puntaje.objects.create(
+                        usuario=usuario,
+                        puntos=puntos,
+                        motivo=f"Asistencia validada a jornada: {jornada.titulo}",
+                        jornada=jornada
+                    )
+        
+        messages.success(request, "Asistencia validada y puntos asignados correctamente.")
+    except Exception as e:
+        messages.error(request, f"Error al validar asistencia: {str(e)}")
     
-    messages.success(request, "Asistencia validada y puntos asignados correctamente.")
     return redirect("admi_asistencia")
 
 
@@ -1133,6 +1170,15 @@ def _validar_datos_jornada(request, datos, organizador):
         if not str(datos.get(campo, "")).strip():
             messages.error(request, mensaje)
             return False
+
+    try:
+        cupo = int(datos.get("cupo_maximo", 0))
+        if cupo < 5 or cupo > 50:
+            messages.error(request, "El cupo maximo debe estar entre 5 y 50 participantes.")
+            return False
+    except ValueError:
+        messages.error(request, "El cupo maximo debe ser un numero valido.")
+        return False
 
     if not organizador:
         messages.error(request, "Debes asignar al menos un organizador antes de publicar la jornada.")
@@ -1238,7 +1284,7 @@ def _alerta_y_redireccion(request, url):
                 <div class="modal">
                     <h2>Aviso</h2>
                     <p>{mensaje}</p>
-                    <button class="btn" onclick="window.location.href='{url}'">Aceptar</button>
+                    <button class="btn" onclick="window.history.back()">Aceptar</button>
                 </div>
             </div>
         </body>
@@ -1289,8 +1335,8 @@ def _validar_datos_jornada(request, datos, organizador, jornada_actual=None):
         messages.error(request, "El cupo maximo debe ser un numero valido.")
         return False
 
-    if cupo_maximo <= 0 or cupo_maximo > 200:
-        messages.error(request, "El cupo maximo debe ser mayor a cero y no puede superar 200 personas.")
+    if cupo_maximo < 5 or cupo_maximo > 50:
+        messages.error(request, "El cupo maximo debe estar entre 5 y 50 participantes.")
         return False
 
     if not organizador:
@@ -1720,7 +1766,13 @@ def admi_notificaciones(request):
 @rol_required('administrador')
 def admi_eliminar_jornada(request, jornada_id):
     jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+    
+    if jornada.estado != "pendiente":
+        messages.error(request, "Solo se pueden eliminar jornadas con estado pendiente.")
+        return redirect("admi_creacion_jornadas")
+    
     jornada.delete()
+    messages.success(request, "Jornada eliminada correctamente.")
     return redirect("admi_creacion_jornadas")
 
 @rol_required('administrador')
@@ -1744,17 +1796,45 @@ def admi_modificar_jornada(request, jornada_id):
 # ---------------------------
 @rol_required('residente')
 def residente_lista_jornadas(request):
-    jornadas = Jornada.objects.exclude(
-        estado='cancelada'
+    from django.core.paginator import Paginator
+    
+    usuario_id = request.session.get("usuario_id")
+    filtro = request.GET.get('filtro', '')
+    
+    jornadas_query = Jornada.objects.filter(
+        estado='activa'
     ).order_by('fecha')
-
+    
+    if filtro == 'inscrito':
+        ids_inscritos = Inscripcion.objects.filter(
+            usuario_id=usuario_id, 
+            estado='activa'
+        ).values_list('jornada_id', flat=True)
+        jornadas_query = jornadas_query.filter(id_jornada__in=ids_inscritos)
+    elif filtro == 'no_inscrito':
+        ids_inscritos = Inscripcion.objects.filter(
+            usuario_id=usuario_id, 
+            estado='activa'
+        ).values_list('jornada_id', flat=True)
+        jornadas_query = jornadas_query.exclude(id_jornada__in=ids_inscritos)
+    
+    jornadas = list(jornadas_query)
+    
     for j in jornadas:
         j.inscritos_activos = Inscripcion.objects.filter(
             jornada=j, estado='activa'
         ).count()
+        j.esta_inscrito = Inscripcion.objects.filter(
+            jornada=j, usuario_id=usuario_id, estado='activa'
+        ).exists()
+
+    paginator = Paginator(jornadas, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, "residente/lista_jornadas.html", {
-        "jornadas": jornadas
+        "jornadas": page_obj,
+        "filtro": filtro
     })
 
 @rol_required('residente')
@@ -2084,12 +2164,22 @@ def organizador_creacion_jornadas(request):
 @rol_required('organizador')
 def organizador_eliminar_jornada(request, jornada_id):
     jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+    
+    if jornada.estado != "pendiente":
+        messages.error(request, "Solo se pueden eliminar jornadas con estado pendiente.")
+        return redirect("organizador_creacion_jornadas")
+    
     jornada.delete()
+    messages.success(request, "Jornada eliminada correctamente.")
     return redirect("organizador_creacion_jornadas")
 
 @rol_required('organizador')
 def organizador_modificar_jornada(request, jornada_id):
     jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+    
+    if jornada.estado != "pendiente":
+        messages.error(request, "Solo se pueden editar jornadas con estado pendiente.")
+        return redirect("organizador_creacion_jornadas")
 
     if request.method == "POST":
         form = JornadaForm(request.POST, instance=jornada)
@@ -2688,10 +2778,52 @@ def residente_notificaciones(request):
         usuario_id=usuario.id_usuario
     ).order_by("-fecha_envio")
 
+    paginator = Paginator(notificaciones, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, "residente/notificaciones.html", {
         "usuario": usuario,
-        "notificaciones": notificaciones
+        "notificaciones": page_obj
     })
+
+
+@rol_required('residente')
+def residente_eliminar_notificacion(request, notificacion_id):
+    usuario_id = request.session.get("usuario_id")
+    if not usuario_id:
+        return redirect("login")
+    
+    usuario = Usuario.objects.filter(id_usuario=usuario_id).first()
+    if not usuario:
+        return redirect("login")
+    
+    notificacion = Notificacion.objects.filter(
+        id_notificacion=notificacion_id,
+        usuario_id=usuario.id_usuario
+    ).first()
+    
+    if notificacion:
+        notificacion.delete()
+        messages.success(request, "Notificación eliminada correctamente.")
+    
+    return redirect("residente_notificaciones")
+
+
+@rol_required('residente')
+def residente_eliminar_todas_notificaciones(request):
+    usuario_id = request.session.get("usuario_id")
+    if not usuario_id:
+        return redirect("login")
+    
+    usuario = Usuario.objects.filter(id_usuario=usuario_id).first()
+    if not usuario:
+        return redirect("login")
+    
+    Notificacion.objects.filter(usuario_id=usuario.id_usuario).delete()
+    messages.success(request, "Todas las notificaciones han sido eliminadas.")
+    
+    return redirect("residente_notificaciones")
 
 
 @rol_required('organizador')
@@ -2817,10 +2949,29 @@ def admi_creacion_jornadas(request):
             </script>
         """)
 
+    # Obtener filtros del GET
+    filtro_estado = request.GET.get('estado', '')
+    filtro_material = request.GET.get('tipo_material', '')
+    
+    # Query base
     jornadas = Jornada.objects.all().order_by("-fecha")
+    
+    # Aplicar filtros
+    if filtro_estado:
+        jornadas = jornadas.filter(estado=filtro_estado)
+    if filtro_material:
+        jornadas = jornadas.filter(tipo_material=filtro_material)
+    
+    # Paginación
+    paginator = Paginator(jornadas, 10)  # 10 jornadas por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     return render(request, "administrador/creacionjornadas.html", {
-        "jornadas": jornadas,
+        "jornadas": page_obj,
         "barrios": barrios,
+        "filtro_estado": filtro_estado,
+        "filtro_material": filtro_material,
     })
 
 
@@ -2913,10 +3064,20 @@ def admi_creacion_jornadas(request):
         }
 
         if not _validar_datos_jornada(request, datos_jornada, usuario_actual):
+            filtro_estado = request.GET.get('estado', '')
+            filtro_material = request.GET.get('tipo_material', '')
             jornadas = Jornada.objects.all().order_by("-fecha")
+            if filtro_estado:
+                jornadas = jornadas.filter(estado=filtro_estado)
+            if filtro_material:
+                jornadas = jornadas.filter(tipo_material=filtro_material)
+            paginator = Paginator(jornadas, 10)
+            page_obj = paginator.get_page(request.GET.get('page'))
             return render(request, "administrador/creacionjornadas.html", {
-                "jornadas": jornadas,
+                "jornadas": page_obj,
                 "barrios": barrios,
+                "filtro_estado": filtro_estado,
+                "filtro_material": filtro_material,
             })
 
         jornada = Jornada(
@@ -2945,10 +3106,73 @@ def admi_creacion_jornadas(request):
             </script>
         """)
 
+    filtro_estado = request.GET.get('estado', '')
+    filtro_material = request.GET.get('tipo_material', '')
+    
     jornadas = Jornada.objects.all().order_by("-fecha")
+    
+    if filtro_estado:
+        jornadas = jornadas.filter(estado=filtro_estado)
+    if filtro_material:
+        jornadas = jornadas.filter(tipo_material=filtro_material)
+    
+    paginator = Paginator(jornadas, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    
     return render(request, "administrador/creacionjornadas.html", {
-        "jornadas": jornadas,
+        "jornadas": page_obj,
         "barrios": barrios,
+        "filtro_estado": filtro_estado,
+        "filtro_material": filtro_material,
+    })
+
+
+@rol_required('administrador')
+def admi_detalle_jornada(request, jornada_id):
+    """Vista para ver los detalles de una jornada incluyendo participantes"""
+    usuario_id = request.session.get("usuario_id")
+    if not usuario_id:
+        return redirect("login")
+    
+    usuario_actual = Usuario.objects.filter(id_usuario=usuario_id).first()
+    if not usuario_actual or usuario_actual.rol != "administrador":
+        messages.error(request, "Solo los administradores pueden acceder a esta página.")
+        return redirect("login")
+    
+    jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+    
+    # Obtener participantes (inscripciones)
+    inscripciones = Inscripcion.objects.filter(
+        jornada=jornada,
+        estado='activa'
+    ).select_related('usuario')
+    
+    # Obtener registros de asistencia
+    from .models import Asistencia
+    ids_inscripcion = list(inscripciones.values_list('id_inscripcion', flat=True))
+    asistentes = {}
+    if ids_inscripcion:
+        registros_asistencia = Asistencia.objects.filter(inscripcion_id__in=ids_inscripcion)
+        for reg in registros_asistencia:
+            asistentes[reg.inscripcion_id] = reg
+    
+    # Preparar datos de participantes
+    participantes = []
+    for inscripcion in inscripciones:
+        usuario = inscripcion.usuario
+        asistencia = asistentes.get(inscripcion.id_inscripcion)
+        participantes.append({
+            'nombre': usuario.nombre if usuario else 'No especificado',
+            'correo': usuario.correo if usuario else '',
+            'telefono': usuario.telefono if usuario else '',
+            'asistio': asistencia.presente if asistencia else None,
+            'puntos': asistencia.puntos_asignados if asistencia else None
+        })
+    
+    return render(request, "administrador/detalle_jornada.html", {
+        "jornada": jornada,
+        "participantes": participantes,
+        "total_participantes": len(participantes)
     })
 
 
@@ -2956,43 +3180,73 @@ def admi_creacion_jornadas(request):
 def admi_modificar_jornada(request, jornada_id):
     jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
 
-    if jornada.estado != "pendiente":
-        messages.error(request, "Solo se pueden editar jornadas con estado pendiente.")
+    if jornada.estado not in ["pendiente", "activa"]:
+        messages.error(request, "Solo se pueden editar jornadas con estado pendiente o activa.")
         return redirect("admi_creacion_jornadas")
 
     if request.method == "POST":
-        datos_jornada = {
-            "titulo": request.POST.get("titulo"),
-            "descripcion": request.POST.get("descripcion"),
-            "fecha": request.POST.get("fecha"),
-            "hora": request.POST.get("hora"),
-            "direccion": request.POST.get("direccion"),
-            "barrio": request.POST.get("barrio"),
-            "tipo_material": request.POST.get("tipo_material"),
-            "cupo_maximo": request.POST.get("cupo_maximo"),
-            "estado": request.POST.get("estado"),
-        }
+        errores = []
+        
+        # Validaciones manuales
+        if not request.POST.get("titulo", "").strip():
+            errores.append("El título es obligatorio.")
+        if not request.POST.get("descripcion", "").strip():
+            errores.append("La descripción es obligatoria.")
+        if not request.POST.get("fecha", "").strip():
+            errores.append("La fecha es obligatoria.")
+        if not request.POST.get("hora", "").strip():
+            errores.append("La hora es obligatoria.")
+        if not request.POST.get("direccion", "").strip():
+            errores.append("El punto de encuentro es obligatorio.")
+        if not request.POST.get("barrio", "").strip():
+            errores.append("El barrio es obligatorio.")
+        if not request.POST.get("tipo_material", "").strip():
+            errores.append("El tipo de material es obligatorio.")
+        if not request.POST.get("cupo_maximo", "").strip():
+            errores.append("El cupo máximo es obligatorio.")
+        if not request.POST.get("estado", "").strip():
+            errores.append("El estado es obligatorio.")
+        
+        descripcion = request.POST.get("descripcion", "").strip()
+        if descripcion and len(descripcion) < 10:
+            errores.append("La descripción debe contener mínimo 10 caracteres.")
+        
+        try:
+            cupos = int(request.POST.get("cupo_maximo", 0))
+            if cupos < 5 or cupos > 50:
+                errores.append("El cupo máximo debe estar entre 5 y 50 personas.")
+        except:
+            errores.append("El cupo máximo debe ser un número válido.")
+        
+        if errores:
+            messages.error(request, errores[0])
+            return redirect("admi_detalle_jornada", jornada_id=jornada.id_jornada)
 
+        # Actualizar la jornada
+        jornada.titulo = request.POST.get("titulo")
+        jornada.descripcion = request.POST.get("descripcion")
+        jornada.fecha = request.POST.get("fecha")
+        jornada.hora = request.POST.get("hora")
+        jornada.direccion = request.POST.get("direccion")
+        jornada.barrio = request.POST.get("barrio")
+        jornada.tipo_material = request.POST.get("tipo_material")
+        jornada.cupo_maximo = int(request.POST.get("cupo_maximo", 0))
+        jornada.estado = request.POST.get("estado")
+        
         organizador = jornada.id_organizador or Usuario.objects.filter(id_usuario=request.session.get("usuario_id")).first()
-        if not _validar_datos_jornada(request, datos_jornada, organizador, jornada):
-            return _alerta_y_redireccion(request, "/admi/creacionjornadas/")
-
-        form = JornadaForm(request.POST, instance=jornada)
-        if form.is_valid():
-            jornada = form.save(commit=False)
-            if not jornada.id_organizador:
-                jornada.id_organizador = organizador
-            if not _validar_publicacion_jornada(jornada):
-                messages.error(request, "Debes asignar al menos un organizador antes de publicar la jornada.")
-                return _alerta_y_redireccion(request, "/admi/creacionjornadas/")
-            jornada.save()
-            _enviar_notificaciones_automaticas_jornada(jornada, "edicion")
-            messages.success(request, "Jornada modificada correctamente.")
-            return redirect("admi_creacion_jornadas")
-    else:
-        form = JornadaForm(instance=jornada)
-
-    return render(request, "administrador/modificar_jornada.html", {"form": form, "jornada": jornada})
+        if not jornada.id_organizador:
+            jornada.id_organizador = organizador
+        
+        if not _validar_publicacion_jornada(jornada):
+            messages.error(request, "Debes asignar al menos un organizador antes de publicar la jornada.")
+            return redirect("admi_detalle_jornada", jornada_id=jornada.id_jornada)
+        
+        jornada.save()
+        _enviar_notificaciones_automaticas_jornada(jornada, "edicion")
+        messages.success(request, "Jornada modificada correctamente.")
+        return redirect("admi_detalle_jornada", jornada_id=jornada.id_jornada)
+    
+    return redirect("admi_detalle_jornada", jornada_id=jornada.id_jornada)
 
 
 @rol_required('organizador')
@@ -3054,10 +3308,78 @@ def organizador_creacion_jornadas(request):
             </script>
         """)
 
+    # Obtener filtros del GET
+    filtro_estado = request.GET.get('estado', '')
+    filtro_material = request.GET.get('tipo_material', '')
+    
+    # Query base
     jornadas = Jornada.objects.all().order_by("-fecha")
+    
+    # Aplicar filtros
+    if filtro_estado:
+        jornadas = jornadas.filter(estado=filtro_estado)
+    if filtro_material:
+        jornadas = jornadas.filter(tipo_material=filtro_material)
+    
+    # Paginación
+    paginator = Paginator(jornadas, 10)  # 10 jornadas por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     return render(request, "organizador/creacionjornadas.html", {
-        "jornadas": jornadas,
+        "jornadas": page_obj,
         "barrios": barrios,
+        "filtro_estado": filtro_estado,
+        "filtro_material": filtro_material,
+    })
+
+
+@rol_required('organizador')
+def organizador_detalle_jornada(request, jornada_id):
+    """Vista para ver los detalles de una jornada incluyendo participantes"""
+    usuario_id = request.session.get("usuario_id")
+    if not usuario_id:
+        return redirect("login")
+    
+    usuario_actual = Usuario.objects.filter(id_usuario=usuario_id).first()
+    if not usuario_actual or usuario_actual.rol != "organizador":
+        messages.error(request, "Solo los organizadores pueden acceder a esta página.")
+        return redirect("login")
+    
+    jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
+    
+    # Obtener participantes (inscripciones)
+    inscripciones = Inscripcion.objects.filter(
+        jornada=jornada,
+        estado='activa'
+    ).select_related('usuario')
+    
+    # Obtener registros de asistencia
+    from .models import Asistencia
+    ids_inscripcion = list(inscripciones.values_list('id_inscripcion', flat=True))
+    asistentes = {}
+    if ids_inscripcion:
+        registros_asistencia = Asistencia.objects.filter(inscripcion_id__in=ids_inscripcion)
+        for reg in registros_asistencia:
+            asistentes[reg.inscripcion_id] = reg
+    
+    # Preparar datos de participantes
+    participantes = []
+    for inscripcion in inscripciones:
+        usuario = inscripcion.usuario
+        asistencia = asistentes.get(inscripcion.id_inscripcion)
+        participantes.append({
+            'nombre': usuario.nombre if usuario else 'No especificado',
+            'correo': usuario.correo if usuario else '',
+            'telefono': usuario.telefono if usuario else '',
+            'asistio': asistencia.presente if asistencia else None,
+            'puntos': asistencia.puntos_asignados if asistencia else None
+        })
+    
+    return render(request, "organizador/detalle_jornada.html", {
+        "jornada": jornada,
+        "participantes": participantes,
+        "total_participantes": len(participantes)
     })
 
 
@@ -3065,41 +3387,71 @@ def organizador_creacion_jornadas(request):
 def organizador_modificar_jornada(request, jornada_id):
     jornada = get_object_or_404(Jornada, id_jornada=jornada_id)
 
-    if jornada.estado != "pendiente":
-        messages.error(request, "Solo se pueden editar jornadas con estado pendiente.")
+    if jornada.estado not in ["pendiente", "activa"]:
+        messages.error(request, "Solo se pueden editar jornadas con estado pendiente o activa.")
         return redirect("organizador_creacion_jornadas")
 
     if request.method == "POST":
-        datos_jornada = {
-            "titulo": request.POST.get("titulo"),
-            "descripcion": request.POST.get("descripcion"),
-            "fecha": request.POST.get("fecha"),
-            "hora": request.POST.get("hora"),
-            "direccion": request.POST.get("direccion"),
-            "barrio": request.POST.get("barrio"),
-            "tipo_material": request.POST.get("tipo_material"),
-            "cupo_maximo": request.POST.get("cupo_maximo"),
-            "estado": request.POST.get("estado"),
-        }
+        errores = []
+        
+        # Validaciones manuales
+        if not request.POST.get("titulo", "").strip():
+            errores.append("El título es obligatorio.")
+        if not request.POST.get("descripcion", "").strip():
+            errores.append("La descripción es obligatoria.")
+        if not request.POST.get("fecha", "").strip():
+            errores.append("La fecha es obligatoria.")
+        if not request.POST.get("hora", "").strip():
+            errores.append("La hora es obligatoria.")
+        if not request.POST.get("direccion", "").strip():
+            errores.append("El punto de encuentro es obligatorio.")
+        if not request.POST.get("barrio", "").strip():
+            errores.append("El barrio es obligatorio.")
+        if not request.POST.get("tipo_material", "").strip():
+            errores.append("El tipo de material es obligatorio.")
+        if not request.POST.get("cupo_maximo", "").strip():
+            errores.append("El cupo máximo es obligatorio.")
+        if not request.POST.get("estado", "").strip():
+            errores.append("El estado es obligatorio.")
+        
+        descripcion = request.POST.get("descripcion", "").strip()
+        if descripcion and len(descripcion) < 10:
+            errores.append("La descripción debe contener mínimo 10 caracteres.")
+        
+        try:
+            cupos = int(request.POST.get("cupo_maximo", 0))
+            if cupos < 5 or cupos > 50:
+                errores.append("El cupo máximo debe estar entre 5 y 50 personas.")
+        except:
+            errores.append("El cupo máximo debe ser un número válido.")
+        
+        if errores:
+            messages.error(request, errores[0])
+            return redirect("organizador_detalle_jornada", jornada_id=jornada.id_jornada)
 
+        # Actualizar la jornada
+        jornada.titulo = request.POST.get("titulo")
+        jornada.descripcion = request.POST.get("descripcion")
+        jornada.fecha = request.POST.get("fecha")
+        jornada.hora = request.POST.get("hora")
+        jornada.direccion = request.POST.get("direccion")
+        jornada.barrio = request.POST.get("barrio")
+        jornada.tipo_material = request.POST.get("tipo_material")
+        jornada.cupo_maximo = int(request.POST.get("cupo_maximo", 0))
+        jornada.estado = request.POST.get("estado")
+        
         organizador = jornada.id_organizador or Usuario.objects.filter(id_usuario=request.session.get("usuario_id")).first()
-        if not _validar_datos_jornada(request, datos_jornada, organizador, jornada):
-            return _alerta_y_redireccion(request, "/organizador/creacionjornadas/")
-
-        form = JornadaForm(request.POST, instance=jornada)
-        if form.is_valid():
-            jornada = form.save(commit=False)
-            if not jornada.id_organizador:
-                jornada.id_organizador = organizador
-            if not _validar_publicacion_jornada(jornada):
-                messages.error(request, "Debes asignar al menos un organizador antes de publicar la jornada.")
-                return _alerta_y_redireccion(request, "/organizador/creacionjornadas/")
-            jornada.save()
-            _enviar_notificaciones_automaticas_jornada(jornada, "edicion")
-            messages.success(request, "Jornada modificada correctamente.")
-            return redirect("organizador_creacion_jornadas")
-    else:
-        form = JornadaForm(instance=jornada)
-
-    return render(request, "organizador/modificar_jornada.html", {"form": form, "jornada": jornada})
+        if not jornada.id_organizador:
+            jornada.id_organizador = organizador
+        
+        if not _validar_publicacion_jornada(jornada):
+            messages.error(request, "Debes asignar al menos un organizador antes de publicar la jornada.")
+            return redirect("organizador_detalle_jornada", jornada_id=jornada.id_jornada)
+        
+        jornada.save()
+        _enviar_notificaciones_automaticas_jornada(jornada, "edicion")
+        messages.success(request, "Jornada modificada correctamente.")
+        return redirect("organizador_detalle_jornada", jornada_id=jornada.id_jornada)
+    
+    return redirect("organizador_detalle_jornada", jornada_id=jornada.id_jornada)
 

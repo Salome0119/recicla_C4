@@ -7,9 +7,206 @@
 <link rel="stylesheet" href="{% static 'residente/css/estilos_residentes.css' %}">
 <link rel="stylesheet" href="{% static 'residente/css/listaj.css' %}">
 
+<style>
+.jornadas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.jornada-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eee;
+}
+
+.jornada-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.jornada-card-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 20px;
+    color: white;
+}
+
+.jornada-card-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+}
+
+.jornada-card-body {
+    padding: 20px;
+}
+
+.jornada-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.jornada-info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.jornada-info-item i {
+    width: 20px;
+    color: var(--primary);
+    text-align: center;
+}
+
+.jornada-info-item strong {
+    color: #333;
+}
+
+.jornada-card-footer {
+    padding: 16px 20px;
+    background: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.status-inscrito {
+    background: #e8f8f0;
+    color: #27ae60;
+}
+
+.status-cupo-lleno {
+    background: #fdecea;
+    color: #e74c3c;
+}
+
+.status-disponible {
+    background: #e8f5e9;
+    color: #27ae60;
+}
+
+.status-curso {
+    background: #fef3e2;
+    color: #e67e22;
+}
+
+.status-finalizada {
+    background: #f5f5f5;
+    color: #7f8c8d;
+}
+
+.btn-inscribirse {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.btn-inscribirse:hover {
+    background: var(--secondary);
+}
+
+.jornada-material {
+    display: inline-block;
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.filtro-container {
+    background: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+}
+
+.filtro-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filtro-form label {
+    font-weight: 600;
+    color: #333;
+}
+
+.filtro-form select {
+    padding: 10px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.filtro-form select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    display: block;
+    color: #ddd;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+}
+</style>
+
 {% include "residente/header.html" %}
+
 <main class="page-container">
-    <h1>📅 Jornadas de Reciclaje</h1>
+    <h1 style="margin-bottom: 24px;">📅 Jornadas de Reciclaje</h1>
+    
+    <div class="filtro-container">
+        <form method="GET" class="filtro-form">
+            <label for="filtro">Filtrar:</label>
+            <select name="filtro" id="filtro" onchange="this.form.submit()">
+                <option value="">Todas las jornadas</option>
+                <option value="inscrito" {% if filtro == 'inscrito' %}selected{% endif %}>Mis jornadas inscritas</option>
+                <option value="no_inscrito" {% if filtro == 'no_inscrito' %}selected{% endif %}>Jornadas disponibles</option>
+            </select>
+        </form>
+    </div>
 
     {% if messages %}
         {% for message in messages %}
@@ -23,61 +220,107 @@
     {% endif %}
 
     {% if jornadas %}
-        <ul class="lista-jornadas">
+        <div class="jornadas-grid">
             {% for j in jornadas %}
-                <li class="jornada-item">
-                    <h2>{{ j.titulo }}</h2>
-                    <p><strong>Fecha:</strong> {{ j.fecha }}</p>
-                    <p><strong>Hora:</strong> {{ j.hora }}</p>
-                    <p><strong>Barrio:</strong> {{ j.barrio }}</p>
-
-                    {% if j.estado == 'activa' %}
-                        {% if j.cupo_maximo %}
-                            {% if j.inscritos_activos >= j.cupo_maximo %}
-                                <p style="color: #E74C3C; font-weight: 600;">
-                                    Cupo lleno ({{ j.inscritos_activos }}/{{ j.cupo_maximo }})
-                                </p>
-                                <span style="background:#E74C3C; color:white; padding: 5px 12px;
-                                             border-radius: 20px; font-size: 13px;">
-                                    Sin cupos disponibles
-                                </span>
-                            {% else %}
-                                <p style="color: #27ae60; font-weight: 600;">
-                                    Cupos disponibles: {{ j.inscritos_activos }}/{{ j.cupo_maximo }}
-                                </p>
-                                <a href="{% url 'residente_inscripcion' j.id_jornada %}" class="btn-ver">
-                                    Inscribirse
-                                </a>
-                            {% endif %}
-                        {% else %}
-                            <p style="color: #27ae60;">Sin limite de cupo</p>
-                            <a href="{% url 'residente_inscripcion' j.id_jornada %}" class="btn-ver">
-                                Inscribirse
-                            </a>
+                <div class="jornada-card">
+                    <div class="jornada-card-header">
+                        <h2>{{ j.titulo }}</h2>
+                    </div>
+                    <div class="jornada-card-body">
+                        <div class="jornada-info">
+                            <div class="jornada-info-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span><strong>Fecha:</strong> {{ j.fecha }}</span>
+                            </div>
+                            <div class="jornada-info-item">
+                                <i class="fas fa-clock"></i>
+                                <span><strong>Hora:</strong> {{ j.hora }}</span>
+                            </div>
+                            <div class="jornada-info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span><strong>Barrio:</strong> {{ j.barrio }}</span>
+                            </div>
+                            <div class="jornada-info-item">
+                                <i class="fas fa-map-pin"></i>
+                                <span><strong>Dirección:</strong> {{ j.direccion }}</span>
+                            </div>
+                        </div>
+                        {% if j.tipo_material %}
+                            <span class="jornada-material">♻️ {{ j.tipo_material }}</span>
                         {% endif %}
-                    {% elif j.estado == 'finalizada' %}
-                        <span style="background: #888; color: white; padding: 5px 12px;
-                                     border-radius: 20px; font-size: 13px;">
-                            Jornada finalizada
-                        </span>
-                    {% elif j.estado == 'pendiente' %}
-                        <span style="background: #f39c12; color: white; padding: 5px 12px;
-                                     border-radius: 20px; font-size: 13px;">
-                            Proximamente
-                        </span>
-                    {% elif j.estado == 'en_curso' %}
-                        <span style="background: #e67e22; color: white; padding: 5px 12px;
-                                     border-radius: 20px; font-size: 13px;">
-                            Jornada en curso
-                        </span>
-                    {% endif %}
-                </li>
+                    </div>
+                    <div class="jornada-card-footer">
+                        {% if j.estado == 'activa' %}
+                            {% if j.esta_inscrito %}
+                                <div class="status-badge status-inscrito">
+                                    <i class="fas fa-check-circle"></i> ✓ Ya inscrito
+                                </div>
+                            {% else %}
+                                {% if j.cupo_maximo %}
+                                    {% if j.inscritos_activos >= j.cupo_maximo %}
+                                        <div class="status-badge status-cupo-lleno">
+                                            <i class="fas fa-times-circle"></i> Cupo lleno
+                                        </div>
+                                        <p style="color: #e74c3c; font-size: 0.85rem; margin: 0;">
+                                            ({{ j.inscritos_activos }}/{{ j.cupo_maximo }} inscriptos)
+                                        </p>
+                                    {% else %}
+                                        <div class="status-badge status-disponible">
+                                            <i class="fas fa-user-check"></i> 
+                                            {{ j.cupo_maximo|add:"-"|add:j.inscritos_activos }} cupos disponibles
+                                        </div>
+                                        <p style="color: #27ae60; font-size: 0.85rem; margin: 0 0 12px 0;">
+                                            ({{ j.inscritos_activos }}/{{ j.cupo_maximo }} inscriptos)
+                                        </p>
+                                        <a href="{% url 'residente_inscripcion' j.id_jornada %}" class="btn-inscribirse">
+                                            Inscribirse
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="status-badge status-disponible">
+                                        <i class="fas fa-infinity"></i> Sin límite de cupo
+                                    </div>
+                                    <a href="{% url 'residente_inscripcion' j.id_jornada %}" class="btn-inscribirse">
+                                        Inscribirse
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        {% elif j.estado == 'en_curso' %}
+                            <div class="status-badge status-curso">
+                                <i class="fas fa-spinner"></i> Jornada en curso
+                            </div>
+                        {% elif j.estado == 'finalizada' %}
+                            <div class="status-badge status-finalizada">
+                                <i class="fas fa-check"></i> Finalizada
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
+        
+        {% if jornadas.has_other_pages %}
+        <div style="margin-top: 40px; display: flex; justify-content: center; gap: 10px;">
+            {% if jornadas.has_previous %}
+            <a href="?page={{ jornadas.previous_page_number }}{% if filtro %}&filtro={{ filtro }}{% endif %}" style="padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 6px;">Anterior</a>
+            {% endif %}
+            
+            <span style="padding: 10px;">Página {{ jornadas.number }} de {{ jornadas.paginator.num_pages }}</span>
+            
+            {% if jornadas.has_next %}
+            <a href="?page={{ jornadas.next_page_number }}{% if filtro %}&filtro={{ filtro }}{% endif %}" style="padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 6px;">Siguiente</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        
     {% else %}
-        <p>No hay jornadas disponibles.</p>
+        <div class="empty-state">
+            <i class="fas fa-calendar-times"></i>
+            <p>No hay jornadas disponibles.</p>
+        </div>
     {% endif %}
 
 </main>
+
 {% include "residente/footer.html" %}
 {% endblock %}
