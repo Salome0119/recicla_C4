@@ -4,212 +4,723 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión - RC4</title>
 
     <style>
         :root {
-            --green-dark: #1b4332;   
-            --green-medium: #2e7d32; 
-            --green-bright: #388e3c; 
-            --green-light: #66bb6a;  
-            --green-bg: #dcedc1;     
-            --green-bg-light: #a8e6cf;
-            --text-dark: #2f4f4f;
+            --primary: #2ECC71;
+            --secondary: #27AE60;
+            --green-dark: #1b4332;
+            --green-medium: #2e7d32;
             --white: #ffffff;
-            --border-color: #c8e6c9;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-400: #adb5bd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: "Poppins", sans-serif;
-            background: linear-gradient(135deg, var(--green-bg-light), var(--green-bg));
-            height: 100vh;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #a8e6cf 0%, #a7e8d0 50%);
+        }
+
+        .split-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 950px;
+            height: 620px;
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(27, 67, 50, 0.3);
+            overflow: hidden;
+            display: flex;
+            animation: containerAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes containerAppear {
+            0% { opacity: 0; transform: scale(0.9); }
+            60% { transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .image-panel {
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--green-dark));
+            display: flex;
             flex-direction: column;
-        }
-
-        .brand-card {
-            width: 400px;
-            padding: 22px 25px;
-            background: var(--white);
-            border-radius: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
-            border: 2px solid var(--border-color);
-            animation: fadeIn 0.8s ease;
-        }
-
-        .brand-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--green-light);
-            border-radius: 12px;
-            display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.8rem;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: width 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .image-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .image-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
             color: var(--white);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            transition: all 0.5s ease;
         }
 
-        .brand-title {
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: var(--green-dark);
-            letter-spacing: .5px;
+        .image-content .big-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
         }
 
-        .login-card {
-            background: var(--white);
-            width: 380px;
-            padding: 35px 40px;
-            border-radius: 22px;
-            border: 2px solid var(--border-color);
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
-            animation: fadeIn 0.7s ease;
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(25px); }
-            to { opacity: 1; transform: translateY(0); }
+        .image-content h2 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            font-weight: 800;
         }
 
-        .login-title {
+        .image-content p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            max-width: 240px;
+        }
+
+        .panel-float-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .panel-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.2;
+            animation: iconFloat 8s infinite ease-in-out;
+        }
+
+        .panel-icon:nth-child(1) { top: 15%; left: 15%; animation-delay: 0s; }
+        .panel-icon:nth-child(2) { top: 70%; left: 25%; animation-delay: 1s; }
+        .panel-icon:nth-child(3) { top: 20%; right: 20%; animation-delay: 2s; }
+        .panel-icon:nth-child(4) { bottom: 25%; right: 15%; animation-delay: 3s; }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(10deg); }
+        }
+
+        .form-panel {
+            width: 55%;
+            height: 100%;
+            padding: 30px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: width 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow: hidden;
+        }
+
+        .forms-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 5px;
+        }
+
+        .forms-wrapper::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .forms-wrapper::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 2px;
+        }
+
+        .forms-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .form-title {
             text-align: center;
             color: var(--green-dark);
             font-size: 1.8rem;
-            margin-bottom: 1.2rem;
             font-weight: 700;
+            margin-bottom: 5px;
         }
 
-        label {
-            font-weight: 600;
-            color: var(--green-dark);
-            font-size: 0.95rem;
-        }
-
-        input {
-            width: 100%;
-            padding: 11px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 0.95rem;
-            background-color: #f6fff6;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--green-bright);
-            box-shadow: 0 0 8px rgba(56, 142, 60, 0.35);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(90deg, var(--green-light), var(--green-bright));
-            border: none;
-            border-radius: 10px;
-            color: var(--white);
+        .form-subtitle {
+            text-align: center;
+            color: var(--gray-400);
             font-size: 1rem;
+            margin-bottom: 25px;
+        }
+
+        .form-decoration {
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            margin: 0 auto 25px;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
             font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s ease;
-        }
-
-        button:hover {
-            background: linear-gradient(90deg, var(--green-bright), var(--green-dark));
-            transform: scale(1.05);
-            box-shadow: 0px 8px 18px rgba(0,0,0,0.2);
-        }
-
-        .register-link {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: var(--green-medium);
-        }
-
-        .register-link a {
-            color: var(--green-medium);
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .register-link a:hover {
             color: var(--green-dark);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
         }
 
-        /* Estilo de los mensajes dentro de la card */
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: var(--gray-100);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 14px;
+            color: var(--white);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(46, 204, 113, 0.5);
+        }
+
+        .form-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .form-link a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .form-link a:hover {
+            color: var(--secondary);
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        .forgot-link a {
+            color: var(--gray-400);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-link a:hover {
+            color: var(--primary);
+        }
+
         .msg-box {
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 18px;
             font-size: 0.9rem;
             text-align: center;
-            border: 1px solid;
+            border: 2px solid;
+        }
+
+        .input-error {
+            border-color: #c62828 !important;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .error-msg {
+            color: #c62828;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .toggle-overlay {
+            position: absolute;
+            top: 50%;
+            left: 45%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+            transition: left 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .toggle-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: 4px solid var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--white);
+            cursor: pointer;
+            box-shadow: 0 5px 22px rgba(46, 204, 113, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 7px 30px rgba(46, 204, 113, 0.8);
+        }
+
+        .split-container.register-active .image-panel {
+            width: 40%;
+        }
+
+        .split-container.register-active .form-panel {
+            width: 60%;
+        }
+
+        .split-container.register-active .toggle-overlay {
+            left: 40%;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+                align-items: flex-start;
+                padding-top: 15px;
+            }
+
+            .split-container {
+                flex-direction: column;
+                height: auto;
+                min-height: 650px;
+                border-radius: 20px;
+            }
+
+            .image-panel {
+                width: 100% !important;
+                height: 180px;
+                padding: 20px;
+            }
+
+            .image-content h2 {
+                font-size: 1.4rem;
+            }
+
+            .image-content p {
+                display: none;
+            }
+
+            .image-content .big-icon {
+                font-size: 2.8rem;
+                margin-bottom: 8px;
+            }
+
+            .panel-float-icons {
+                display: none;
+            }
+
+            .form-panel {
+                width: 100% !important;
+                padding: 25px 30px;
+            }
+
+            .forms-wrapper {
+                overflow: visible;
+            }
+
+            .toggle-overlay {
+                display: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="brand-card">
-        <div class="brand-icon">♻️</div>
-        <div class="brand-title">Recicla Comuna 4</div>
+    <div class="split-container" id="splitContainer">
+        
+        <div class="image-panel">
+            <div class="panel-float-icons">
+                <div class="panel-icon">♻️</div>
+                <div class="panel-icon">🌱</div>
+                <div class="panel-icon">♻️</div>
+                <div class="panel-icon">🌿</div>
+            </div>
+            
+            <div class="image-content" id="imageContent">
+                <div class="big-icon">♻️</div>
+                <h2 id="imageTitle">Recicla Comuna 4</h2>
+                <p id="imageText">Únete a nuestra comunidad y transforma tu barrio en un lugar más limpio y sostenible.</p>
+            </div>
+        </div>
+
+        <div class="toggle-overlay" id="toggleOverlay">
+            <div class="toggle-btn" onclick="toggleMode()">⇄</div>
+        </div>
+
+        <div class="form-panel">
+            <div class="forms-wrapper">
+                <div id="loginForm">
+                <h2 class="form-title">Bienvenido</h2>
+                <p class="form-subtitle">Ingresa a tu cuenta</p>
+                <div class="form-decoration"></div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="msg-box"
+                             style="
+                                {% if message.tags == 'error' %}
+                                    background:#ffebee; color:#c62828; border-color:#ffcdd2;
+                                {% else %}
+                                    background:#e8f5e8; color:#2e7d32; border-color:#c8e6c9;
+                                {% endif %}
+                             ">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label>Correo</label>
+                        <input type="email" name="correo" required placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" name="contrasena" required placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="submit-btn">Iniciar Sesión</button>
+
+                    <p class="forgot-link">
+                        <a href="{% url 'password_reset_request' %}">¿Olvidaste tu contraseña?</a>
+                    </p>
+
+                    <p class="form-link">
+                        ¿No tienes cuenta? <a href="#" onclick="toggleMode(); return false;">Crear cuenta</a>
+                    </p>
+                </form>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+                <h2 class="form-title">Crear Cuenta</h2>
+                <p class="form-subtitle">Únete a nuestra comunidad verde</p>
+                <div class="form-decoration"></div>
+
+                <form method="POST" action="{% url 'register' %}">
+                    {% csrf_token %}
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" name="nombre" required minlength="2" maxlength="50" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" placeholder="Solo letras">
+                        </div>
+                        <div class="form-group">
+                            <label>Apellido</label>
+                            <input type="text" name="apellido" required minlength="2" maxlength="50" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" placeholder="Solo letras">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Correo</label>
+                        <input type="email" name="correo" required placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" name="contrasena" required minlength="8" maxlength="20" placeholder="Mín 8 caracteres, mayúscula, minúscula y número">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Barrio</label>
+                        <select name="barrio" required>
+                            <option disabled selected>Selecciona un barrio</option>
+                            <option>Aranjuez</option>
+                            <option>Manrique</option>
+                            <option>Manrique Central</option>
+                            <option>Campo Valdés</option>
+                            <option>Sevilla</option>
+                            <option>La Piñuela</option>
+                            <option>Las Grutas</option>
+                            <option>El Raizal</option>
+                            <option>El Diamante</option>
+                            <option>Moravia</option>
+                            <option>Campo Amor</option>
+                            <option>San José</option>
+                            <option>San Pedro</option>
+                            <option>El Poblado</option>
+                            <option>La Esperanza</option>
+                            <option>Villa Verde</option>
+                            <option>La Honda</option>
+                            <option>Santa Cruz</option>
+                            <option>La Isla</option>
+                            <option>El Chorrillo</option>
+                            <option>Los Buenos</option>
+                            <option>Palacio de los Deportes</option>
+                            <option>La América</option>
+                            <option>Estadio</option>
+                            <option>San Javier</option>
+                            <option>Valencia</option>
+                            <option>La Liliana</option>
+                            <option>Astillero</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rol</label>
+                        <select name="rol" required>
+                            <option value="residente">Residente</option>
+                            <option value="organizador">Organizador</option>
+                            <option value="administrador">Administrador</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Crear Cuenta</button>
+
+                    <p class="form-link">
+                        ¿Ya tienes cuenta? <a href="#" onclick="toggleMode(); return false;">Iniciar sesión</a>
+                    </p>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="login-card">
-        <h2 class="login-title">Iniciar Sesión</h2>
+    <script>
+        function toggleMode() {
+            const container = document.getElementById('splitContainer');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const imageTitle = document.getElementById('imageTitle');
+            const imageText = document.getElementById('imageText');
+            
+            container.classList.toggle('register-active');
+            
+            if (container.classList.contains('register-active')) {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                imageTitle.textContent = '¡Regístrate!';
+                imageText.textContent = 'Sé parte del cambio y ayuda a tu comunidad a reciclar mejor.';
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                imageTitle.textContent = 'Recicla Comuna 4';
+                imageText.textContent = 'Únete a nuestra comunidad y transforma tu barrio en un lugar más limpio y sostenible.';
+            }
+        }
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="msg-box"
-                     style="
-                        {% if message.tags == 'error' %}
-                            background:#ffebee; color:#c62828; border-color:#ffcdd2;
-                        {% else %}
-                            background:#e8f5e8; color:#2e7d32; border-color:#c8e6c9;
-                        {% endif %}
-                     ">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+        // Validaciones para el formulario de registro
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.querySelector('#registerForm form');
+            if (!registerForm) return;
 
-        <form method="POST">
-            {% csrf_token %}
+            const nombreInput = registerForm.querySelector('input[name="nombre"]');
+            const apellidoInput = registerForm.querySelector('input[name="apellido"]');
+            const correoInput = registerForm.querySelector('input[name="correo"]');
+            const contrasenaInput = registerForm.querySelector('input[name="contrasena"]');
 
-            <label>Correo</label>
-            <input type="email" name="correo" required>
+            function validarNombre(input, nombreLabel) {
+                const valor = input.value.trim();
+                const errorDiv = input.parentElement.querySelector('.error-msg');
+                if (errorDiv) errorDiv.remove();
+                input.classList.remove('input-error');
 
-            <label>Contraseña</label>
-            <input type="password" name="contrasena" required>
+                if (valor.length < 2) {
+                    mostrarError(input, nombreLabel + ' debe tener al menos 2 caracteres');
+                    return false;
+                }
+                if (valor.length > 50) {
+                    mostrarError(input, nombreLabel + ' debe tener máximo 50 caracteres');
+                    return false;
+                }
+                if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(valor)) {
+                    mostrarError(input, nombreLabel + ' solo puede contener letras y espacios');
+                    return false;
+                }
+                return true;
+            }
 
-            <button type="submit">Ingresar</button>
+            function validarCorreo(input) {
+                const valor = input.value.trim();
+                const errorDiv = input.parentElement.querySelector('.error-msg');
+                if (errorDiv) errorDiv.remove();
+                input.classList.remove('input-error');
 
-            <p style="text-align: center; margin-top: 10px;">
-                <a href="{% url 'password_reset_request' %}"
-                   style="color: var(--green-dark); text-decoration: underline;">
-                    ¿Olvidaste tu contraseña?
-                </a>
-            </p>
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(valor)) {
+                    mostrarError(input, 'Ingresa un correo electrónico válido');
+                    return false;
+                }
+                return true;
+            }
 
-            <p class="register-link">
-                ¿No tienes cuenta?
-                <a href="{% url 'register' %}">Crear cuenta</a>
-            </p>
-        </form>
-    </div>
+            function validarContrasena(input) {
+                const valor = input.value;
+                const errorDiv = input.parentElement.querySelector('.error-msg');
+                if (errorDiv) errorDiv.remove();
+                input.classList.remove('input-error');
+
+                if (valor.length < 8) {
+                    mostrarError(input, 'La contraseña debe tener al menos 8 caracteres');
+                    return false;
+                }
+                if (valor.length > 20) {
+                    mostrarError(input, 'La contraseña debe tener máximo 20 caracteres');
+                    return false;
+                }
+                if (!/[A-Z]/.test(valor)) {
+                    mostrarError(input, 'La contraseña debe tener al menos una mayúscula');
+                    return false;
+                }
+                if (!/[a-z]/.test(valor)) {
+                    mostrarError(input, 'La contraseña debe tener al menos una minúscula');
+                    return false;
+                }
+                if (!/[0-9]/.test(valor)) {
+                    mostrarError(input, 'La contraseña debe tener al menos un número');
+                    return false;
+                }
+                return true;
+            }
+
+            function mostrarError(input, mensaje) {
+                input.classList.add('input-error');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-msg';
+                errorDiv.style.cssText = 'color: #c62828; font-size: 0.85rem; margin-top: 5px;';
+                errorDiv.textContent = mensaje;
+                input.parentElement.appendChild(errorDiv);
+            }
+
+            if (nombreInput) {
+                nombreInput.addEventListener('blur', function() { validarNombre(this, 'El nombre'); });
+            }
+            if (apellidoInput) {
+                apellidoInput.addEventListener('blur', function() { validarNombre(this, 'El apellido'); });
+            }
+            if (correoInput) {
+                correoInput.addEventListener('blur', function() { validarCorreo(this); });
+            }
+            if (contrasenaInput) {
+                contrasenaInput.addEventListener('blur', function() { validarContrasena(this); });
+            }
+
+            registerForm.addEventListener('submit', function(e) {
+                let valido = true;
+
+                if (nombreInput) {
+                    if (!validarNombre(nombreInput, 'El nombre')) valido = false;
+                }
+                if (apellidoInput) {
+                    if (!validarNombre(apellidoInput, 'El apellido')) valido = false;
+                }
+                if (correoInput) {
+                    if (!validarCorreo(correoInput)) valido = false;
+                }
+                if (contrasenaInput) {
+                    if (!validarContrasena(contrasenaInput)) valido = false;
+                }
+
+                if (!valido) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

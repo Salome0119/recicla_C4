@@ -147,8 +147,8 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = "salohenao19@gmail.com"        # ← tu correo aquí
-EMAIL_HOST_PASSWORD = "ihfi rhmw dymh fgoi"     # ← clave de aplicación
+EMAIL_HOST_USER = "reciclacomuna@gmail.com"        # ← tu correo aquí
+EMAIL_HOST_PASSWORD = "udth xwkk ksrn bwtq"     # ← clave de aplicación
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 LOGIN_URL = '/login/'

@@ -25,42 +25,121 @@
     color: var(--dark);
     margin-bottom: 16px;
   }
+  .filters-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .filter-group {
+    flex: 1;
+    min-width: 200px;
+  }
+  .filter-group label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
   select {
     width: 100%;
-    padding: 10px 14px;
-    border: 2px solid rgba(46,204,113,0.3);
+    padding: 12px 14px;
+    border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 1rem;
     color: var(--dark);
     background: white;
+    transition: all 0.2s;
   }
-  .tabla-asistencia {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 16px;
+  select:focus {
+    border-color: #27ae60;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(39,174,96,0.1);
   }
-  .tabla-asistencia th {
-    background: var(--bg-2, #f5f5f5);
-    padding: 12px 10px;
-    text-align: left;
+  .jornada-info {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    padding: 20px 24px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .jornada-info h2 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+  .jornada-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 0.95rem;
+    opacity: 0.95;
+  }
+  .jornada-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .info-puntos {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #27ae60;
+  }
+  .inscrito-card {
+    background: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #eee;
+    transition: all 0.2s;
+  }
+  .inscrito-card:hover {
+    border-color: #27ae60;
+    box-shadow: 0 2px 8px rgba(39,174,96,0.15);
+  }
+  .inscrito-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .inscrito-info {
+    flex: 1;
+  }
+  .inscrito-nombre {
     font-weight: 600;
     color: var(--dark);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
   }
-  .tabla-asistencia td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #eee;
-    color: var(--dark);
-    font-size: 0.95rem;
-  }
-  .tabla-asistencia tr:hover {
-    background: var(--bg-1, #fafafa);
+  .inscrito-email {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 2px;
   }
   .badge-rol {
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
+    text-transform: capitalize;
   }
   .badge-residente {
     background: #e8f5e9;
@@ -70,16 +149,54 @@
     background: #e3f2fd;
     color: #1565c0;
   }
+  .inscrito-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .checkbox-presente {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .checkbox-presente input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #27ae60;
+  }
+  .puntos-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 80px;
+    text-align: center;
+  }
+  .puntos-pendiente {
+    background: #f5f5f5;
+    color: #888;
+  }
+  .puntos-asignado {
+    background: #e8f5e9;
+    color: #27ae60;
+  }
   .obs-input {
     width: 100%;
-    padding: 6px 10px;
+    padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 0.9rem;
     color: var(--dark);
+    transition: border-color 0.2s;
+  }
+  .obs-input:focus {
+    border-color: #27ae60;
+    outline: none;
   }
   .btn-guardar {
-    margin-top: 20px;
     background: var(--primary, #27ae60);
     color: white;
     border: none;
@@ -89,19 +206,44 @@
     font-size: 1rem;
     font-weight: 600;
     transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
   }
   .btn-guardar:hover {
     background: var(--secondary, #2ecc71);
     transform: translateY(-2px);
   }
-  .info-puntos {
+  .btn-validar {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-validar:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+  }
+  .btn-secondary {
+    background: #6c757d;
+  }
+  .btn-secondary:hover {
+    background: #5a6268;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 40px;
     color: #888;
-    font-size: 13px;
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    background: #f9f9f9;
-    border-radius: 6px;
-    border-left: 3px solid #27ae60;
+  }
+  .empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
   }
   .page-container {
     min-height: calc(100vh - 120px);
@@ -110,6 +252,26 @@
   }
   .wrapper {
     flex: 1;
+  }
+  @media (max-width: 768px) {
+    .filters-row {
+      flex-direction: column;
+    }
+    .filter-group {
+      width: 100%;
+    }
+    .jornada-info {
+      flex-direction: column;
+      text-align: center;
+    }
+    .inscrito-card {
+      flex-direction: column;
+      text-align: center;
+    }
+    .inscrito-actions {
+      width: 100%;
+      justify-content: center;
+    }
   }
 </style>
 {% endblock %}
@@ -124,10 +286,11 @@
 
       {% if messages %}
         {% for message in messages %}
-          <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
+          <div style="padding: 14px 18px; border-radius: 10px; margin-bottom: 20px;
               background: {% if message.tags == 'error' %}#fdecea{% else %}#e8f5e9{% endif %};
               color: {% if message.tags == 'error' %}#c0392b{% else %}#27ae60{% endif %};
-              border: 1px solid {% if message.tags == 'error' %}#f5c6cb{% else %}#a3d9a5{% endif %};">
+              border: 1px solid {% if message.tags == 'error' %}#f5c6cb{% else %}#a3d9a5{% endif %};
+              font-weight: 500;">
             {{ message }}
           </div>
         {% endfor %}
@@ -135,17 +298,31 @@
 
       <!-- Seleccionar jornada -->
       <div class="card">
-        <h2>Selecciona una jornada</h2>
         <form method="GET" action="{% url 'admi_asistencia' %}">
-          <select name="jornada_id" required onchange="this.form.submit()">
-            <option value="">-- Selecciona jornada --</option>
-            {% for j in jornadas_finalizadas %}
-              <option value="{{ j.id_jornada }}"
-                {% if jornada and jornada.id_jornada == j.id_jornada %}selected{% endif %}>
-                {{ j.titulo }} — {{ j.fecha }}
-              </option>
-            {% endfor %}
-          </select>
+          <div class="filters-row">
+            <div class="filter-group">
+              <label>Filtrar por estado</label>
+              <select name="estado" onchange="this.form.submit()">
+                <option value="">Todos los estados</option>
+                <option value="pendiente" {% if filtro_estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                <option value="activa" {% if filtro_estado == 'activa' %}selected{% endif %}>Activa</option>
+                <option value="en_curso" {% if filtro_estado == 'en_curso' %}selected{% endif %}>En curso</option>
+                <option value="finalizada" {% if filtro_estado == 'finalizada' %}selected{% endif %}>Finalizada</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Selecciona una jornada</label>
+              <select name="jornada_id" required onchange="this.form.submit()">
+                <option value="">-- Selecciona jornada --</option>
+                {% for j in jornadas_finalizadas %}
+                  <option value="{{ j.id_jornada }}"
+                    {% if jornada and jornada.id_jornada == j.id_jornada %}selected{% endif %}>
+                    {{ j.titulo }} — {{ j.fecha|date:"d/m/Y" }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
         </form>
       </div>
 
@@ -155,72 +332,72 @@
         {% csrf_token %}
         <input type="hidden" name="jornada_id" value="{{ jornada.id_jornada }}">
 
+        <div class="jornada-info">
+          <h2>{{ jornada.titulo }}</h2>
+          <div class="jornada-meta">
+            <span>📅 {{ jornada.fecha|date:"d/m/Y" }}</span>
+            <span>📍 {{ jornada.ubicacion }}</span>
+            <span>📊 Estado: {{ jornada.get_estado_display }}</span>
+          </div>
+        </div>
+
         <div class="card">
-          <h2>Inscritos en: {{ jornada.titulo }}</h2>
           <p class="info-puntos">
-            Residentes reciben <strong>10 puntos</strong> —
-            Organizadores reciben <strong>20 puntos</strong> por asistencia validada.
+            <strong>💡 Sistema de puntos:</strong> Residentes reciben <strong>10 puntos</strong> — Organizadores reciben <strong>20 puntos</strong> por asistencia validada.
           </p>
 
           {% if inscripciones %}
-          <table class="tabla-asistencia">
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Rol</th>
-                <th style="text-align:center;">Presente</th>
-                <th>Puntos</th>
-                <th>Observaciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ins in inscripciones %}
-              <tr>
-                <td><strong>{{ ins.usuario.nombre }} {{ ins.usuario.apellido }}</strong></td>
-                <td>
-                  <span class="badge-rol {% if ins.usuario.rol == 'organizador' %}badge-organizador{% else %}badge-residente{% endif %}">
-                    {{ ins.usuario.rol }}
-                  </span>
-                </td>
-                <td style="text-align:center;">
+            {% for ins in inscripciones %}
+            <div class="inscrito-card">
+              <div class="inscrito-avatar">
+                {{ ins.usuario.nombre|slice:":1" }}{{ ins.usuario.apellido|slice:":1" }}
+              </div>
+              <div class="inscrito-info">
+                <div class="inscrito-nombre">{{ ins.usuario.nombre }} {{ ins.usuario.apellido }}</div>
+                <div class="inscrito-email">{{ ins.usuario.correo }}</div>
+              </div>
+              <span class="badge-rol {% if ins.usuario.rol == 'organizador' %}badge-organizador{% else %}badge-residente{% endif %}">
+                {{ ins.usuario.rol }}
+              </span>
+              <div class="inscrito-actions">
+                <label class="checkbox-presente">
                   <input type="checkbox"
                     name="presente_{{ ins.id_inscripcion }}"
                     value="1"
-                    style="width:18px; height:18px; cursor:pointer;"
                     {% if ins.asistencia_obj and ins.asistencia_obj.presente %}checked{% endif %}>
-                </td>
-                <td>
+                  <span>Presente</span>
+                </label>
+                <div class="puntos-badge {% if ins.puntaje_asignado %}puntos-asignado{% else %}puntos-pendiente{% endif %}">
                   {% if ins.puntaje_asignado %}
-                    <span style="color:#27ae60; font-weight:bold;">{{ ins.puntaje_asignado }} pts</span>
+                    {{ ins.puntaje_asignado }} pts
                   {% else %}
-                    <span style="color:#aaa;">Pendiente</span>
+                    Pendiente
                   {% endif %}
-                </td>
-                <td>
-                  <input type="text"
-                    class="obs-input"
-                    name="obs_{{ ins.id_inscripcion }}"
-                    value="{{ ins.asistencia_obj.observaciones|default:'' }}"
-                    placeholder="Observaciones...">
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                </div>
+                <input type="text"
+                  class="obs-input"
+                  name="obs_{{ ins.id_inscripcion }}"
+                  value="{{ ins.asistencia_obj.observaciones|default:'' }}"
+                  placeholder="Observaciones..."
+                  style="width: 180px;">
+              </div>
+            </div>
+            {% endfor %}
 
-          <button type="submit" class="btn-guardar" style="background:#6c757d;">
-            Guardar Asistencia
-          </button>
+            <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+              <button type="submit" class="btn-guardar btn-secondary">
+                💾 Guardar Asistencia
+              </button>
+              <button type="button" class="btn-validar" onclick="mostrarModalValidar()">
+                ✅ Validar y Asignar Puntos
+              </button>
+            </div>
           
-          <a href="{% url 'admi_validar_asistencia' %}?jornada_id={{ jornada.id_jornada }}" 
-             class="btn-guardar" 
-             style="display:inline-block; margin-left:10px; text-decoration:none;"
-             onclick="return confirm('¿Validar asistencia y asignar puntos a los presentes?')">
-            Validar y Asignar Puntos
-          </a>
-
           {% else %}
-            <p style="color:#888;">No hay inscritos en esta jornada.</p>
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <p>No hay inscritos en esta jornada.</p>
+            </div>
           {% endif %}
         </div>
       </form>
@@ -259,5 +436,47 @@ document.addEventListener('click', (e) => {
     if (!sm.parentElement.contains(e.target)) sm.classList.remove('active');
   });
 });
+
+function mostrarModalValidar() {
+  const modal = document.getElementById('modalValidar');
+  if (!modal) {
+    if(confirm('¿Validar asistencia y asignar puntos a los presentes?')) {
+      window.location.href = "{% url 'admi_validar_asistencia' %}?jornada_id={{ jornada.id_jornada }}";
+    }
+    return;
+  }
+  modal.style.display = 'flex';
+}
+
+function cerrarModalValidar() {
+  const modal = document.getElementById('modalValidar');
+  if (modal) modal.style.display = 'none';
+}
+
+function confirmarValidacion() {
+  window.location.href = "{% url 'admi_validar_asistencia' %}?jornada_id={{ jornada.id_jornada }}";
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById('modalValidar');
+  if (modal && event.target === modal) {
+    modal.style.display = 'none';
+  }
+};
 </script>
+
+{% if jornada %}
+<div id="modalValidar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+  <div style="background:white; padding:30px; border-radius:12px; max-width:400px; text-align:center; box-shadow:0 10px30px rgba(0,0,0,0.3);">
+    <h3 style="margin-top:0; color:#2c3e50;">¿Confirmar validación?</h3>
+    <p style="color:#666; margin:15px 0;">Se asignarán <strong>10 puntos</strong> a residentes y <strong>20 puntos</strong> a organizadores por su asistencia.</p>
+    <p style="color:#e74c3c; font-size:0.9rem;">Solo puedes validar dentro de las 48 horas posteriores a la jornada.</p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+      <button onclick="cerrarModalValidar()" style="padding:10px 20px; border:1px solid #ddd; background:#f5f5f5; border-radius:6px; cursor:pointer;">Cancelar</button>
+      <button onclick="confirmarValidacion()" style="padding:10px 20px; border:none; background:#27ae60; color:white; border-radius:6px; cursor:pointer; font-weight:600;">Confirmar</button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}

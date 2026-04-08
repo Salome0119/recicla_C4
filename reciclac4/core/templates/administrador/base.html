@@ -5,14 +5,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>{% block titulo %}{% endblock %}</title>
     {% block cabeza_extra %}{% endblock %}
+    <style>
+        :root {
+            --primary: #27ae60;
+            --secondary: #2ecc71;
+            --bg-1: #ffffff;
+            --bg-2: #f5f5f5;
+            --dark: #2c3e50;
+            --muted: #7f8c8d;
+            --border: #ddd;
+            --radius: 12px;
+            --footer-bg: #1e5631;
+            --sidebar-bg: linear-gradient(180deg,#fff,#f7fff7);
+        }
+
+        /* WhatsApp-style Dark Mode */
+        body.dark-mode {
+            --primary: #25d366;
+            --secondary: #128c7e;
+            --bg-1: #121b22;
+            --bg-2: #1f2a34;
+            --dark: #e1e1e1;
+            --muted: #8899a6;
+            --border: #2f3b47;
+            --footer-bg: #1e5631;
+            --sidebar-bg: linear-gradient(180deg,#1f2a34,#121b22);
+            background: #121b22;
+            color: #e1e1e1;
+        }
+
+        body.dark-mode * {
+            border-color: #2f3b47 !important;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode .form-container,
+        body.dark-mode form,
+        body.dark-mode .left-panel,
+        body.dark-mode .page-container,
+        body.dark-mode .wrapper,
+        body.dark-mode .historial-jornadas,
+        body.dark-mode .info-puntos,
+        body.dark-mode .jornada-info,
+        body.dark-mode .filters-form,
+        body.dark-mode .filtro-item,
+        body.dark-mode .pagination,
+        body.dark-mode .empty-state,
+        body.dark-mode .inscrito-card,
+        body.dark-mode .mensaje,
+        body.dark-mode .mensajes-container,
+        body.dark-mode .page-title {
+            background: #1f2a34 !important;
+            border-color: #2f3b47 !important;
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .card h2,
+        body.dark-mode .card h3 {
+            color: #25d366 !important;
+        }
+
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background: #2f3b47 !important;
+            border-color: #3d4f5f !important;
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode input::placeholder,
+        body.dark-mode textarea::placeholder {
+            color: #8899a6 !important;
+        }
+
+        body.dark-mode input:focus,
+        body.dark-mode select:focus,
+        body.dark-mode textarea:focus {
+            border-color: #25d366 !important;
+            box-shadow: 0 0 10px rgba(37, 211, 102, 0.3) !important;
+        }
+
+        body.dark-mode label {
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode table,
+        body.dark-mode .tabla-jornadas,
+        body.dark-mode .tabla-asistencia {
+            background: #1f2a34 !important;
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .tabla-jornadas th,
+        body.dark-mode .tabla-asistencia th {
+            background: #2f3b47 !important;
+            color: #25d366 !important;
+        }
+
+        body.dark-mode .tabla-jornadas td,
+        body.dark-mode .tabla-asistencia td {
+            border-bottom-color: #2f3b47 !important;
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .tabla-jornadas tr:hover,
+        body.dark-mode .tabla-asistencia tr:hover {
+            background: #2f3b47 !important;
+        }
+
+        body.dark-mode .sidebar {
+            background: #1f2a34 !important;
+            box-shadow: 6px 0 30px rgba(0,0,0,0.5);
+        }
+
+        body.dark-mode .sidebar a {
+            color: #e1e1e1 !important;
+            text-decoration: none !important;
+        }
+
+        body.dark-mode .sidebar a:hover {
+            background: #2f3b47 !important;
+            color: #25d366 !important;
+        }
+
+        body.dark-mode footer,
+        footer {
+            background: var(--footer-bg) !important;
+            color: white !important;
+        }
+
+        body.dark-mode .footer-col a {
+            color: #e1e1e1 !important;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        body.dark-mode .theme-toggle {
+            background: #25d366;
+            box-shadow: 0 0 15px rgba(37, 211, 102, 0.5);
+        }
+
+        body.dark-mode header {
+            background: rgba(18, 140, 126, 0.95) !important;
+        }
+
+        body.dark-mode header .logo div:first-child {
+            background: linear-gradient(90deg, #25d366, #128c7e);
+        }
+
+        body.dark-mode header .logo div:last-child {
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode header .logo div:last-child span {
+            color: #25d366;
+        }
+
+        body.dark-mode header .logo div:last-child div {
+            color: #8899a6;
+        }
+
+        body.dark-mode .hamburger svg {
+            fill: white;
+        }
+
+        body.dark-mode header nav a {
+            color: #e1e1e1 !important;
+            text-decoration: none;
+        }
+
+        body.dark-mode header nav a:hover {
+            color: #25d366 !important;
+        }
+
+        body.dark-mode .page-title,
+        body.dark-mode h1,
+        body.dark-mode h2,
+        body.dark-mode h3 {
+            color: #25d366 !important;
+        }
+
+        body.dark-mode .estado-badge {
+            background: #2f3b47 !important;
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .btn-guardar,
+        body.dark-mode .btn-validar,
+        body.dark-mode button[type="submit"],
+        body.dark-mode .btn-filtro,
+        body.dark-mode .btn-page {
+            background: #25d366 !important;
+            color: #121b22 !important;
+        }
+
+        body.dark-mode .btn-secondary {
+            background: #3d4f5f !important;
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .badge-residente {
+            background: rgba(37, 211, 102, 0.15) !important;
+            color: #25d366 !important;
+        }
+
+        body.dark-mode .badge-organizador {
+            background: rgba(18, 140, 126, 0.15) !important;
+            color: #128c7e !important;
+        }
+
+        body.dark-mode .puntos-badge {
+            background: #2f3b47 !important;
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .puntos-asignado {
+            background: rgba(37, 211, 102, 0.15) !important;
+            color: #25d366 !important;
+        }
+
+        body.dark-mode .inscrito-avatar {
+            background: linear-gradient(135deg, #25d366, #128c7e) !important;
+        }
+
+        body.dark-mode .checkbox-presente span {
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .filtro-item label {
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .current {
+            color: #e1e1e1 !important;
+        }
+
+        body.dark-mode .empty-state {
+            color: #8899a6 !important;
+        }
+    </style>
 </head>
 <body>
     {% block cuerpo %}
     {% endblock %}
+
+    <button class="theme-toggle" onclick="toggleDarkMode()" title="Cambiar modo">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <script>
+        if (localStorage.getItem('adminDarkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('adminDarkMode', isDark);
+            
+            const icon = document.querySelector('.theme-toggle i');
+            if (isDark) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        if (document.body.classList.contains('dark-mode')) {
+            const icon = document.querySelector('.theme-toggle i');
+            if (icon) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+        }
+    </script>
 
     <script>
 const openSidebarBtn = document.getElementById('openSidebar');
@@ -36,39 +330,35 @@ openSidebarBtn.addEventListener('click', () => {
 
 if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
 
-// Submenú toggle
 document.querySelectorAll('.submenu-toggle').forEach(toggle => {
     toggle.addEventListener('click', (e) => {
-        e.preventDefault();           // Evita que siga el enlace
-        e.stopPropagation();          // Evita que el clic cierre el sidebar
+        e.preventDefault();
+        e.stopPropagation();
         toggle.parentElement.classList.toggle('active');
     });
 });
 
-// Enlaces normales cierran el sidebar
 sidebar.querySelectorAll('a').forEach(a => {
     if(!a.classList.contains('submenu-toggle')) {
         a.addEventListener('click', closeSidebar);
     }
 });
 
-// Close on Escape
 document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape' && sidebar.classList.contains('active')) closeSidebar();
 });
 
 document.querySelectorAll('.submenu-toggle').forEach(toggle => {
-  const parent = toggle.parentElement; // li.submenu-parent
+  const parent = toggle.parentElement;
   const submenu = parent.querySelector('.submenu');
 
   toggle.addEventListener('click', (e) => {
     e.preventDefault();
-    e.stopPropagation(); // evita que el clic cierre otro menú
-    submenu.classList.toggle('active'); // solo alterna la visibilidad de este submenú
+    e.stopPropagation();
+    submenu.classList.toggle('active');
   });
 });
 
-// Cerrar submenús si se hace clic fuera
 document.addEventListener('click', (e) => {
   document.querySelectorAll('.submenu.active').forEach(sm => {
     if (!sm.parentElement.contains(e.target)) {

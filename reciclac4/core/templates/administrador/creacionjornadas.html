@@ -81,17 +81,42 @@ document.addEventListener("DOMContentLoaded", function () {
         campoDescripcion.required = true;
         campoDescripcion.minLength = 10;
     }
+
+    // Validar que los campos no tengan solo espacios
+    const form = document.querySelector('form[action*="creacion_jornadas"]');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let hasError = false;
+            const textFields = ['titulo', 'descripcion', 'direccion', 'barrio'];
+            
+            // Limpiar mensajes de error previos
+            document.querySelectorAll('.error-message').forEach(el => el.remove());
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+            
+            for (const fieldName of textFields) {
+                const field = document.querySelector(`[name="${fieldName}"]`);
+                if (field && field.value.trim() === '') {
+                    e.preventDefault();
+                    hasError = true;
+                    
+                    // Agregar clase de error al input
+                    field.classList.add('input-error');
+                    
+                    // Crear mensaje de error
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.style.cssText = 'color: #E74C3C; font-size: 0.85rem; margin-top: 5px;';
+                    errorDiv.textContent = 'Este campo no puede estar vacío';
+                    field.parentElement.appendChild(errorDiv);
+                    
+                    field.focus();
+                    return false;
+                }
+            }
+        });
+    }
 });
 </script>
-{% if messages %}
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    {% for message in messages %}
-    alert("{{ message|escapejs }}");
-    {% endfor %}
-});
-</script>
-{% endif %}
 {% endblock %}
 
 {% block cuerpo %}
@@ -165,8 +190,8 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
 
       <div class="campo">
-          <label for="cupo_maximo">Cupo máximo:</label>
-          <input type="number" id="cupo_maximo" name="cupo_maximo" min="1" required>
+          <label for="cupo_maximo">Cupo máximo (5-50):</label>
+          <input type="number" id="cupo_maximo" name="cupo_maximo" min="5" max="50" required>
       </div>
 
       <div class="campo full">
@@ -189,18 +214,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </div>
 
+<!-- Mensajes después del formulario -->
+{% if messages %}
+<div id="mensajes-formulario" style="margin-top: 30px;">
+    {% for message in messages %}
+    <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
+        background: {% if message.tags == 'error' %}#fdecea{% else %}#e8f5e9{% endif %};
+        color: {% if message.tags == 'error' %}#c0392b{% else %}#27ae60{% endif %};
+        border: 1px solid {% if message.tags == 'error' %}#f5c6cb{% else %}#a3d9a5{% endif %};">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 <!-- =================== Historial de Jornadas =================== -->
-<div class="historial-jornadas" style="margin-top: 50px;">
+<div class="historial-jornadas" style="margin-top: 80px;">
     <h2>📜 Historial de Jornadas</h2>
+    
+    <!-- Filtros de búsqueda -->
+    <form method="GET" class="filtros-form" style="margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+        <div class="filtro-item">
+            <label for="filtro-estado">Estado:</label>
+            <select id="filtro-estado" name="estado">
+                <option value="">Todos</option>
+                <option value="pendiente" {% if filtro_estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                <option value="activa" {% if filtro_estado == 'activa' %}selected{% endif %}>Activa</option>
+                <option value="en_curso" {% if filtro_estado == 'en_curso' %}selected{% endif %}>En curso</option>
+                <option value="finalizada" {% if filtro_estado == 'finalizada' %}selected{% endif %}>Finalizada</option>
+                <option value="cancelada" {% if filtro_estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+            </select>
+        </div>
+        <div class="filtro-item">
+            <label for="filtro-material">Material:</label>
+            <select id="filtro-material" name="tipo_material">
+                <option value="">Todos</option>
+                <option value="Plástico" {% if filtro_material == 'Plástico' %}selected{% endif %}>Plástico</option>
+                <option value="Vidrio" {% if filtro_material == 'Vidrio' %}selected{% endif %}>Vidrio</option>
+                <option value="Papel y cartón" {% if filtro_material == 'Papel y cartón' %}selected{% endif %}>Papel y cartón</option>
+                <option value="Metales" {% if filtro_material == 'Metales' %}selected{% endif %}>Metales</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-filtro">🔍 Filtrar</button>
+    </form>
+    
     <table class="tabla-jornadas">
         <thead>
             <tr>
                 <th>Título</th>
                 <th>Fecha</th>
-                <th>Hora</th>
-                <th>Barrio</th>
                 <th>Material</th>
-                <th>Cupo</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -210,23 +273,40 @@ document.addEventListener("DOMContentLoaded", function () {
             <tr>
                 <td>{{ j.titulo }}</td>
                 <td>{{ j.fecha }}</td>
-                <td>{{ j.hora }}</td>
-                <td>{{ j.barrio }}</td>
                 <td>{{ j.tipo_material }}</td>
-                <td>{{ j.cupo_maximo }}</td>
-                <td>{{ j.estado }}</td>
+                <td>
+                    {% if j.get_estado_display %}
+                    <span class="estado-badge estado-{{ j.estado }}">{{ j.get_estado_display }}</span>
+                    {% else %}
+                    <span class="estado-badge estado-{{ j.estado }}">{{ j.estado }}</span>
+                    {% endif %}
+                </td>
                 <td class="acciones">
-                    <a href="{% url 'admi_modificar_jornada' j.id_jornada %}" class="btn-modificar">✏️ Modificar</a>
-                    <a href="{% url 'admi_eliminar_jornada' j.id_jornada %}" class="btn-eliminar" onclick="return confirm('¿Seguro que deseas eliminar esta jornada?');">🗑️ Eliminar</a>
+                    <a href="{% url 'admi_detalle_jornada' j.id_jornada %}" class="btn-info">ℹ️ Más Info</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="8" style="text-align:center;">No hay jornadas registradas.</td>
+                <td colspan="5" style="text-align:center;">No hay jornadas registradas.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    
+    <!-- Paginación -->
+    {% if jornadas.has_other_pages %}
+    <div class="pagination" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+        {% if jornadas.has_previous %}
+        <a href="?page={{ jornadas.previous_page_number }}{% if filtro_estado %}&estado={{ filtro_estado }}{% endif %}{% if filtro_material %}&tipo_material={{ filtro_material }}{% endif %}" class="btn-page">Anterior</a>
+        {% endif %}
+        
+        <span class="current">Página {{ jornadas.number }} de {{ jornadas.paginator.num_pages }}</span>
+        
+        {% if jornadas.has_next %}
+        <a href="?page={{ jornadas.next_page_number }}{% if filtro_estado %}&estado={{ filtro_estado }}{% endif %}{% if filtro_material %}&tipo_material={{ filtro_material }}{% endif %}" class="btn-page">Siguiente</a>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 
 </main>
@@ -436,6 +516,64 @@ button[type="submit"]:hover {
     background-color: var(--bg-1);
 }
 
+/* Mensajes estilizados */
+.mensajes-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.mensaje {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mensaje-icono {
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+.mensaje-error {
+    background-color: #FEF2F2;
+    border-left: 4px solid #EF4444;
+    color: #991B1B;
+}
+
+.mensaje-success {
+    background-color: #F0FDF4;
+    border-left: 4px solid #22C55E;
+    color: #166534;
+}
+
+.mensaje-info {
+    background-color: #EFF6FF;
+    border-left: 4px solid #3B82F6;
+    color: #1E40AF;
+}
+
+.mensaje-warning {
+    background-color: #FEFCE8;
+    border-left: 4px solid #EAB308;
+    color: #854D0E;
+}
+
 /* Botones de acción */
 td.acciones {
     display: flex;
@@ -456,6 +594,53 @@ td.acciones {
     background: var(--secondary);
 }
 
+.btn-participantes {
+    background: #27AE60;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.2s ease;
+    display: inline-block;
+}
+
+.btn-participantes:hover {
+    background: #1E8449;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(39, 174, 96, 0.3);
+}
+
+.btn-info {
+    background: #3498DB;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.2s ease;
+    display: inline-block;
+}
+
+.btn-info:hover {
+    background: #2980B9;
+    transform: translateY(-1px);
+}
+
+.estado-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.estado-pendiente { background: #FEF9E7; color: #F39C12; }
+.estado-activa { background: #E8F8F5; color: #27AE60; }
+.estado-en_curso { background: #EBF5FB; color: #3498DB; }
+.estado-finalizada { background: #F2F3F4; color: #7F8C8D; }
+.estado-cancelada { background: #FDEDEC; color: #E74C3C; }
+
 .btn-eliminar {
     background: #E74C3C;
     color: white;
@@ -468,6 +653,16 @@ td.acciones {
 
 .btn-eliminar:hover {
     background: #C0392B;
+}
+
+.btn-disabled {
+    background: #BDC3C7;
+    color: #7F8C8D;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: not-allowed;
+    display: inline-block;
 }
 
 /* ============================
@@ -486,9 +681,77 @@ td.acciones {
         flex-direction: column;
     }
 
-    .btn-modificar, .btn-eliminar {
+    .btn-modificar, .btn-eliminar, .btn-participantes {
         width: 100%;
     }
+}
+
+/* Estilos para filtros */
+.filtros-form {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.filtro-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filtro-item label {
+    font-weight: 600;
+    color: #2C3E50;
+}
+
+.filtro-item select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.btn-filtro {
+    background: #3498DB;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.btn-filtro:hover {
+    background: #2980B9;
+}
+
+/* Estilos para paginación */
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.current {
+    padding: 8px 12px;
+    color: #2C3E50;
+    font-weight: 500;
+}
+
+.btn-page {
+    padding: 8px 16px;
+    background: #3498DB;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.btn-page:hover {
+    background: #2980B9;
 }
 
 </style>

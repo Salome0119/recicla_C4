@@ -34,6 +34,7 @@ class Usuario(models.Model):
     apellido = models.CharField(max_length=50)
     correo = models.CharField(max_length=100, unique=True)
     contrasena = models.CharField(max_length=255)
+    telefono = models.CharField(max_length=20, null=True, blank=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     barrio = models.CharField(max_length=100, null=True, blank=True)
     recibe_notificaciones_jornadas = models.BooleanField(default=True)

@@ -47,6 +47,7 @@ urlpatterns = [
     path('admi/notificaciones/', views.admi_notificaciones, name='admi_notificaciones'),
     path('admi/jornadas/modificar/<int:jornada_id>/', views.admi_modificar_jornada, name='admi_modificar_jornada'),
     path('admi/jornadas/eliminar/<int:jornada_id>/', views.admi_eliminar_jornada, name='admi_eliminar_jornada'),
+    path('admi/jornadas/detalle/<int:jornada_id>/', views.admi_detalle_jornada, name='admi_detalle_jornada'),
 
 
         # ORGANIZADOR: 6 páginas
@@ -65,6 +66,7 @@ urlpatterns = [
     path('organizador/notificaciones/', views.organizador_notificaciones, name='organizador_notificaciones'),
     path('organizador/jornadas/modificar/<int:jornada_id>/', views.organizador_modificar_jornada, name='organizador_modificar_jornada'),
     path('organizador/jornadas/eliminar/<int:jornada_id>/', views.organizador_eliminar_jornada, name='organizador_eliminar_jornada'),
+    path('organizador/jornadas/detalle/<int:jornada_id>/', views.organizador_detalle_jornada, name='organizador_detalle_jornada'),
 
 
     # RESIDENTE: 7 páginas
@@ -92,6 +94,8 @@ path('residente/puntaje/', views.perfil_residente, name='perfil_residente'),
     path('residente/configuracion/', views.residente_configuracion, name='residente_configuracion'),
     path('residente/cambiar-foto/', views.cambiar_foto, name='cambiar_foto'),
     path('residente/notificaciones/', views.residente_notificaciones, name='residente_notificaciones'),
+    path('residente/notificaciones/eliminar/<int:notificacion_id>/', views.residente_eliminar_notificacion, name='residente_eliminar_notificacion'),
+    path('residente/notificaciones/eliminar-todas/', views.residente_eliminar_todas_notificaciones, name='residente_eliminar_todas_notificaciones'),
 
     
     #USUARIO
