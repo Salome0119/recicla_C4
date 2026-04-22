@@ -73,6 +73,7 @@ urlpatterns = [
 
     # RESIDENTE: 7 páginas
     path("residente/cat_recompensas/", views.residente_cat_recompensas, name="residente_cat_recompensas"),
+    path("residente/historial-canjes/", views.residente_historial_canjes, name="residente_historial_canjes"),
     path("residente/canje/recompensa/", views.residente_canje_recompensa, name="residente_canje_recompensa"),
     path("residente/como-participar/", views.residente_como_participar, name="residente_como_participar"),
     path("residente/inicio/", views.residente_inicio, name="residente_inicio"),
