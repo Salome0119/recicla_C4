@@ -1,0 +1,57 @@
+{% extends "residente/base.html" %}
+{% load static %}
+{% block titulo %}Recicla Comuna 4 — Historial de Canjes{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'residente/css/estilos recompensa.css' %}">
+{% endblock %}
+
+{% block cuerpo %}
+{% include 'residente/header.html' %}
+
+<main class="page-container" id="mainContent">
+  <section class="catalogo-section" style="padding: 40px 30px;">
+    <h1 class="main-title">Historial de Recompensas Canjeadas</h1>
+    <p class="main-desc">Aquí puedes ver todas las recompensas que has canjeado.</p>
+    
+    {% if canjes %}
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <thead style="background: #2ECC71; color: #fff;">
+          <tr>
+            <th style="padding: 14px 16px; text-align: left;">Recompensa</th>
+            <th style="padding: 14px 16px; text-align: left;">Fecha</th>
+            <th style="padding: 14px 16px; text-align: left;">Dirección</th>
+            <th style="padding: 14px 16px; text-align: left;">Barrio</th>
+            <th style="padding: 14px 16px; text-align: left;">Observaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for canje in canjes %}
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 12px 16px;">{{ canje.recompensa.titulo }}</td>
+            <td style="padding: 12px 16px;">{{ canje.fecha_canje|date:"d/m/Y H:i" }}</td>
+            <td style="padding: 12px 16px;">{{ canje.direccion }}</td>
+            <td style="padding: 12px 16px;">{{ canje.barrio }}</td>
+            <td style="padding: 12px 16px;">{{ canje.observaciones|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px 20px; color: #888;">
+      <i class="fas fa-gift" style="font-size: 48px; margin-bottom: 16px;"></i>
+      <p style="font-size: 1.2rem;">Aún no has canjeado ninguna recompensa.</p>
+      <a href="{% url 'residente_cat_recompensas' %}" style="color: #2ECC71; font-weight: 600; text-decoration: none;">Ver catálogo de recompensas</a>
+    </div>
+    {% endif %}
+    
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="{% url 'residente_cat_recompensas' %}" style="background: #2ECC71; color: #fff; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; display: inline-block;">Volver al Catálogo</a>
+    </div>
+  </section>
+</main>
+
+{% include 'residente/footer.html' %}
+{% endblock %}

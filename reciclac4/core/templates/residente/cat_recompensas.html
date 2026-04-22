@@ -12,6 +12,15 @@
 
 
 <main class="page-container" id="mainContent">
+  {% if not usuario %}
+  <div class="alert alert-info" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:12px 20px;margin-bottom:20px;text-align:center;">
+    <i class="fas fa-info-circle"></i>
+    <strong>Solo los usuarios registrados</strong> pueden ver información ampliada y canjear recompensas.
+    <a href="{% url 'login' %}" style="color:#1976D2;font-weight:600;">Inicia sesión</a> o
+    <a href="{% url 'registro' %}" style="color:#1976D2;font-weight:600;">regístrate</a> para acceder.
+  </div>
+  {% endif %}
+  
   <section class="catalogo-section">
     <canvas id="bgCanvas"></canvas>
 

@@ -2086,6 +2086,20 @@ def residente_cat_recompensas(request):
     })
 
 @rol_required('residente')
+def residente_historial_canjes(request):
+    from .models import CanjeRecompensa
+    
+    usuario_id = request.session.get("usuario_id")
+    usuario = Usuario.objects.filter(id_usuario=usuario_id).first()
+    
+    canjes = CanjeRecompensa.objects.filter(usuario=usuario).select_related('recompensa').order_by('-fecha_canje')
+    
+    return render(request, "residente/historial_canjes.html", {
+        'canjes': canjes,
+        'usuario': usuario
+    })
+
+@rol_required('residente')
 def residente_canje_recompensa(request):
     from django.http import JsonResponse
     from .models import Recompensa, CanjeRecompensa, Puntaje
