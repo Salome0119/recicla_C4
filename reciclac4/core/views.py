@@ -700,7 +700,44 @@ def admi_recoleccion(request):
 
 @rol_required('administrador')
 def admi_recompensa(request):
-    return render(request, "administrador/recompensa.html")
+    from .models import Recompensa
+    
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        descripcion = request.POST.get('descripcion')
+        puntos_requeridos = request.POST.get('puntos_requeridos')
+        cantidad_disponible = request.POST.get('cantidad_disponible')
+        imagen = request.FILES.get('imagen')
+        
+        if titulo and descripcion and puntos_requeridos and cantidad_disponible:
+            Recompensa.objects.create(
+                titulo=titulo,
+                descripcion=descripcion,
+                puntos_requeridos=int(puntos_requeridos),
+                cantidad_disponible=int(cantidad_disponible),
+                imagen=imagen,
+                disponible=True
+            )
+            messages.success(request, 'Recompensa creada correctamente.')
+        else:
+            messages.error(request, 'Todos los campos son requeridos.')
+        
+        return redirect('admi_recompensa')
+    
+    recompensas = Recompensa.objects.all().order_by('-fecha_creacion')
+    return render(request, "administrador/recompensa.html", {'recompensas': recompensas})
+
+@rol_required('administrador')
+def admi_recompensa_canjes(request, recompensa_id):
+    from .models import CanjeRecompensa, Recompensa
+    
+    recompensa = get_object_or_404(Recompensa, id_recompensa=recompensa_id)
+    canjes = CanjeRecompensa.objects.filter(recompensa=recompensa).select_related('usuario')
+    
+    return render(request, "administrador/recompensa_canjes.html", {
+        'recompensa': recompensa,
+        'canjes': canjes
+    })
 
 @rol_required('administrador')
 def admi_educacion(request):
@@ -2037,7 +2074,75 @@ def residente_recoleccion(request):
 
 @rol_required('residente')
 def residente_cat_recompensas(request):
-    return render(request, "residente/cat_recompensas.html")
+    from .models import Recompensa
+    
+    usuario_id = request.session.get("usuario_id")
+    usuario = Usuario.objects.filter(id_usuario=usuario_id).first()
+    
+    recompensas = Recompensa.objects.filter(disponible=True, cantidad_disponible__gt=0).order_by('-fecha_creacion')
+    return render(request, "residente/cat_recompensas.html", {
+        'recompensas': recompensas,
+        'usuario': usuario
+    })
+
+@rol_required('residente')
+def residente_canje_recompensa(request):
+    from django.http import JsonResponse
+    from .models import Recompensa, CanjeRecompensa, Puntaje
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+    
+    usuario_id = request.session.get("usuario_id")
+    usuario = Usuario.objects.filter(id_usuario=usuario_id).first()
+    
+    if not usuario:
+        return JsonResponse({'success': False, 'error': 'Usuario no encontrado'}, status=400)
+    
+    recompensa_id = request.POST.get('recompensa_id')
+    direccion = request.POST.get('direccion', '').strip()
+    barrio = request.POST.get('barrio', '').strip()
+    observaciones = request.POST.get('observaciones', '').strip()
+    
+    if not recompensa_id or not direccion or not barrio:
+        return JsonResponse({'success': False, 'error': 'Todos los campos son requeridos'}, status=400)
+    
+    try:
+        recompensa = Recompensa.objects.get(id_recompensa=recompensa_id)
+    except Recompensa.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Recompensa no encontrada'}, status=400)
+    
+    if recompensa.cantidad_disponible <= 0:
+        return JsonResponse({'success': False, 'error': 'Recompensa agotada'}, status=400)
+    
+    puntos_usuario = usuario.puntaje_total
+    if puntos_usuario < recompensa.puntos_requeridos:
+        return JsonResponse({'success': False, 'error': 'Puntos insuficientes'}, status=400)
+    
+    try:
+        CanjeRecompensa.objects.create(
+            usuario=usuario,
+            recompensa=recompensa,
+            direccion=direccion,
+            barrio=barrio,
+            observaciones=observaciones if observaciones else None
+        )
+        
+        recompensa.cantidad_disponible -= 1
+        if recompensa.cantidad_disponible <= 0:
+            recompensa.disponible = False
+        recompensa.save()
+        
+        Puntaje.objects.create(
+            usuario=usuario,
+            puntos=-recompensa.puntos_requeridos,
+            motivo=f"Canje de recompensa: {recompensa.titulo}",
+            recompensa=recompensa
+        )
+        
+        return JsonResponse({'success': True, 'message': 'Canje exitoso'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 @rol_required('residente')
 def residente_como_participar(request):
@@ -2246,7 +2351,44 @@ def organizador_recoleccion(request):
 
 @rol_required('organizador')
 def organizador_recompensa(request):
-    return render(request, "organizador/recompensa.html")
+    from .models import Recompensa
+    
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        descripcion = request.POST.get('descripcion')
+        puntos_requeridos = request.POST.get('puntos_requeridos')
+        cantidad_disponible = request.POST.get('cantidad_disponible')
+        imagen = request.FILES.get('imagen')
+        
+        if titulo and descripcion and puntos_requeridos and cantidad_disponible:
+            Recompensa.objects.create(
+                titulo=titulo,
+                descripcion=descripcion,
+                puntos_requeridos=int(puntos_requeridos),
+                cantidad_disponible=int(cantidad_disponible),
+                imagen=imagen,
+                disponible=True
+            )
+            messages.success(request, 'Recompensa creada correctamente.')
+        else:
+            messages.error(request, 'Todos los campos son requeridos.')
+        
+        return redirect('organizador_recompensa')
+    
+    recompensas = Recompensa.objects.all().order_by('-fecha_creacion')
+    return render(request, "organizador/recompensa.html", {'recompensas': recompensas})
+
+@rol_required('organizador')
+def organizador_recompensa_canjes(request, recompensa_id):
+    from .models import CanjeRecompensa, Recompensa
+    
+    recompensa = get_object_or_404(Recompensa, id_recompensa=recompensa_id)
+    canjes = CanjeRecompensa.objects.filter(recompensa=recompensa).select_related('usuario')
+    
+    return render(request, "organizador/recompensa_canjes.html", {
+        'recompensa': recompensa,
+        'canjes': canjes
+    })
 
 @rol_required('organizador')
 def organizador_educacion(request):

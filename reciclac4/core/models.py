@@ -180,6 +180,12 @@ class Puntaje(models.Model):
         null=True,
         blank=True
     )
+    recompensa = models.ForeignKey(
+        'Recompensa',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         db_table = 'core_puntaje'
@@ -238,4 +244,42 @@ class AccionDestacada(models.Model):
     class Meta:
         db_table = 'core_accion_destacada'
         managed = True
+
+
+class Recompensa(models.Model):
+    id_recompensa = models.AutoField(primary_key=True)
+    titulo = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    puntos_requeridos = models.IntegerField()
+    imagen = models.ImageField(upload_to='recompensas/', blank=True, null=True)
+    disponible = models.BooleanField(default=True)
+    cantidad_disponible = models.IntegerField(default=0)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    last_update = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'core_recompensa'
+        managed = True
+        ordering = ['-fecha_creacion']
+
+    def __str__(self):
+        return self.titulo
+
+
+class CanjeRecompensa(models.Model):
+    id_canje = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='canjes')
+    recompensa = models.ForeignKey(Recompensa, on_delete=models.CASCADE, related_name='canjes')
+    fecha_canje = models.DateTimeField(auto_now_add=True)
+    direccion = models.CharField(max_length=200, blank=True, null=True)
+    barrio = models.CharField(max_length=100, blank=True, null=True)
+    observaciones = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'core_canje_recompensa'
+        managed = True
+        ordering = ['-fecha_canje']
+
+    def __str__(self):
+        return f"{self.usuario.nombre} - {self.recompensa.titulo}"
 

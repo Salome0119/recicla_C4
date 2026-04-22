@@ -22,6 +22,7 @@ urlpatterns = [
     path("admi/foro/", views.admi_publicacion_foro, name="admi_publicacion_foro"),
     path("admi/recoleccion/", views.admi_recoleccion, name="admi_recoleccion"),
     path("admi/recompensa/", views.admi_recompensa, name="admi_recompensa"),
+    path("admi/recompensa/<int:recompensa_id>/canjes/", views.admi_recompensa_canjes, name="admi_recompensa_canjes"),
     path("admi/inicio/", views.admi_inicio, name="admi_inicio"),
     path('admi/solicitudes/', views.solicitudes_pendientes, name='solicitudes_pendientes'),
     path("admi/educacion/", views.admi_educacion, name="admi_educacion"),
@@ -56,6 +57,7 @@ urlpatterns = [
     path("organizador/foro/", views.organizador_publicacion_foro, name="organizador_publicacion_foro"),
     path("organizador/recoleccion/", views.organizador_recoleccion, name="organizador_recoleccion"),
     path("organizador/recompensa/", views.organizador_recompensa, name="organizador_recompensa"),
+    path("organizador/recompensa/<int:recompensa_id>/canjes/", views.organizador_recompensa_canjes, name="organizador_recompensa_canjes"),
     path("organizador/inicio/", views.organizador_inicio, name="organizador_inicio"),
     path("organizador/educacion/", views.organizador_educacion, name="organizador_educacion"),
     path("organizador/contacto/", views.organizador_contacto, name="organizador_contacto"),
@@ -71,6 +73,7 @@ urlpatterns = [
 
     # RESIDENTE: 7 páginas
     path("residente/cat_recompensas/", views.residente_cat_recompensas, name="residente_cat_recompensas"),
+    path("residente/canje/recompensa/", views.residente_canje_recompensa, name="residente_canje_recompensa"),
     path("residente/como-participar/", views.residente_como_participar, name="residente_como_participar"),
     path("residente/inicio/", views.residente_inicio, name="residente_inicio"),
     # core/urls.py

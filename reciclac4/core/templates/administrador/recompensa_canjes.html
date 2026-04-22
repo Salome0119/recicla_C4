@@ -1,0 +1,134 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+{% block titulo %}Canjes - {{ recompensa.titulo }}{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+<style>
+  .page-container {
+    min-height: calc(100vh - 180px);
+    padding: 20px;
+  }
+  
+  .wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+  }
+  
+  .canje-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .canje-info h3 {
+    margin: 0 0 8px 0;
+    color: var(--dark);
+  }
+  
+  .canje-info p {
+    margin: 4px 0;
+    color: var(--muted);
+  }
+  
+  .canje-fecha {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  
+  .btn-volver {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .btn-volver:hover {
+    background: var(--secondary);
+  }
+  
+  .page-title {
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+  }
+</style>
+{% endblock %}
+
+{% block cuerpo %}
+{% include 'administrador/header.html' %}
+
+<main class="page-container">
+  <div class="wrapper">
+    <a href="{% url 'admi_recompensa' %}" class="btn-volver">← Volver a Recompensas</a>
+    
+    <h1 class="page-title">Usuarios que canjearon: {{ recompensa.titulo }}</h1>
+    
+    {% if canjes %}
+      {% for canje in canjes %}
+      <div class="canje-card">
+        <div class="canje-info">
+          <h3>{{ canje.usuario.nombre }} {{ canje.usuario.apellido }}</h3>
+          <p><strong>Correo:</strong> {{ canje.usuario.correo }}</p>
+          <p><strong>Dirección:</strong> {{ canje.direccion|default:"No especificada" }}</p>
+          <p><strong>Barrio:</strong> {{ canje.barrio|default:"No especificado" }}</p>
+          {% if canje.observaciones %}
+            <p><strong>Observaciones:</strong> {{ canje.observaciones }}</p>
+          {% endif %}
+        </div>
+        <div class="canje-fecha">
+          Canjeado el: {{ canje.fecha_canje|date:"d/m/Y H:i" }}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color: var(--muted); text-align: center;">Nadie ha canjeado esta recompensa aún.</p>
+    {% endif %}
+  </div>
+</main>
+
+{% include 'administrador/footer.html' %}
+
+<script>
+const openSidebarBtn = document.getElementById('openSidebar');
+const closeSidebarBtn = document.getElementById('closeSidebar');
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.getElementById('mainContent');
+
+function openSidebar() {
+    sidebar.classList.add('active');
+    mainContent.style.transform = 'translateX(260px)';
+}
+function closeSidebar() {
+    sidebar.classList.remove('active');
+    mainContent.style.transform = 'translateX(0)';
+}
+
+openSidebarBtn.addEventListener('click', () => {
+    if(sidebar.classList.contains('active')) closeSidebar();
+    else openSidebar();
+});
+
+if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+
+document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggle.parentElement.classList.toggle('active');
+    });
+});
+
+document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && sidebar.classList.contains('active')) closeSidebar();
+});
+</script>
+{% endblock %}
