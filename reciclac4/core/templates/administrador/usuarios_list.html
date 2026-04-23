@@ -44,12 +44,14 @@
         <td>{{ u.rol }}</td>
         <td>{{ u.estado }}</td>
         <td>
-          <a href="{% url 'admin_users_edit' u.id_usuario %}">Editar</a> |
-          {% if u.estado != "suspendido" %}
-            <a href="{% url 'admin_users_suspend' u.id_usuario %}">Suspender</a>
-          {% else %}
-            <a href="{% url 'admin_users_restore' u.id_usuario %}">Restaurar</a>
-          {% endif %}
+          <div class="actions">
+            <a href="{% url 'admin_users_edit' u.id_usuario %}" class="btn-edit">Editar</a>
+            {% if u.estado != "suspendido" %}
+              <a href="{% url 'admin_users_suspend_confirm' u.id_usuario %}" class="btn-delete">Suspender</a>
+            {% else %}
+              <a href="{% url 'admin_users_restore' u.id_usuario %}" class="btn-view">Restaurar</a>
+            {% endif %}
+          </div>
         </td>
       </tr>
       {% empty %}
@@ -90,8 +92,8 @@
         }
         data.results.forEach(u=>{
           const acciones = u.estado !== 'suspendido'
-            ? `<a href="/admin/usuarios/${u.id}/edit/">Editar</a> | <a href="/admin/usuarios/${u.id}/suspend/">Suspender</a>`
-            : `<a href="/admin/usuarios/${u.id}/edit/">Editar</a> | <a href="/admin/usuarios/${u.id}/restore/">Restaurar</a>`;
+            ? `<div class="actions"><a href="/admin/usuarios/${u.id}/edit/" class="btn-edit">Editar</a><a href="/admin/usuarios/${u.id}/suspend/confirm/" class="btn-delete">Suspender</a></div>`
+            : `<div class="actions"><a href="/admin/usuarios/${u.id}/edit/" class="btn-edit">Editar</a><a href="/admin/usuarios/${u.id}/restore/" class="btn-view">Restaurar</a></div>`;
           usersTable.insertAdjacentHTML('beforeend', `<tr>
             <td>${u.id}</td>
             <td>${u.nombre}</td>

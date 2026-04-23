@@ -59,26 +59,26 @@
                     <td>{{ u.puntaje_total }}</td>
 
                     <td>
-                        <a href="{% url 'editar_usuario' u.id_usuario %}" class="btn-edit">
-                            ✏️ Editar
-                        </a>
+                        <div class="actions">
+                            <a href="{% url 'editar_usuario' u.id_usuario %}" class="btn-edit">
+                                ✏️ Editar
+                            </a>
 
-                        <a href="{% url 'historial_puntaje_admin' u.id_usuario %}" class="btn-view">
-                          Puntaje
-                        </a>
+                            <a href="{% url 'historial_puntaje_admin' u.id_usuario %}" class="btn-view">
+                              Puntaje
+                            </a>
 
-                        {% if u.estado != "suspendido" %}
-                        <a href="{% url 'suspender_usuario' u.id_usuario %}"
-                           class="btn-delete"
-                           onclick="return confirm('¿Suspender este usuario?');">
-                           Suspender
-                        </a>
-                        {% else %}
-                        <a href="{% url 'reactivar_usuario' u.id_usuario %}"
-                           class="btn-edit">
-                           🔄 Reactivar
-                        </a>
-                        {% endif %}
+                            {% if u.estado != "suspendido" %}
+                            <a href="#" class="btn-delete" onclick="showSuspenderModal({{ u.id_usuario }}, '{{ u.nombre }} {{ u.apellido }}'); return false;">
+                               Suspender
+                            </a>
+                            {% else %}
+                            <a href="{% url 'reactivar_usuario' u.id_usuario %}"
+                               class="btn-edit">
+                               🔄 Reactivar
+                            </a>
+                            {% endif %}
+                        </div>
                     </td>
                 </tr>
                 {% empty %}
@@ -147,5 +147,52 @@
 
 </div>
 
+<!-- Modal de confirmación suspensión -->
+<div id="suspenderModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeSuspenderModal()">&times;</span>
+        <h3>Suspender Usuario</h3>
+        <p>¿Estás seguro de suspender a <strong id="suspenderNombre"></strong>?</p>
+        <form id="suspenderForm" method="post" action="{% url 'suspender_usuario' 0 %}">
+            {% csrf_token %}
+            <input type="hidden" id="suspenderId" name="id_usuario">
+            <label for="motivo">Motivo de suspensión:</label>
+            <textarea id="motivo" name="motivo" rows="4" placeholder="Ingrese el motivo de la suspensión..." required></textarea>
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-danger">Confirmar Suspensión</button>
+                <button type="button" class="btn" onclick="closeSuspenderModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% include 'administrador/footer.html' %}
+<script>
+function showSuspenderModal(id, nombre) {
+    document.getElementById('suspenderId').value = id;
+    document.getElementById('suspenderNombre').textContent = nombre;
+    document.getElementById('suspenderForm').action = '/admi/usuarios/suspender/' + id + '/';
+    document.getElementById('suspenderModal').style.display = 'block';
+}
+function closeSuspenderModal() {
+    document.getElementById('suspenderModal').style.display = 'none';
+    document.getElementById('motivo').value = '';
+}
+window.onclick = function(event) {
+    var modal = document.getElementById('suspenderModal');
+    if (event.target == modal) {
+        closeSuspenderModal();
+    }
+}
+</script>
+<style>
+.modal { position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal-content { background: #fff; margin: 10% auto; padding: 20px; width: 90%; max-width: 500px; border-radius: 8px; position: relative; }
+.modal-content .close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
+.modal-content h3 { margin-top: 0; }
+.modal-content textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+.modal-actions { margin-top: 15px; }
+.modal-actions .btn-danger { background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; }
+.modal-actions .btn { background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+</style>
 {% endblock %}

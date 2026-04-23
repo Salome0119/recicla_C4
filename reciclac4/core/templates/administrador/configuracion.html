@@ -24,13 +24,13 @@
                 <input type="hidden" name="action" value="perfil">
 
                 <label>Nombre completo</label>
-                <input type="text" name="nombre" value="{{ user.nombre }}" required>
+                <input type="text" name="nombre" value="{{ user.nombre }}" required minlength="2" maxlength="50" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+">
 
                 <label>Correo electrónico</label>
                 <input type="email" name="email" value="{{ user.correo }}" required>
 
                 <label>Teléfono</label>
-                <input type="text" name="telefono" value="{{ user.telefono }}">
+                <input type="text" name="telefono" value="{{ user.telefono }}" pattern="\d{7,15}" title="7-15 dígitos">
 
                 <button class="btn-save">Guardar cambios</button>
             </form>

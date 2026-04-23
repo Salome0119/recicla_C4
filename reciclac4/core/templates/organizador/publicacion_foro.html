@@ -19,10 +19,16 @@
         <form action="{% url 'organizador_publicacion_foro' %}" method="post" enctype="multipart/form-data">
           {% csrf_token %}
 
-          <!-- Título -->
+<!-- Título -->
           <div class="campo">
             <label for="titulo">📌 Título del tema:</label>
-            <input type="text" id="titulo" name="titulo" placeholder="Escribe un título llamativo" required>
+            <input type="text" id="titulo" name="titulo" placeholder="Escribe un título llamativo" required minlength="3" maxlength="100">
+          </div>
+
+          <!-- Contenido -->
+          <div class="campo">
+            <label for="contenido">💬 Contenido del mensaje:</label>
+            <textarea id="contenido" name="contenido" placeholder="Escribe aquí tu publicación..." required minlength="10" maxlength="1000"></textarea>
           </div>
 
           <!-- Contenido -->

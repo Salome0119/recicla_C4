@@ -20,6 +20,7 @@ from datetime import datetime
 from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Sum
 
+import re
 from functools import wraps
 from .models import Notificacion
 from django.db import models
@@ -73,6 +74,8 @@ def login_view(request):
                     messages.error(request, "Tu cuenta está pendiente de aprobación.")
                 elif usuario.estado == 'rechazado':
                     messages.error(request, "Tu solicitud fue rechazada.")
+                elif usuario.estado == 'suspendido':
+                    messages.error(request, "Tu cuenta ha sido suspendida. No puedes acceder al sistema.")
                 return redirect("login")
 
         except Usuario.DoesNotExist:
@@ -469,7 +472,26 @@ def admin_users_edit(request, id_usuario):
 
     return render(request, "administrador/usuarios_form.html", {"form": form, "crear": False, "usuario_obj": usuario})
 
-# SUSPENDER USUARIO
+# SUSPENDER USUARIO - Confirmación
+@rol_required('administrador')
+def admin_users_suspend_confirm(request, id_usuario):
+    uid = request.session.get("usuario_id")
+    if not uid:
+        return redirect("login")
+    usuario_actual = Usuario.objects.get(id_usuario=uid)
+    if usuario_actual.rol != "administrador":
+        messages.error(request, "No tienes permisos.")
+        return redirect("admi_inicio")
+
+    usuario = get_object_or_404(Usuario, id_usuario=id_usuario)
+    if usuario.estado == "suspendido":
+        messages.warning(request, "El usuario ya está suspendido.")
+        return redirect("admin_users_list")
+    
+    return render(request, "administrador/suspender_confirm.html", {"usuario": usuario})
+
+
+# SUSPENDER USUARIO - Procesar
 @rol_required('administrador')
 def admin_users_suspend(request, id_usuario):
     uid = request.session.get("usuario_id")
@@ -481,10 +503,25 @@ def admin_users_suspend(request, id_usuario):
         return redirect("admi_inicio")
 
     usuario = get_object_or_404(Usuario, id_usuario=id_usuario)
-    usuario.estado = "suspendido"
-    usuario.save()
-    UserChangeLog.objects.create(usuario=usuario, quien=f"{usuario_actual.nombre} {usuario_actual.apellido}", accion="suspender", detalle="Suspensión por administrador")
-    messages.success(request, "Usuario suspendido (no eliminado).")
+    
+    if request.method == "POST":
+        motivo = request.POST.get("motivo", "").strip()
+        if not motivo:
+            messages.error(request, "Debe ingresar un motivo.")
+            return render(request, "administrador/suspender_confirm.html", {"usuario": usuario})
+        
+        usuario.estado = "suspendido"
+        usuario.save()
+        UserChangeLog.objects.create(
+            usuario=usuario, 
+            quien=f"{usuario_actual.nombre} {usuario_actual.apellido}", 
+            accion="suspender", 
+            detalle=f"Suspensión: {motivo}"
+        )
+        messages.success(request, f"Usuario suspendido. Motivo: {motivo}")
+    else:
+        return redirect("admin_users_suspend_confirm", id_usuario)
+    
     return redirect("admin_users_list")
 
 # RESTAURAR USUARIO
@@ -740,6 +777,24 @@ def admi_recompensa_canjes(request, recompensa_id):
     })
 
 @rol_required('administrador')
+def admi_historial_canjes(request):
+    from .models import CanjeRecompensa
+    from django.core.paginator import Paginator
+    
+    canjes_list = CanjeRecompensa.objects.select_related('usuario', 'recompensa').order_by('-fecha_canje')
+    paginator = Paginator(canjes_list, 10)
+    page = request.GET.get('page', 1)
+    try:
+        canjes = paginator.page(page)
+    except:
+        canjes = paginator.page(1)
+    
+    return render(request, "administrador/historial_canjes.html", {
+        'canjes': canjes,
+        'total': canjes_list.count()
+    })
+
+@rol_required('administrador')
 def admi_educacion(request):
     return render(request, "administrador/educacion.html")
 
@@ -932,16 +987,50 @@ def agregar_usuario(request):
         return redirect("admi_inicio")
 
     if request.method == "POST":
-        nombre = request.POST.get("nombre")
-        apellido = request.POST.get("apellido")
-        correo = request.POST.get("correo")
-        contrasena = request.POST.get("contrasena")
+        nombre = request.POST.get("nombre", "").strip()
+        apellido = request.POST.get("apellido", "").strip()
+        correo = request.POST.get("correo", "").strip()
+        contrasena = request.POST.get("contrasena", "").strip()
         rol = request.POST.get("rol")
         estado = request.POST.get("estado")
 
-        if Usuario.objects.filter(correo=correo).exists():
+        errors = []
+        
+        if not nombre:
+            errors.append("El nombre no puede estar vacío.")
+        elif len(nombre) < 2:
+            errors.append("El nombre debe tener al menos 2 caracteres.")
+        elif len(nombre) > 50:
+            errors.append("El nombre no puede exceder 50 caracteres.")
+        elif not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', nombre):
+            errors.append("El nombre solo puede contener letras.")
+        
+        if not apellido:
+            errors.append("El apellido no puede estar vacío.")
+        elif len(apellido) < 2:
+            errors.append("El apellido debe tener al menos 2 caracteres.")
+        elif len(apellido) > 50:
+            errors.append("El apellido no puede exceder 50 caracteres.")
+        elif not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', apellido):
+            errors.append("El apellido solo puede contener letras.")
+        
+        if not correo:
+            errors.append("El correo no puede estar vacío.")
+        elif not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
+            errors.append("Ingrese un correo electrónico válido.")
+        elif Usuario.objects.filter(correo=correo).exists():
             messages.error(request, "El correo ya está registrado.")
             return redirect("agregar_usuario")
+        
+        if not contrasena:
+            errors.append("La contraseña no puede estar vacía.")
+        elif len(contrasena) < 8:
+            errors.append("La contraseña debe tener al menos 8 caracteres.")
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return render(request, "administrador/usuarios_agregar.html")
 
         nuevo = Usuario.objects.create(
             nombre=nombre,
@@ -1361,6 +1450,48 @@ def _validar_datos_jornada(request, datos, organizador, jornada_actual=None):
             messages.error(request, mensaje)
             return False
 
+    titulo = str(datos.get("titulo", "")).strip()
+    if len(titulo) < 3:
+        messages.error(request, "El titulo debe tener al menos 3 caracteres.")
+        return False
+    if len(titulo) > 100:
+        messages.error(request, "El titulo no puede exceder 100 caracteres.")
+        return False
+
+    descripcion = str(datos.get("descripcion", "")).strip()
+    if len(descripcion) < 10:
+        messages.error(request, "La descripcion debe contener minimo 10 caracteres.")
+        return False
+    if len(descripcion) > 500:
+        messages.error(request, "La descripcion no puede exceder 500 caracteres.")
+        return False
+
+    direccion = str(datos.get("direccion", "")).strip()
+    if len(direccion) < 5:
+        messages.error(request, "La direccion debe tener al menos 5 caracteres.")
+        return False
+    if len(direccion) > 200:
+        messages.error(request, "La direccion no puede exceder 200 caracteres.")
+        return False
+    
+    barrio = str(datos.get("barrio", "")).strip()
+    if barrio and not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-]+$', barrio):
+        messages.error(request, "El barrio contiene caracteres invalidos.")
+        return False
+
+    try:
+        cupo_maximo = int(datos.get("cupo_maximo"))
+    except (TypeError, ValueError):
+        messages.error(request, "El cupo maximo debe ser un numero valido.")
+        return False
+
+    if cuota_maximo < 1:
+        messages.error(request, "El cupo maximo debe ser al menos 1.")
+        return False
+    if cuota_maximo > 1000:
+        messages.error(request, "El cupo maximo no puede exceder 1000.")
+        return False
+
     descripcion = str(datos.get("descripcion", "")).strip()
     if len(descripcion) < 10:
         messages.error(request, "La descripcion debe contener minimo 10 caracteres.")
@@ -1595,6 +1726,12 @@ def suspender_usuario(request, id):
         return redirect("admi_inicio")
 
     usuario = get_object_or_404(Usuario, id_usuario=id)
+    motivo = request.POST.get("motivo", "").strip()
+    
+    if not motivo:
+        messages.error(request, "Debe ingresar un motivo.")
+        return redirect("panel_usuarios")
+    
     usuario.estado = "suspendido"
     usuario.save()
 
@@ -1602,10 +1739,10 @@ def suspender_usuario(request, id):
         usuario=usuario,
         quien=f"{usuario_actual.nombre} {usuario_actual.apellido}",
         accion="suspender",
-        detalle="Usuario suspendido"
+        detalle=f"Suspensión: {motivo}"
     )
 
-    messages.success(request, "Usuario suspendido correctamente.")
+    messages.success(request, f"Usuario suspendido. Motivo: {motivo}")
     return redirect("panel_usuarios")
 
 @rol_required('administrador')
@@ -2402,6 +2539,24 @@ def organizador_recompensa_canjes(request, recompensa_id):
     return render(request, "organizador/recompensa_canjes.html", {
         'recompensa': recompensa,
         'canjes': canjes
+    })
+
+@rol_required('organizador')
+def organizador_historial_canjes(request):
+    from .models import CanjeRecompensa
+    from django.core.paginator import Paginator
+    
+    canjes_list = CanjeRecompensa.objects.select_related('usuario', 'recompensa').order_by('-fecha_canje')
+    paginator = Paginator(canjes_list, 10)
+    page = request.GET.get('page', 1)
+    try:
+        canjes = paginator.page(page)
+    except:
+        canjes = paginator.page(1)
+    
+    return render(request, "organizador/historial_canjes.html", {
+        'canjes': canjes,
+        'total': canjes_list.count()
     })
 
 @rol_required('organizador')
