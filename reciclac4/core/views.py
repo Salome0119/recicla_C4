@@ -800,6 +800,86 @@ def admi_educacion(request):
 
 @rol_required('administrador')
 def admi_contacto(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        mensaje = request.POST.get('mensaje', '').strip()
+        
+        errors = []
+        if not nombre or len(nombre) < 2:
+            errors.append('El nombre debe tener al menos 2 caracteres.')
+        if not correo or '@' not in correo:
+            errors.append('Ingresa un correo electrónico válido.')
+        if not mensaje or len(mensaje) < 10:
+            errors.append('El mensaje debe tener al menos 10 caracteres.')
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            from django.conf import settings
+            from django.core.mail import send_mail
+            from django.utils.html import strip_tags
+            
+            # Correo para el administrador
+            asunto_admin = f'Nuevo mensaje de contacto - {nombre}'
+            mensaje_admin = f'''
+            Nuevo mensaje recibido desde el formulario de contacto (Administrador):
+
+            Nombre: {nombre}
+            Correo: {correo}
+            Rol: Administrador
+
+            Mensaje:
+            {mensaje}
+
+            ---
+            Recicla Comuna 4
+            '''
+            
+            # Correo de confirmación para el usuario
+            asunto_usuario = 'Hemos recibido tu mensaje - Recicla Comuna 4'
+            mensaje_usuario = f'''
+            Hola {nombre}:
+
+            Hemos recibido tu mensaje correctamente. Nuestro equipo se pondrá en contacto contigo pronto.
+
+            Tu mensaje:
+            {mensaje}
+
+            Si necesitas contactarnos directamente:
+            Teléfono: 315 5959444
+            Correo: reciclacomuna@gmail.com
+
+            ---
+            Recicla Comuna 4
+            '''
+            
+            try:
+                # Enviar al administrador
+                send_mail(
+                    asunto_admin,
+                    mensaje_admin,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [settings.EMAIL_HOST_USER],
+                    fail_silently=False,
+                )
+                
+                # Enviar confirmación al usuario
+                send_mail(
+                    asunto_usuario,
+                    mensaje_usuario,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [correo],
+                    fail_silently=False,
+                )
+                
+                messages.success(request, 'Mensaje enviado correctamente. Te hemos enviado una confirmación a tu correo.')
+            except Exception as e:
+                messages.error(request, f'Error al enviar el correo: {str(e)}')
+            
+            return redirect('admi_contacto')
+    
     return render(request, "administrador/contacto.html")
 @rol_required('administrador')
 def admi_inicio(request):
@@ -2305,6 +2385,85 @@ def residente_educacion(request):
 
 @rol_required('residente')
 def residente_contacto(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        mensaje = request.POST.get('mensaje', '').strip()
+        
+        errors = []
+        if not nombre or len(nombre) < 2:
+            errors.append('El nombre debe tener al menos 2 caracteres.')
+        if not correo or '@' not in correo:
+            errors.append('Ingresa un correo electrónico válido.')
+        if not mensaje or len(mensaje) < 10:
+            errors.append('El mensaje debe tener al menos 10 caracteres.')
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            from django.conf import settings
+            from django.core.mail import send_mail
+            
+            # Correo para el administrador
+            asunto_admin = f'Nuevo mensaje de contacto - {nombre}'
+            mensaje_admin = f'''
+            Nuevo mensaje recibido desde el formulario de contacto (Residente):
+
+            Nombre: {nombre}
+            Correo: {correo}
+            Rol: Residente
+
+            Mensaje:
+            {mensaje}
+
+            ---
+            Recicla Comuna 4
+            '''
+            
+            # Correo de confirmación para el usuario
+            asunto_usuario = 'Hemos recibido tu mensaje - Recicla Comuna 4'
+            mensaje_usuario = f'''
+            Hola {nombre}:
+
+            Hemos recibido tu mensaje correctamente. Nuestro equipo se pondrá en contacto contigo pronto.
+
+            Tu mensaje:
+            {mensaje}
+
+            Si necesitas contactarnos directamente:
+            Teléfono: 315 5959444
+            Correo: reciclacomuna@gmail.com
+
+            ---
+            Recicla Comuna 4
+            '''
+            
+            try:
+                # Enviar al administrador
+                send_mail(
+                    asunto_admin,
+                    mensaje_admin,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [settings.EMAIL_HOST_USER],
+                    fail_silently=False,
+                )
+                
+                # Enviar confirmación al usuario
+                send_mail(
+                    asunto_usuario,
+                    mensaje_usuario,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [correo],
+                    fail_silently=False,
+                )
+                
+                messages.success(request, 'Mensaje enviado correctamente. Te hemos enviado una confirmación a tu correo.')
+            except Exception as e:
+                messages.error(request, f'Error al enviar el correo: {str(e)}')
+            
+            return redirect('residente_contacto')
+    
     return render(request, "residente/contacto.html")
 
 @rol_required('residente')
@@ -2565,6 +2724,85 @@ def organizador_educacion(request):
 
 @rol_required('organizador')
 def organizador_contacto(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        mensaje = request.POST.get('mensaje', '').strip()
+        
+        errors = []
+        if not nombre or len(nombre) < 2:
+            errors.append('El nombre debe tener al menos 2 caracteres.')
+        if not correo or '@' not in correo:
+            errors.append('Ingresa un correo electrónico válido.')
+        if not mensaje or len(mensaje) < 10:
+            errors.append('El mensaje debe tener al menos 10 caracteres.')
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            from django.conf import settings
+            from django.core.mail import send_mail
+            
+            # Correo para el administrador
+            asunto_admin = f'Nuevo mensaje de contacto - {nombre}'
+            mensaje_admin = f'''
+            Nuevo mensaje recibido desde el formulario de contacto (Organizador):
+
+            Nombre: {nombre}
+            Correo: {correo}
+            Rol: Organizador
+
+            Mensaje:
+            {mensaje}
+
+            ---
+            Recicla Comuna 4
+            '''
+            
+            # Correo de confirmación para el usuario
+            asunto_usuario = 'Hemos recibido tu mensaje - Recicla Comuna 4'
+            mensaje_usuario = f'''
+            Hola {nombre}:
+
+            Hemos recibido tu mensaje correctamente. Nuestro equipo se pondrá en contacto contigo pronto.
+
+            Tu mensaje:
+            {mensaje}
+
+            Si necesitas contactarnos directamente:
+            Teléfono: 315 5959444
+            Correo: reciclacomuna@gmail.com
+
+            ---
+            Recicla Comuna 4
+            '''
+            
+            try:
+                # Enviar al administrador
+                send_mail(
+                    asunto_admin,
+                    mensaje_admin,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [settings.EMAIL_HOST_USER],
+                    fail_silently=False,
+                )
+                
+                # Enviar confirmación al usuario
+                send_mail(
+                    asunto_usuario,
+                    mensaje_usuario,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [correo],
+                    fail_silently=False,
+                )
+                
+                messages.success(request, 'Mensaje enviado correctamente. Te hemos enviado una confirmación a tu correo.')
+            except Exception as e:
+                messages.error(request, f'Error al enviar el correo: {str(e)}')
+            
+            return redirect('organizador_contacto')
+    
     return render(request, "organizador/contacto.html")
 
 @rol_required('organizador')
@@ -3176,6 +3414,85 @@ def usuario_educacion(request):
     return render(request, "usuario/educacion.html")
 
 def usuario_contacto(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        mensaje = request.POST.get('mensaje', '').strip()
+        
+        errors = []
+        if not nombre or len(nombre) < 2:
+            errors.append('El nombre debe tener al menos 2 caracteres.')
+        if not correo or '@' not in correo:
+            errors.append('Ingresa un correo electrónico válido.')
+        if not mensaje or len(mensaje) < 10:
+            errors.append('El mensaje debe tener al menos 10 caracteres.')
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            from django.conf import settings
+            from django.core.mail import send_mail
+            
+            # Correo para el administrador
+            asunto_admin = f'Nuevo mensaje de contacto - {nombre}'
+            mensaje_admin = f'''
+            Nuevo mensaje recibido desde el formulario de contacto (Usuario):
+
+            Nombre: {nombre}
+            Correo: {correo}
+            Rol: Usuario visitante
+
+            Mensaje:
+            {mensaje}
+
+            ---
+            Recicla Comuna 4
+            '''
+            
+            # Correo de confirmación para el usuario
+            asunto_usuario = 'Hemos recibido tu mensaje - Recicla Comuna 4'
+            mensaje_usuario = f'''
+            Hola {nombre}:
+
+            Hemos recibido tu mensaje correctamente. Nuestro equipo se pondrá en contacto contigo pronto.
+
+            Tu mensaje:
+            {mensaje}
+
+            Si necesitas contactarnos directamente:
+            Teléfono: 315 5959444
+            Correo: reciclacomuna@gmail.com
+
+            ---
+            Recicla Comuna 4
+            '''
+            
+            try:
+                # Enviar al administrador
+                send_mail(
+                    asunto_admin,
+                    mensaje_admin,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [settings.EMAIL_HOST_USER],
+                    fail_silently=False,
+                )
+                
+                # Enviar confirmación al usuario
+                send_mail(
+                    asunto_usuario,
+                    mensaje_usuario,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [correo],
+                    fail_silently=False,
+                )
+                
+                messages.success(request, 'Mensaje enviado correctamente. Te hemos enviado una confirmación a tu correo.')
+            except Exception as e:
+                messages.error(request, f'Error al enviar el correo: {str(e)}')
+            
+            return redirect('usuario_contacto')
+    
     return render(request, "usuario/contacto.html")
 
 

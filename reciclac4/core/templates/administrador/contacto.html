@@ -18,36 +18,44 @@
         Si tienes dudas, sugerencias o deseas unirte a nuestras iniciativas ambientales, ¡escríbenos!
     </p>
 
+    {% if messages %}
+    <div class="contacto-messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="contacto-grid">
 
         <!-- Información -->
         <div class="contacto-info">
             <h3>💬 Información de contacto</h3>
             <ul>
-                <li><strong>📍 Ubicación:</strong> Comuna 4 — Medellín</li>
-                <li><strong>📞 Teléfono:</strong> 300 000 0000</li>
-                <li><strong>✉ Correo:</strong> recicla.comuna4@gmail.com</li>
-                <li><strong>🕒 Horario:</strong> Lunes a sábado — 8:00 a 5:00 p.m.</li>
+                <li><strong>📞 Teléfono:</strong> 315 5959444</li>
+                <li><strong>✉ Correo:</strong> reciclacomuna@gmail.com</li>
+                <li><strong>🕒 Horario:</strong> Lunes a sábado — 8:00 a.m. a 5:00 p.m.</li>
             </ul>
         </div>
 
         <!-- Formulario -->
-        <form class="contacto-form">
+        <form class="contacto-form" method="POST">
+            {% csrf_token %}
             <h3>📨 Envíanos un mensaje</h3>
 
             <div class="form-group">
                 <label>Nombre</label>
-                <input type="text" placeholder="Escribe tu nombre">
+                <input type="text" name="nombre" placeholder="Escribe tu nombre" required minlength="2">
             </div>
 
             <div class="form-group">
                 <label>Correo electrónico</label>
-                <input type="email" placeholder="tucorreo@ejemplo.com">
+                <input type="email" name="correo" placeholder="tucorreo@ejemplo.com" required>
             </div>
 
             <div class="form-group">
                 <label>Mensaje</label>
-                <textarea rows="4" placeholder="Cuéntanos cómo podemos ayudarte"></textarea>
+                <textarea name="mensaje" rows="4" placeholder="Cuéntanos cómo podemos ayudarte" required minlength="10"></textarea>
             </div>
 
             <button type="submit" class="btn-contacto">Enviar mensaje</button>
