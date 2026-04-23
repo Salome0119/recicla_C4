@@ -144,12 +144,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       <div class="campo full">
           <label for="titulo">Título de la jornada:</label>
-          <input type="text" id="titulo" name="titulo" required>
+          <input type="text" id="titulo" name="titulo" required minlength="3" maxlength="100">
       </div>
 
       <div class="campo full">
           <label for="descripcion">📝 Descripción:</label>
-          <textarea id="descripcion" name="descripcion" required></textarea>
+          <textarea id="descripcion" name="descripcion" required minlength="10" maxlength="500"></textarea>
       </div>
 
       <div class="campo">
@@ -164,18 +164,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       <div class="campo">
           <label for="barrio">🏘️ Barrio:</label>
-          <select id="barrio" name="barrio" required>
-              <option disabled selected>Selecciona un barrio</option>
-              <option>San José</option>
-              <option>El Poblado</option>
-              <option>La Esperanza</option>
-              <option>Villa Verde</option>
-          </select>
+          <input type="text" id="barrio" name="barrio" required pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-]+" title="Solo letras, números y guiones">
       </div>
 
       <div class="campo">
           <label for="direccion">📍 Dirección:</label>
-          <input type="text" id="direccion" name="direccion" required>
+          <input type="text" id="direccion" name="direccion" required minlength="5" maxlength="200">
       </div>
 
       <div class="campo">

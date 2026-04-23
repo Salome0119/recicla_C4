@@ -9,37 +9,38 @@
 
     <h2 class="title">➕ Agregar Usuario</h2>
 
-    <form method="POST" class="form-card">
+    <form method="POST" class="form-card" id="agregarUsuarioForm">
         {% csrf_token %}
 
         <label>Nombre</label>
-        <input type="text" name="nombre" required>
+        <input type="text" name="nombre" required minlength="2" maxlength="50" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" placeholder="Solo letras, 2-50 caracteres">
 
         <label>Apellido</label>
-        <input type="text" name="apellido" required>
+        <input type="text" name="apellido" required minlength="2" maxlength="50" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" placeholder="Solo letras, 2-50 caracteres">
 
         <label>Correo</label>
-        <input type="email" name="correo" required>
+        <input type="email" name="correo" required placeholder="correo@ejemplo.com">
 
         <label>Contraseña</label>
-        <input type="password" name="contrasena" required>
+        <input type="password" name="contrasena" required minlength="8" placeholder="Mínimo 8 caracteres">
 
         <label>Rol</label>
-        <select name="rol">
+        <select name="rol" required>
             <option value="residente">Residente</option>
             <option value="organizador">Organizador</option>
             <option value="administrador">Administrador</option>
         </select>
 
         <label>Estado</label>
-        <select name="estado">
+        <select name="estado" required>
             <option value="activo">Activo</option>
             <option value="suspendido">Suspendido</option>
         </select>
 
-        <button class="btn-save">Guardar</button>
+        <button class="btn-save" type="submit">Guardar</button>
     </form>
 
 </div>
 {% include 'administrador/footer.html' %}
+<script src="{% static 'js/validaciones.js' %}"></script>
 {% endblock %}

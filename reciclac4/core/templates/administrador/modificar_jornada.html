@@ -143,6 +143,52 @@
 <form method="POST" action="">
     {% csrf_token %}
     {{ form.as_p }}
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var titulo = document.querySelector('[name="titulo"]');
+        var descripcion = document.querySelector('[name="descripcion"]');
+        var direccion = document.querySelector('[name="direccion"]');
+        var barrio = document.querySelector('[name="barrio"]');
+        var tipo_material = document.querySelector('[name="tipo_material"]');
+        var cupo_maximo = document.querySelector('[name="cupo_maximo"]');
+        
+        if(titulo) { titulo.required = true; titulo.minLength = 3; titulo.maxLength = 100; }
+        if(descripcion) { descripcion.required = true; descripcion.minLength = 10; descripcion.maxLength = 500; }
+        if(direccion) { direccion.required = true; direccion.minLength = 5; direccion.maxLength = 200; }
+        if(barrio) { barrio.required = true; barrio.pattern = "[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\\s\\-]+"; }
+        if(tipo_material) { tipo_material.required = true; }
+        if(cupo_maximo) {cupo_maximo.required = true; }
+        
+        var form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            var hasError = false;
+            document.querySelectorAll('.error-message').forEach(function(el) { el.remove(); });
+            
+            if(titulo && titulo.value.trim().length < 3) {
+                hasError = true;
+                addErrorMessage(titulo, 'El título debe tener al menos 3 caracteres.');
+            }
+            if(descripcion && descripcion.value.trim().length < 10) {
+                hasError = true;
+                addErrorMessage(descripcion, 'La descripción debe tener al menos 10 caracteres.');
+            }
+            if(direccion && direccion.value.trim().length < 5) {
+                hasError = true;
+                addErrorMessage(direccion, 'La dirección debe tener al menos 5 caracteres.');
+            }
+            
+            if(hasError) { e.preventDefault(); }
+        });
+        
+        function addErrorMessage(field, message) {
+            var div = document.createElement('div');
+            div.className = 'error-message';
+            div.style.cssText = 'color: #E74C3C; font-size: 0.85rem; margin-top: 5px;';
+            div.textContent = message;
+            field.parentElement.appendChild(div);
+        }
+    });
+    </script>
     <button type="submit" class="btn">Guardar Cambios</button>
 </form>
 

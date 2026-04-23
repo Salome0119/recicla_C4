@@ -68,9 +68,12 @@ class Usuario(models.Model):
     def puede_acceder(self):
         """
         Verifica si el usuario puede iniciar sesión
+        No permite acceso a usuarios suspendidos ni rechazados
         Residentes: estado 'activo'
         Organizadores/Administradores: estado 'aprobado'
         """
+        if self.estado in ('suspendido', 'rechazado'):
+            return False
         if self.rol == "residente":
             return self.estado == "activo"
         else:
