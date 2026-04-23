@@ -11,21 +11,44 @@
 {% block cuerpo %}
 {% include 'organizador/header.html' %}
 
-<main class="page-container edu-page">
+<main class="edu-page">
 
     <!-- HERO -->
     <section class="edu-hero">
         <h1>🌱 Educación Ambiental</h1>
-        <p>Aprende a reciclar, reducir, reutilizar y transformar tu entorno en la Comuna 4.</p>
+        <p>Organiza, educca y moviliza a la comunidad. El reciclaje es responsabilidad de todos.</p>
     </section>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="edu-stats">
+        <div class="stat-card">
+            <span class="stat-icon">📊</span>
+            <span class="stat-number">12</span>
+            <div class="stat-label">jornadas este mes</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🌍</span>
+            <span class="stat-number">850kg</span>
+            <div class="stat-label">material recolectado</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">👥</span>
+            <span class="stat-number">180</span>
+            <div class="stat-label">familias participantes</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">♻️</span>
+            <span class="stat-number">68%</span>
+            <div class="stat-label">eficiencia de clasificación</div>
+        </div>
+    </div>
 
     <!-- POR QUÉ RECICLAR -->
     <section class="edu-section">
         <h2>♻ ¿Por qué reciclar?</h2>
         <p class="edu-intro">
-            El reciclaje es una de las acciones más simples y eficaces para proteger el medio ambiente.
-            Cada residuo separado correctamente ayuda a prevenir contaminación, reduce el consumo de recursos
-            naturales y fortalece nuestra economía comunitaria.
+            Como organizador, eres el puente entre la comunidad y el cambio ambiental. 
+            Tu labor educativa es fundamental para transformar hábitos y construir una Comuna 4 más limpia.
         </p>
 
         <div class="edu-grid">
@@ -38,7 +61,7 @@
             <div class="edu-card">
                 <div class="edu-icon">🔥</div>
                 <h3>Menos basura</h3>
-                <p>Cuando clasificamos adecuadamente, disminuimos los residuos que terminan en rellenos sanitarios o quemados.</p>
+                <p>Cuando clasificamos adecuadamente, disminuimos los residuos que terminan en rellenos sanitarios o quemados ilegalmente.</p>
             </div>
 
             <div class="edu-card">
@@ -55,34 +78,34 @@
         </div>
     </section>
 
-    <!-- COMO RECICLAR -->
+    <!-- CÓMO RECICLAR -->
     <section class="edu-section">
         <h2>📝 ¿Cómo reciclar correctamente?</h2>
 
         <div class="steps">
             <div class="step">
                 <span>1</span>
-                <p>Separa tus residuos: plástico, papel, cartón, vidrio y metal.</p>
+                <p><strong>Educa a la comunidad:</strong> Organiza talleres sobre separación en origen y beneficios del reciclaje.</p>
             </div>
 
             <div class="step">
                 <span>2</span>
-                <p>Lava y seca los envases para evitar malos olores y contaminación del material.</p>
+                <p><strong>Proporciona herramientas:</strong> Entrega bolsas identificadas y material educativo a cada familia.</p>
             </div>
 
             <div class="step">
                 <span>3</span>
-                <p>Aplasta botellas y cajas para reducir el volumen dentro de tu bolsa de reciclaje.</p>
+                <p><strong>Supervisa la clasificación:</strong> Verifica que el material llegue limpio, seco y bien separado.</p>
             </div>
 
             <div class="step">
                 <span>4</span>
-                <p>Deposita el material en bolsas transparentes y entrégalo en jornadas o puntos autorizados.</p>
+                <p><strong>Organiza jornadas:</strong> Programa fechas regulares y comunica los puntos de entrega.</p>
             </div>
 
             <div class="step">
                 <span>5</span>
-                <p>Evita mezclar residuos orgánicos con reciclables. Todo debe ir limpio.</p>
+                <p><strong>Da seguimiento:</strong> Lleva registros de toneladas recolectadas y familias participantes.</p>
             </div>
         </div>
     </section>
@@ -96,22 +119,27 @@
                 <h3>✔ Reciclables</h3>
                 <ul>
                     <li>Botellas PET (transparente, verde, azul)</li>
-                    <li>Papel y cartón secos</li>
-                    <li>Vidrio (frascos y botellas)</li>
-                    <li>Latas de aluminio</li>
-                    <li>Envases plásticos limpios</li>
-                    <li>Chatarra metálica</li>
+                    <li>Papel y cartón secos (sin grasa ni comida)</li>
+                    <li>Vidrio (frascos y botellas limpias)</li>
+                    <li>Latas de aluminio y latas de comida</li>
+                    <li>Envases plásticos limpios (código 1, 2, 5)</li>
+                    <li>Chatarra metálica limpia</li>
+                    <li>Tetrapak (cajas de jugo, leche)</li>
+                    <li>Revistas y periódicos en buen estado</li>
                 </ul>
             </div>
 
             <div class="no">
                 <h3>✘ No reciclables</h3>
                 <ul>
-                    <li>Servilletas o papeles contaminados</li>
-                    <li>Papel higiénico</li>
-                    <li>Icopor sucio o manchado</li>
+                    <li>Servilletas o papeles contaminados con comida</li>
+                    <li>Papel higiénico y toallas húmedas</li>
+                    <li>Icopor sucio o manchado (unicel)</li>
                     <li>Papel metalizado o aluminio delgado</li>
-                    <li>Desechos orgánicos</li>
+                    <li>Desechos orgánicos (comida, cáscaras)</li>
+                    <li>Pañales y productos sanitarios</li>
+                    <li>Cristal roto o cerámica</li>
+                    <li>Baterías y pilas (son residuos peligrosos)</li>
                 </ul>
             </div>
         </div>
@@ -119,40 +147,123 @@
 
     <!-- CONSEJOS -->
     <section class="edu-tips">
-        <h2>💡 Consejos rápidos</h2>
+        <h2>💡 Consejos para organizadores</h2>
 
         <div class="tips-list">
-
             <div class="tip-item">
-                <span>🍶</span>
-                <p>Usa poca agua para lavar los envases. Solo enjuaga ligeramente.</p>
+                <span>📢</span>
+                <p>Usa altoparlantes o redes sociales para recordar las fechas de jornadas.</p>
             </div>
 
             <div class="tip-item">
-                <span>🛍</span>
-                <p>Lleva tu propia bolsa reutilizable al mercado.</p>
+                <span>🎨</span>
+                <p>Crea afiches coloridos con iconos claros para cada tipo de material.</p>
             </div>
 
             <div class="tip-item">
-                <span>🌱</span>
-                <p>Comienza un pequeño compostaje en casa con tus residuos orgánicos.</p>
+                <span>🏆</span>
+                <p>Implementa un sistema de reconocimiento para las familias más consistentes.</p>
             </div>
 
             <div class="tip-item">
-                <span>📦</span>
-                <p>Guarda cajas y frascos para reutilizarlos en tu hogar.</p>
+                <span>📋</span>
+                <p>Lleva un registro diario de materiales recolectados por tipo y peso.</p>
             </div>
 
             <div class="tip-item">
-                <span>🚯</span>
-                <p>No tires colillas, chicles ni envolturas en la calle: también contaminan.</p>
+                <span>🤝</span>
+                <p>Aliate con escuelas locales para educación ambiental desde temprana edad.</p>
             </div>
 
             <div class="tip-item">
-                <span>👟</span>
-                <p>Dona ropa, calzado y objetos que aún pueden servir a otras personas.</p>
+                <span>🚛</span>
+                <p>Coordina con la alcaldía el transporte adecuado para materiales voluminosos.</p>
             </div>
+        </div>
+    </section>
 
+    <!-- HERRAMIENTAS DE ORGANIZADOR -->
+    <section class="edu-section">
+        <h2>🛠️ Herramientas para tu labor</h2>
+        <div class="edu-intro">
+            Como organizador, tienes acceso a herramientas especiales para monitorear y mejorar el proceso:
+        </div>
+        <div class="edu-grid">
+            <div class="edu-card">
+                <div class="edu-icon">📅</div>
+                <h3>Calendario</h3>
+                <p>Programa jornadas con anticipación y envía notificaciones automáticas a las familias.</p>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">📊</div>
+                <h3>Métricas</h3>
+                <p>Visualiza gráficos de progreso mensual y compara con meses anteriores.</p>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">🎓</div>
+                <h3>Capacitación</h3>
+                <p>Accede a módulos de capacitación para ti y tu equipo de trabajo.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="edu-faq">
+        <h2>❓ Preguntas frecuentes</h2>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Qué hago si una familia no separa bien?</div>
+            <div class="faq-answer">Visita el hogar, explica los beneficios y deja material educativo impreso con ejemplos visuales.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Cómo motivo a más familias?</div>
+            <div class="faq-answer">Organiza concursos de reciclaje con premios simbólicos: "Familia del Mes", reconocimientos públicos.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Qué registros debo llevar?</div>
+            <div class="faq-answer">Peso por tipo de material, número de familias, asistencia a jornadas y toneladas totales mensuales.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Puedo rechazar material sucio?</div>
+            <div class="faq-answer">Sí, el material debe entregarse limpio. Si llega contaminado, devuélvelo explicando por qué no se acepta.</div>
+        </div>
+    </section>
+
+    <!-- RECURSOS -->
+    <section class="edu-resources">
+        <h2>📚 Recursos adicionales</h2>
+
+        <div class="resources-grid">
+            <div class="resource-card">
+                <span>📄</span>
+                <h4>Manual del Organizador</h4>
+                <p>Guía completa con checklists, formatos de registro y scripts de capacitación comunitaria.</p>
+            </div>
+            <div class="resource-card">
+                <span>🎥</span>
+                <h4>Videos para talleres</h4>
+                <p>Biblioteca de videos cortos para proyectar en reuniones de vecinos y escuelas.</p>
+            </div>
+            <div class="resource-card">
+                <span>📱</span>
+                <h4>App de notificaciones</h4>
+                <p>Herramienta para enviar recordatorios masivos sobre jornadas y puntos de entrega.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACCIONES DE ORGANIZADOR -->
+    <section class="org-actions">
+        <h3>🛡️ Acciones de Organizador</h3>
+        <p>Gestiona las jornadas y supervisa el progreso de la comunidad:</p>
+        <div>
+            <a href="{% url 'organizador_creacion_jornadas' %}" class="btn-org-action">📅 Crear Jornada</a>
+            <a href="{% url 'organizador_asistencia' %}" class="btn-org-action">✅ Control de Asistencia</a>
+            <a href="{% url 'organizador_recoleccion' %}" class="btn-org-action">🚛 Recolección</a>
+            <a href="{% url 'organizador_educacion' %}" class="btn-org-action">📚 Educación</a>
         </div>
     </section>
 
