@@ -11,21 +11,45 @@
 {% block cuerpo %}
 {% include 'usuario/header.html' %}
 
-<main class="page-container edu-page">
+<main class="edu-page">
 
     <!-- HERO -->
     <section class="edu-hero">
         <h1>🌱 Educación Ambiental</h1>
-        <p>Aprende a reciclar, reducir, reutilizar y transformar tu entorno en la Comuna 4.</p>
+        <p>Descubre cómo pequeñas acciones en tu día a día pueden transformar la Comuna 4. ¡Involúcrate!</p>
     </section>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="edu-stats">
+        <div class="stat-card">
+            <span class="stat-icon">🌍</span>
+            <span class="stat-number">1.2M</span>
+            <div class="stat-label">toneladas de residuos al año</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">♻️</span>
+            <span class="stat-number">35%</span>
+            <div class="stat-label">podría reciclarse</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">💚</span>
+            <span class="stat-number">450</span>
+            <div class="stat-label">familias ya participan</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🌳</span>
+            <span class="stat-number">120</span>
+            <div class="stat-label">árboles salvados al mes</div>
+        </div>
+    </div>
 
     <!-- POR QUÉ RECICLAR -->
     <section class="edu-section">
         <h2>♻ ¿Por qué reciclar?</h2>
         <p class="edu-intro">
-            El reciclaje es una de las acciones más simples y eficaces para proteger el medio ambiente.
-            Cada residuo separado correctamente ayuda a prevenir contaminación, reduce el consumo de recursos
-            naturales y fortalece nuestra economía comunitaria.
+            El reciclaje es una de las acciones más simples y eficaces para proteger el medio ambiente. 
+            Cada residuo separado correctamente ayuda a prevenir contaminación, reduce el consumo de recursos 
+            naturales y fortalece nuestra economía comunitaria en la Comuna 4.
         </p>
 
         <div class="edu-grid">
@@ -55,34 +79,34 @@
         </div>
     </section>
 
-    <!-- COMO RECICLAR -->
+    <!-- CÓMO RECICLAR -->
     <section class="edu-section">
         <h2>📝 ¿Cómo reciclar correctamente?</h2>
 
         <div class="steps">
             <div class="step">
                 <span>1</span>
-                <p>Separa tus residuos: plástico, papel, cartón, vidrio y metal.</p>
+                <p><strong>Separa en origen:</strong> Diferencia plástico, papel, cartón, vidrio y metal en bolsas separadas desde tu hogar.</p>
             </div>
 
             <div class="step">
                 <span>2</span>
-                <p>Lava y seca los envases para evitar malos olores y contaminación del material.</p>
+                <p><strong>Limpieza básica:</strong> Lava y seca los envases para evitar malos olores y contaminación del material reciclable.</p>
             </div>
 
             <div class="step">
                 <span>3</span>
-                <p>Aplasta botellas y cajas para reducir el volumen dentro de tu bolsa de reciclaje.</p>
+                <p><strong>Reduce volumen:</strong> Aplasta botellas y cajas para optimizar el espacio en tu bolsa de reciclaje.</p>
             </div>
 
             <div class="step">
                 <span>4</span>
-                <p>Deposita el material en bolsas transparentes y entrégalo en jornadas o puntos autorizados.</p>
+                <p><strong>Entrega responsable:</strong> Deposita el material en bolsas transparentes y entrégalo en jornadas o puntos autorizados.</p>
             </div>
 
             <div class="step">
                 <span>5</span>
-                <p>Evita mezclar residuos orgánicos con reciclables. Todo debe ir limpio.</p>
+                <p><strong>Evita contaminación:</strong> No mezcles residuos orgánicos con reciclables. Todo debe ir limpio y seco.</p>
             </div>
         </div>
     </section>
@@ -96,22 +120,27 @@
                 <h3>✔ Reciclables</h3>
                 <ul>
                     <li>Botellas PET (transparente, verde, azul)</li>
-                    <li>Papel y cartón secos</li>
-                    <li>Vidrio (frascos y botellas)</li>
-                    <li>Latas de aluminio</li>
-                    <li>Envases plásticos limpios</li>
-                    <li>Chatarra metálica</li>
+                    <li>Papel y cartón secos (sin grasa ni comida)</li>
+                    <li>Vidrio (frascos y botellas limpias)</li>
+                    <li>Latas de aluminio y latas de comida</li>
+                    <li>Envases plásticos limpios (código 1, 2, 5)</li>
+                    <li>Chatarra metálica limpia</li>
+                    <li>Tetrapak (cajas de jugo, leche)</li>
+                    <li>Revistas y periódicos en buen estado</li>
                 </ul>
             </div>
 
             <div class="no">
                 <h3>✘ No reciclables</h3>
                 <ul>
-                    <li>Servilletas o papeles contaminados</li>
-                    <li>Papel higiénico</li>
-                    <li>Icopor sucio o manchado</li>
+                    <li>Servilletas o papeles contaminados con comida</li>
+                    <li>Papel higiénico y toallas húmedas</li>
+                    <li>Icopor sucio o manchado (unicel)</li>
                     <li>Papel metalizado o aluminio delgado</li>
-                    <li>Desechos orgánicos</li>
+                    <li>Desechos orgánicos (comida, cáscaras)</li>
+                    <li>Pañales y productos sanitarios</li>
+                    <li>Cristal roto o cerámica</li>
+                    <li>Baterías y pilas (son residuos peligrosos)</li>
                 </ul>
             </div>
         </div>
@@ -119,40 +148,123 @@
 
     <!-- CONSEJOS -->
     <section class="edu-tips">
-        <h2>💡 Consejos rápidos</h2>
+        <h2>💡 Consejos rápidos para el día a día</h2>
 
         <div class="tips-list">
-
             <div class="tip-item">
-                <span>🍶</span>
-                <p>Usa poca agua para lavar los envases. Solo enjuaga ligeramente.</p>
+                <span>🚿</span>
+                <p>Usa poca agua para lavar los envases. Solo enjuaga ligeramente para ahorrar este recurso.</p>
             </div>
 
             <div class="tip-item">
-                <span>🛍</span>
-                <p>Lleva tu propia bolsa reutilizable al mercado.</p>
+                <span>🛍️</span>
+                <p>Lleva tu propia bolsa reutilizable al mercado y evita usar bolsas plásticas.</p>
             </div>
 
             <div class="tip-item">
                 <span>🌱</span>
-                <p>Comienza un pequeño compostaje en casa con tus residuos orgánicos.</p>
+                <p>Comienza un pequeño compostaje en casa con tus residuos orgánicos (cáscaras, posos de café).</p>
             </div>
 
             <div class="tip-item">
                 <span>📦</span>
-                <p>Guarda cajas y frascos para reutilizarlos en tu hogar.</p>
+                <p>Guarda cajas y frascos para reutilizarlos en tu hogar para organización.</p>
             </div>
 
             <div class="tip-item">
                 <span>🚯</span>
-                <p>No tires colillas, chicles ni envolturas en la calle: también contaminan.</p>
+                <p>No tires colillas, chicles ni envolturas en la calle: también contaminan el suelo.</p>
             </div>
 
             <div class="tip-item">
                 <span>👟</span>
-                <p>Dona ropa, calzado y objetos que aún pueden servir a otras personas.</p>
+                <p>Dona ropa, calzado y objetos que aún pueden servir a otras personas de la comuna.</p>
             </div>
+        </div>
+    </section>
 
+    <!-- BENEFICIOS -->
+    <section class="edu-section">
+        <h2>🎁 Beneficios de reciclar</h2>
+        <div class="edu-intro">
+            Al aprender y practicar el reciclaje, obtendrás beneficios para ti y tu familia:
+        </div>
+        <div class="edu-grid">
+            <div class="edu-card">
+                <div class="edu-icon">⭐</div>
+                <h3>Puntos canjeables</h3>
+                <p>Acumula puntos por cada kilogramo entregado y canjealos por recompensas en el sistema.</p>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">🏆</div>
+                <h3>Reconocimiento</h3>
+                <p>Las familias destacadas aparecen en el muro de honor de la comuna.</p>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">📚</div>
+                <h3>Educación</h3>
+                <p>Acceso a talleres gratuitos sobre huertos urbanos y compostaje casero.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="edu-faq">
+        <h2>❓ Preguntas frecuentes</h2>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Dónde puedo llevar mis reciclables?</div>
+            <div class="faq-answer">Puedes llevarlos a las jornadas programadas o a los puntos verdes autorizados. Consulta la sección de jornadas para ver fechas y ubicaciones.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Los recuperadores cobran por recolectar?</div>
+            <div class="faq-answer">No, el servicio de recolección y acopio es gratuito para las familias participantes de la Comuna 4.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Qué hago con las pilas y baterías?</div>
+            <div class="faq-answer">Las pilas y baterías son residuos peligrosos. Llévalas a puntos especiales de acopio de materiales peligrosos, no las mezcles con reciclables comunes.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Puedo reciclar cartón pizza?</div>
+            <div class="faq-answer">No, el cartón con grasa o comida no es reciclable. Descarta las partes sucias y solo recicla las partes limpias.</div>
+        </div>
+    </section>
+
+    <!-- RECURSOS -->
+    <section class="edu-resources">
+        <h2>📚 Recursos adicionales</h2>
+
+        <div class="resources-grid">
+            <div class="resource-card">
+                <span>📄</span>
+                <h4>Guía de separación</h4>
+                <p>Descarga nuestra guía PDF completa con ilustraciones de cómo separar cada tipo de material en casa.</p>
+            </div>
+            <div class="resource-card">
+                <span>🎥</span>
+                <h4>Videos educativos</h4>
+                <p>Accede a nuestra biblioteca de videos sobre técnicas de clasificación y compostaje casero.</p>
+            </div>
+            <div class="resource-card">
+                <span>📱</span>
+                <h4>App móvil</h4>
+                <p>Descarga nuestra aplicación para recibir recordatorios de jornadas y tips diarios de reciclaje.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACCIONES DE USUARIO -->
+    <section class="usuario-actions">
+        <h3>🏡 Únete a la comunidad</h3>
+        <p>Forma parte del cambio en la Comuna 4:</p>
+        <div>
+            <a href="{% url 'usuario_registro' %}" class="btn-usuario-action">📝 Registrate</a>
+            <a href="{% url 'usuario_educacion' %}" class="btn-usuario-action">📚 Educación</a>
+            <a href="{% url 'usuario_jornadas' %}" class="btn-usuario-action">📅 Jornadas</a>
+            <a href="{% url 'usuario_contacto' %}" class="btn-usuario-action">📞 Contacto</a>
         </div>
     </section>
 
