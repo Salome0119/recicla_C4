@@ -286,3 +286,19 @@ class CanjeRecompensa(models.Model):
     def __str__(self):
         return f"{self.usuario.nombre} - {self.recompensa.titulo}"
 
+# class ContactMessage(models.Model):
+#     nombre = models.CharField(max_length=100)
+#     correo = models.EmailField()
+#     mensaje = models.TextField()
+#     fecha = models.DateTimeField(auto_now_add=True)
+#     rol = models.CharField(max_length=20, blank=True)  # rol que envía el mensaje
+#     leido = models.BooleanField(default=False)
+
+#     class Meta:
+#         db_table = 'core_contact_message'
+#         ordering = ['-fecha']
+#         managed = True
+
+#     def __str__(self):
+#         return f"{self.nombre} - {self.correo}"
+
