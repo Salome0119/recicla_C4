@@ -42,6 +42,11 @@
     border-bottom: 1px solid #ddd;
 }
 
+.users-table th:last-child,
+.users-table td:last-child {
+    min-width: 260px;
+}
+
 .btn-edit, .btn-delete, .btn-view {
     padding: 6px 10px;
     border-radius: 8px;
@@ -73,9 +78,10 @@
 /* Contenedor de acciones en tabla */
 .actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 6px;
     align-items: center;
+    white-space: nowrap;
 }
 
 /* Botones de acción rápida */
@@ -134,13 +140,13 @@
 /* Responsive */
 @media (max-width: 768px) {
     .actions {
-        flex-direction: column;
-        align-items: stretch;
+        flex-wrap: nowrap;
     }
     
     .actions a {
-        text-align: center;
-        margin: 2px 0;
+        margin: 2px 4px 2px 0;
+        font-size: 12px;
+        padding: 4px 8px;
     }
     
     .controls {
@@ -158,6 +164,7 @@
     
     .users-table {
         font-size: 14px;
+        min-width: 600px;
     }
     
     .users-table th, .users-table td {
