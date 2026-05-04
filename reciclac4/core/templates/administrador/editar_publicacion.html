@@ -1,0 +1,372 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+{% endblock %}
+
+{% block cuerpo %}
+
+<style>
+    /* ==============================================
+       EDITAR PUBLICACIÓN - DISEÑO MODERNO
+       ============================================== */
+
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .page-header p {
+        color: #7f8c8d;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .publication-meta {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .publication-meta .label {
+        font-size: 0.85rem;
+        opacity: 0.85;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .publication-meta .value {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Contenedor del formulario */
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .form-section {
+        margin-bottom: 28px;
+    }
+
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .required-star {
+        color: #e74c3c;
+        font-size: 1rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 14px 16px;
+        border: 2px solid #e8f0f7;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background: #fdfdfd;
+        font-family: inherit;
+        line-height: 1.5;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 12px rgba(102, 126, 234, 0.25);
+        outline: none;
+    }
+
+    .form-group textarea {
+        min-height: 180px;
+        resize: vertical;
+    }
+
+    .form-group-hint {
+        font-size: 0.8rem;
+        color: #95a5a6;
+        margin-top: 6px;
+        margin-bottom: 0;
+    }
+
+    /* Caracteres restantes */
+    .char-counter {
+        text-align: right;
+        font-size: 0.8rem;
+        color: #95a5a6;
+        margin-top: 4px;
+    }
+
+    /* Botones */
+    .form-actions {
+        display: flex;
+        gap: 14px;
+        justify-content: flex-start;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #eee;
+    }
+
+    .btn {
+        padding: 14px 28px;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 160px;
+        justify-content: center;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+        background: #ecf0f1;
+        color: #7f8c8d;
+        border: 1px solid #dfe6e9;
+    }
+
+    .btn-secondary:hover {
+        background: #dfe6e9;
+        color: #2c3e50;
+        transform: translateY(-1px);
+    }
+
+    /* Badge de estado */
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    .status-published {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-draft {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    /* Vista previa del contenido */
+    .content-preview {
+        background: #f8f9fa;
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: #555;
+        line-height: 1.6;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .form-container {
+            padding: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .publication-meta {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+{% include 'administrador/header.html' %}
+
+<main class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1>✏️ Editar Publicación</h1>
+        <p>Modifica el título y contenido de la publicación.</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="form-container">
+
+        <!-- Metadatos de la publicación -->
+        <div class="publication-meta">
+            <div>
+                <div class="label">Publicación ID</div>
+                <div class="value">#{{ publicacion.id_tema }}</div>
+            </div>
+            <div>
+                <div class="label">Creada por</div>
+                <div class="value">{{ publicacion.id_usuario.nombre }} {{ publicacion.id_usuario.apellido }}</div>
+            </div>
+            <div>
+                <div class="label">Fecha de creación</div>
+                <div class="value">{{ publicacion.fecha_publicacion|date:"d/m/Y H:i" }}</div>
+            </div>
+        </div>
+
+        <!-- Mensajes de error -->
+        {% if messages %}
+            {% for message in messages %}
+                <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
+                    background: {% if message.tags == 'error' %}#fdecea{% else %}#e8f5e9{% endif %};
+                    color: {% if message.tags == 'error' %}#c0392b{% else %}#27ae60{% endif %};
+                    border: 1px solid {% if message.tags == 'error' %}#f5c6cb{% else %}#a3d9a5{% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="">
+            {% csrf_token %}
+
+            <!-- Título -->
+            <div class="form-group">
+                <label for="titulo">
+                    📌 Título de la publicación <span class="required-star">*</span>
+                </label>
+                <input type="text"
+                       id="titulo"
+                       name="titulo"
+                       value="{{ publicacion.titulo }}"
+                       required
+                       minlength="3"
+                       maxlength="100"
+                       placeholder="Escribe un título claro y conciso">
+                <span class="form-group-hint">Mínimo 3 caracteres • Máximo 100</span>
+            </div>
+
+            <!-- Contenido -->
+            <div class="form-group">
+                <label for="contenido">
+                    💬 Contenido <span class="required-star">*</span>
+                </label>
+                <textarea id="contenido"
+                          name="contenido"
+                          required
+                          minlength="10"
+                          maxlength="1000"
+                          rows="10"
+                          placeholder="Escribe el contenido completo de la publicación...">{{ publicacion.contenido }}</textarea>
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="form-group-hint">Mínimo 10 caracteres • Máximo 1000</span>
+                    <span class="char-counter" id="charCounter">0/1000</span>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    💾 Guardar Cambios
+                </button>
+                <a href="{% url 'admi_foro_publicaciones' %}" class="btn btn-secondary">
+                    ↩️ Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+// Contador de caracteres para el textarea
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('contenido');
+    const counter = document.getElementById('charCounter');
+
+    if (textarea && counter) {
+        const maxLength = textarea.maxLength;
+
+        function updateCounter() {
+            const currentLength = textarea.value.length;
+            counter.textContent = `${currentLength}/${maxLength}`;
+
+            // Cambiar color si se acerca al límite
+            if (currentLength > maxLength * 0.9) {
+                counter.style.color = '#e74c3c';
+            } else if (currentLength > maxLength * 0.75) {
+                counter.style.color = '#f39c12';
+            } else {
+                counter.color = '#95a5a6';
+            }
+        }
+
+        textarea.addEventListener('input', updateCounter);
+        updateCounter(); // Valor inicial
+    }
+});
+</script>
+
+{% include 'administrador/footer.html' %}
+
+{% endblock %}

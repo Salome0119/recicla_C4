@@ -8,124 +8,276 @@
 
 {% block cuerpo %}
 
-
+<!-- Mensajes de feedback -->
+{% if messages %}
+<div id="mensajes-formulario" style="margin-top: 20px; margin-bottom: 20px; padding: 0 20px;">
+    {% for message in messages %}
+    <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 12px;
+        background: {% if message.tags == 'error' %}#fdecea{% else %}#e8f5e9{% endif %};
+        color: {% if message.tags == 'error' %}#c0392b{% else %}#27ae60{% endif %};
+        border: 1px solid {% if message.tags == 'error' %}#f5c6cb{% else %}#a3d9a5{% endif %};">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 <style>
-    /* ====== ESTILOS DE LOS BOTONES DE INTERACCIÓN ====== */
+    /* ==============================================
+       HISTORIAL DE PUBLICACIONES - SOLO LISTADO
+       ============================================== */
 
-    .foro-actions {
-        margin-top: 15px;
-        padding: 12px;
-        background: #f8f8f8;
-        border-radius: 8px;
+    .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        border: 1px solid #e0e0e0;
-        margin-bottom: 80px;
+        margin-bottom: 24px;
     }
 
-    .foro-reacciones button,
-    .foro-otros button {
-        padding: 8px 14px;
+    .page-header h1 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.6rem;
+    }
+
+    .btn-nueva-publicacion {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: 0.2s ease;
+        box-shadow: 0 3px 8px rgba(17, 153, 142, 0.25);
+    }
+
+    .btn-nueva-publicacion:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(17, 153, 142, 0.35);
+    }
+
+    /* Lista de publicaciones */
+    .pub-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .pub-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        padding: 20px 24px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .pub-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .pub-card h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.2rem;
+        color: #2c3e50;
+        line-height: 1.35;
+    }
+
+    .pub-body {
+        color: #555;
+        font-size: 0.95rem;
+        line-height: 1.65;
+        max-height: 150px;
+        overflow-y: auto;
+        margin-bottom: 12px;
+        padding-right: 8px;
+    }
+
+    /* Barra de meta información */
+    .pub-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.82rem;
+        color: #95a5a6;
+        padding-top: 12px;
+        border-top: 1px solid #ececec;
+        margin-bottom: 12px;
+    }
+
+    /* Botones de acción */
+    .pub-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-editar, .btn-eliminar {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 14px;
         border: none;
         border-radius: 6px;
-        margin-right: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
         cursor: pointer;
-        font-size: 14px;
-        transition: 0.2s ease;
+        transition: all 0.2s;
     }
 
-    .btn-like {
-        background: #e1f3ff;
+    .btn-editar {
+        background: #e8f4fd;
+        color: #2980b9;
     }
-    .btn-like:hover {
-        background: #c8e7ff;
-    }
-
-    .btn-dislike {
-        background: #ffe3e3;
-    }
-    .btn-dislike:hover {
-        background: #ffc7c7;
+    .btn-editar:hover {
+        background: #d0e8f9;
+        transform: translateY(-1px);
     }
 
-    .btn-love {
-        background: #ffe2f0;
+    .btn-eliminar {
+        background: #fdedec;
+        color: #c0392b;
     }
-    .btn-love:hover {
-        background: #ffc8e2;
-    }
-
-    .btn-comentar {
-        background: #f2f2f2;
-    }
-    .btn-comentar:hover {
-        background: #e0e0e0;
+    .btn-eliminar:hover {
+        background: #fcebe9;
+        transform: translateY(-1px);
     }
 
-    .btn-denunciar {
-        background: #ffeacc;
-        color: #b33a00;
-        font-weight: bold;
+    /* Estado vacío */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #bdc3c7;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    .btn-denunciar:hover {
-        background: #ffd8a1;
+    .empty-state h3 {
+        font-size: 1.35rem;
+        margin-bottom: 8px;
+        color: #95a5a6;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .pub-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .pub-actions {
+            width: 100%;
+        }
+
+        .btn-editar, .btn-eliminar {
+            flex: 1;
+            justify-content: center;
+        }
     }
 </style>
-
 
 {% include "administrador/header.html" %}
 
 <main class="page-container foro-page">
 
-    <section class="foro-hero">
-        <h1>💬 Foro Comunitario</h1>
-        <p>Publicaciones realizadas por los administradores y organizadores de la Comuna 4.</p>
-    </section>
+    <!-- Header con título y botón Nueva Publicación -->
+    <div class="page-header">
+        <h1>📋 Historial de Publicaciones</h1>
+        <a href="{% url 'admi_publicacion_foro' %}" class="btn-nueva-publicacion">
+            ✏️ Nueva Publicación
+        </a>
+    </div>
 
-    <section class="foro-lista">
+    <!-- Lista de publicaciones -->
+    <div class="pub-list">
         {% if publicaciones %}
             {% for pub in publicaciones %}
-            <div class="foro-card">
+            <article class="pub-card">
                 <h3>{{ pub.titulo }}</h3>
-
-                <p class="foro-contenido">
+                <div class="pub-body">
                     {{ pub.contenido|linebreaksbr }}
-                </p>
-
-                <div class="foro-footer">
+                </div>
+                <div class="pub-meta">
                     <span>👤 {{ pub.id_usuario.nombre }} {{ pub.id_usuario.apellido }}</span>
                     <span>📅 {{ pub.fecha_publicacion|date:"d/m/Y H:i" }}</span>
                 </div>
-            </div>
-
-            <!-- 🔽 Botones por FUERA de la tarjeta -->
-            <div class="foro-actions">
-
-                <div class="foro-reacciones">
-                    <button class="btn-like">👍 Me gusta</button>
-                    <button class="btn-dislike">👎 No me gusta</button>
-                    <button class="btn-love">❤️ Me encanta</button>
+                <div class="pub-actions">
+                    <a href="{% url 'admi_editar_publicacion' pub.id_tema %}"
+                       class="btn-editar">✏️ Editar</a>
+                    <button type="button"
+                            onclick="confirmarEliminacion(event, '{{ pub.id_tema }}', '{{ pub.titulo|escapejs }}', '{% url 'admi_eliminar_publicacion' pub.id_tema %}')"
+                            class="btn-eliminar">
+                        🗑️ Eliminar
+                    </button>
                 </div>
-
-                <div class="foro-otros">
-                    <button class="btn-comentar">💬 Comentar</button>
-                    <button class="btn-denunciar">🚫 Denunciar contenido</button>
-                </div>
-
-            </div>
-
+            </article>
             {% endfor %}
         {% else %}
-            <p class="no-pub">No hay publicaciones en el foro.</p>
+            <div class="empty-state">
+                <h3>📭 No hay publicaciones</h3>
+                <p>No se han creado publicaciones aún. Haz clic en "Nueva Publicación" para crear una.</p>
+            </div>
         {% endif %}
-    </section>
-
+    </div>
 </main>
 
+<!-- ==================== MODAL ELIMINAR ==================== -->
+<div id="modal-eliminar"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:white; padding:30px; border-radius:14px; max-width:420px; width:92%; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.25);">
+        <h3 style="color:#c0392b; margin:0 0 14px 0; font-size:1.3rem;">⚠️ Confirmar Eliminación</h3>
+        <p id="mensaje-eliminar" style="margin:0 0 24px 0; color:#555; line-height:1.5;"></p>
+        <div style="display:flex; gap:12px; justify-content:center;">
+            <button type="button"
+                    onclick="cerrarModal()"
+                    style="padding:10px 22px; background:#95a5a6; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+                Cancelar
+            </button>
+            <form id="form-eliminar"
+                  method="post"
+                  style="display:inline; margin:0;">
+                {% csrf_token %}
+                <button type="submit"
+                        style="padding:10px 22px; background:#E74C3C; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+                    Eliminar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
 
+<script>
+function confirmarEliminacion(event, idPublicacion, titulo, urlEliminar) {
+    event.preventDefault();
+    const modal   = document.getElementById('modal-eliminar');
+    const mensaje = document.getElementById('mensaje-eliminar');
+    const form    = document.getElementById('form-eliminar');
+
+    mensaje.textContent = `¿Eliminar "${titulo}"? Esta acción no se puede deshacer.`;
+    form.action = urlEliminar;
+    modal.style.display = 'flex';
+}
+
+function cerrarModal() {
+    document.getElementById('modal-eliminar').style.display = 'none';
+}
+
+// Cerrar modal al hacer clic fuera del contenido
+document.getElementById('modal-eliminar').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModal();
+});
+</script>
 
 {% include "administrador/footer.html" %}
 

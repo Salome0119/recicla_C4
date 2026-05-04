@@ -1,0 +1,328 @@
+/* ============================
+   ASISTENCIA - Attendance Records
+   ============================ */
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 24px;
+    padding-top: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 16px;
+}
+
+.filters-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--dark);
+    background: white;
+    transition: all 0.2s;
+}
+
+select:focus {
+    border-color: #27ae60;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(39,174,96,0.1);
+}
+
+.jornada-info {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    padding: 20px 24px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.jornada-info h2 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.jornada-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
+
+.jornada-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.info-puntos {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #27ae60;
+}
+
+.inscrito-card {
+    background: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #eee;
+    transition: all 0.2s;
+}
+
+.inscrito-card:hover {
+    border-color: #27ae60;
+    box-shadow: 0 2px 8px rgba(39,174,96,0.15);
+}
+
+.inscrito-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.inscrito-info {
+    flex: 1;
+}
+
+.inscrito-nombre {
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 1.05rem;
+}
+
+.inscrito-email {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 2px;
+}
+
+.badge-rol {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.badge-residente {
+    background: #e8f5e9;
+    color: #27ae60;
+}
+
+.badge-organizador {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.inscrito-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.checkbox-presente {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-presente input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #27ae60;
+}
+
+.puntos-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 80px;
+    text-align: center;
+}
+
+.puntos-pendiente {
+    background: #f5f5f5;
+    color: #888;
+}
+
+.puntos-asignado {
+    background: #e8f5e9;
+    color: #27ae60;
+}
+
+.obs-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--dark);
+    transition: border-color 0.2s;
+}
+
+.obs-input-wide {
+    width: 180px;
+}
+
+.obs-input:focus {
+    border-color: #27ae60;
+    outline: none;
+}
+
+.btn-guardar {
+    background: var(--primary, #27ae60);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-guardar:hover {
+    background: var(--secondary, #219150);
+    transform: translateY(-2px);
+}
+
+.form-actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-validar {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-validar:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.page-container {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapper {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .filters-row {
+        flex-direction: column;
+    }
+    .filter-group {
+        width: 100%;
+    }
+    .jornada-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    .inscrito-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    .inscrito-actions {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.validacion-info {
+    color: #e74c3c;
+    font-size: 0.9rem;
+}

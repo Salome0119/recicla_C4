@@ -731,6 +731,40 @@ def admi_publicacion_foro(request):
             messages.error(request, f"Error al guardar la publicación: {e}")
 
     return render(request, "administrador/publicacion_foro.html")
+
+@rol_required('administrador')
+def admi_editar_publicacion(request, publicacion_id):
+    publicacion = get_object_or_404(TemaForo, id_tema=publicacion_id)
+    
+    if request.method == "POST":
+        titulo = request.POST.get("titulo")
+        contenido = request.POST.get("contenido")
+        
+        if titulo and contenido:
+            publicacion.titulo = titulo
+            publicacion.contenido = contenido
+            publicacion.save()
+            messages.success(request, "✅ Publicación actualizada correctamente.")
+            return redirect('admi_foro_publicaciones')
+        else:
+            messages.error(request, "El título y el contenido son obligatorios.")
+    
+    return render(request, "administrador/editar_publicacion.html", {
+        "publicacion": publicacion
+    })
+
+@rol_required('administrador')
+def admi_eliminar_publicacion(request, publicacion_id):
+    publicacion = get_object_or_404(TemaForo, id_tema=publicacion_id)
+    
+    if request.method == "POST":
+        titulo = publicacion.titulo
+        publicacion.delete()
+        messages.success(request, f"✅ Publicación '{titulo}' eliminada correctamente.")
+        return redirect('admi_foro_publicaciones')
+    
+    return redirect('admi_foro_publicaciones')
+
 @rol_required('administrador')
 def admi_recoleccion(request):
     return render(request, "administrador/recoleccion.html")
@@ -1562,25 +1596,7 @@ def _validar_datos_jornada(request, datos, organizador, jornada_actual=None):
     try:
         cupo_maximo = int(datos.get("cupo_maximo"))
     except (TypeError, ValueError):
-        messages.error(request, "El cupo maximo debe ser un numero valido.")
-        return False
-
-    if cuota_maximo < 1:
-        messages.error(request, "El cupo maximo debe ser al menos 1.")
-        return False
-    if cuota_maximo > 1000:
-        messages.error(request, "El cupo maximo no puede exceder 1000.")
-        return False
-
-    descripcion = str(datos.get("descripcion", "")).strip()
-    if len(descripcion) < 10:
-        messages.error(request, "La descripcion debe contener minimo 10 caracteres.")
-        return False
-
-    try:
-        cupo_maximo = int(datos.get("cupo_maximo"))
-    except (TypeError, ValueError):
-        messages.error(request, "El cupo maximo debe ser un numero valido.")
+        messages.error(request, "El cupo maximo debe be un numero valido.")
         return False
 
     if cupo_maximo < 5 or cupo_maximo > 50:
@@ -2050,46 +2066,36 @@ def admi_modificar_jornada(request, jornada_id):
 # ---------------------------
 @rol_required('residente')
 def residente_lista_jornadas(request):
-    from django.core.paginator import Paginator
-    
-    usuario_id = request.session.get("usuario_id")
-    filtro = request.GET.get('filtro', '')
-    
-    jornadas_query = Jornada.objects.filter(
-        estado='activa'
-    ).order_by('fecha')
-    
-    if filtro == 'inscrito':
-        ids_inscritos = Inscripcion.objects.filter(
-            usuario_id=usuario_id, 
-            estado='activa'
-        ).values_list('jornada_id', flat=True)
-        jornadas_query = jornadas_query.filter(id_jornada__in=ids_inscritos)
-    elif filtro == 'no_inscrito':
-        ids_inscritos = Inscripcion.objects.filter(
-            usuario_id=usuario_id, 
-            estado='activa'
-        ).values_list('jornada_id', flat=True)
-        jornadas_query = jornadas_query.exclude(id_jornada__in=ids_inscritos)
-    
-    jornadas = list(jornadas_query)
-    
-    for j in jornadas:
-        j.inscritos_activos = Inscripcion.objects.filter(
-            jornada=j, estado='activa'
-        ).count()
-        j.esta_inscrito = Inscripcion.objects.filter(
-            jornada=j, usuario_id=usuario_id, estado='activa'
-        ).exists()
-
-    paginator = Paginator(jornadas, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    return render(request, "residente/lista_jornadas.html", {
-        "jornadas": page_obj,
-        "filtro": filtro
-    })
+     from django.core.paginator import Paginator
+     from django.db.models import Count, Exists, OuterRef
+     
+     usuario_id = request.session.get("usuario_id")
+     filtro = request.GET.get('filtro', '')
+     
+     jornadas_query = Jornada.objects.filter(
+         estado='activa'
+     ).annotate(
+         inscritos_activos=Count('inscripcion', filter=models.Q(inscripcion__estado='activa')),
+         esta_inscrito=Exists(Inscripcion.objects.filter(
+             jornada=OuterRef('pk'),
+             usuario_id=usuario_id,
+             estado='activa'
+         ))
+     ).order_by('fecha')
+     
+     if filtro == 'inscrito':
+         jornadas_query = jornadas_query.filter(esta_inscrito=True)
+     elif filtro == 'no_inscrito':
+         jornadas_query = jornadas_query.filter(esta_inscrito=False)
+ 
+     paginator = Paginator(jornadas_query, 10)
+     page_number = request.GET.get('page')
+     page_obj = paginator.get_page(page_number)
+ 
+     return render(request, "residente/lista_jornadas.html", {
+         "jornadas": page_obj,
+         "filtro": filtro
+     })
 
 @rol_required('residente')
 def residente_ver_jornada(request, id_jornada):
@@ -3127,9 +3133,12 @@ def _enviar_notificaciones_automaticas_jornada(jornada, accion):
     if not barrio:
         return 0
 
+    # Obtener residentes activos del mismo barrio con preferencias de notificación web
     residentes = Usuario.objects.filter(
         rol="residente",
         estado="activo",
+        barrio__iexact=barrio,
+        canal_notificacion_web=True
     )
 
     fecha_jornada = "por definir"
@@ -3162,32 +3171,41 @@ def _enviar_notificaciones_automaticas_jornada(jornada, accion):
         f"Fecha: {fecha_jornada}. Hora: {hora_jornada}. Direccion: {jornada.direccion or 'Por definir'}."
     )
 
-    enviados = 0
-    for residente in residentes:
-        if (getattr(residente, "barrio", "") or "").strip().lower() != barrio.lower():
-            continue
+    notificaciones = []
+    enviados_correo = 0
 
-        canales = _canales_notificacion_usuario(residente)
-
+    for residente in residentes.iterator(chunk_size=100):
+        canales = ['web']  # Siempre incluir web si tienen canal_notificacion_web=True
+        if getattr(residente, 'canal_notificacion_correo', False) and residente.correo:
+            canales.append('correo')
+        
         for canal in canales:
-            Notificacion.objects.create(
-                usuario=residente,
-                tipo="jornada",
-                canal=canal,
-                mensaje=mensaje,
-            )
-            enviados += 1
-
-            if canal == "correo" and residente.correo:
-                send_mail(
-                    subject=f"Jornada {accion_texto}: {jornada.titulo}",
-                    message=mensaje,
-                    from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
-                    recipient_list=[residente.correo],
-                    fail_silently=True,
+            notificaciones.append(
+                Notificacion(
+                    usuario=residente,
+                    tipo="jornada",
+                    canal=canal,
+                    mensaje=mensaje,
                 )
+            )
+            if canal == "correo":
+                try:
+                    send_mail(
+                        subject=f"Jornada {accion_texto}: {jornada.titulo}",
+                        message=mensaje,
+                        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                        recipient_list=[residente.correo],
+                        fail_silently=True,
+                    )
+                    enviados_correo += 1
+                except Exception:
+                    pass
 
-    return enviados
+    # Crear todas las notificaciones en lote
+    if notificaciones:
+        Notificacion.objects.bulk_create(notificaciones, batch_size=1000)
+
+    return enviados_correo + len(notificaciones)
 
 
 def _asegurar_notificaciones_jornadas_usuario(usuario):
@@ -3268,34 +3286,56 @@ def _enviar_notificaciones_automaticas_foro(publicacion, autor=None):
     if not publicacion:
         return 0
 
-    destinatarios = Usuario.objects.filter(estado="activo")
+    # Obtener destinatarios activos (residentes y organizadores) excluyendo el autor
+    # Solo usuarios con preferencia de notificaciones web activa
+    destinatarios = Usuario.objects.filter(
+        estado="activo",
+        canal_notificacion_web=True
+    ).exclude(rol="administrador")  # Opcional: excluir admin si no les interesa
+    
     if autor and getattr(autor, "id_usuario", None):
         destinatarios = destinatarios.exclude(id_usuario=autor.id_usuario)
 
     mensaje = f"Hay una nueva publicacion en el foro: {publicacion.titulo}."
-    enviados = 0
+    notificaciones = []
+    enviados_correo = 0
 
-    for usuario in destinatarios:
-        canales = _canales_notificacion_usuario(usuario)
+    # Procesar en lotes para evitar carga de memoria
+    for usuario in destinatarios.iterator(chunk_size=100):
+        canales = []
+        if getattr(usuario, 'canal_notificacion_web', True):
+            canales.append('web')
+        if getattr(usuario, 'canal_notificacion_correo', False) and usuario.correo:
+            canales.append('correo')
+        
         for canal in canales:
-            Notificacion.objects.create(
-                usuario=usuario,
-                tipo="foro",
-                canal=canal,
-                mensaje=mensaje,
-            )
-            enviados += 1
-
-            if canal == "correo" and usuario.correo:
-                send_mail(
-                    subject=f"Nueva publicacion en el foro: {publicacion.titulo}",
-                    message=mensaje,
-                    from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
-                    recipient_list=[usuario.correo],
-                    fail_silently=True,
+            notificaciones.append(
+                Notificacion(
+                    usuario=usuario,
+                    tipo="foro",
+                    canal=canal,
+                    mensaje=mensaje,
                 )
+            )
+            if canal == "correo":
+                # Enviar correo en segundo plano no bloqueante
+                try:
+                    send_mail(
+                        subject=f"Nueva publicacion en el foro: {publicacion.titulo}",
+                        message=mensaje,
+                        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                        recipient_list=[usuario.correo],
+                        fail_silently=True,
+                    )
+                    enviados_correo += 1
+                except Exception:
+                    pass  # Evitar que falle toda la operación por un correo
 
-    return enviados
+    # Crear todas las notificaciones en una sola operación
+    if notificaciones:
+        Notificacion.objects.bulk_create(notificaciones, batch_size=1000)
+
+    return enviados_correo + len(notificaciones)
 
 
 @rol_required('residente')
@@ -3549,7 +3589,7 @@ def admi_creacion_jornadas(request):
         }
 
         if not _validar_datos_jornada(request, datos_jornada, usuario_actual):
-            return _alerta_y_redireccion(request, "/admi/creacionjornadas/")
+            return redirect('admi_creacion_jornadas')
 
         jornada = Jornada(
             titulo=datos_jornada["titulo"],
@@ -3566,16 +3606,12 @@ def admi_creacion_jornadas(request):
 
         if not _validar_publicacion_jornada(jornada):
             messages.error(request, "Debes asignar al menos un organizador antes de publicar la jornada.")
-            return _alerta_y_redireccion(request, "/admi/creacionjornadas/")
+            return redirect('admi_creacion_jornadas')
 
         jornada.save()
         _enviar_notificaciones_automaticas_jornada(jornada, "creacion")
-        return HttpResponse("""
-            <script>
-                alert('El formulario de jornada se envio correctamente y la jornada fue creada.');
-                window.location.href = '/admi/creacionjornadas/';
-            </script>
-        """)
+        messages.success(request, "✅ La jornada fue creada correctamente.")
+        return redirect('admi_creacion_jornadas')
 
     # Obtener filtros del GET
     filtro_estado = request.GET.get('estado', '')
@@ -3630,7 +3666,7 @@ def organizador_creacion_jornadas(request):
         }
 
         if not _validar_datos_jornada(request, datos_jornada, usuario_actual):
-            return _alerta_y_redireccion(request, "/organizador/creacionjornadas/")
+            return redirect('organizador_creacion_jornadas')
 
         jornada = Jornada(
             titulo=datos_jornada["titulo"],
@@ -3647,16 +3683,12 @@ def organizador_creacion_jornadas(request):
 
         if not _validar_publicacion_jornada(jornada):
             messages.error(request, "Debes asignar al menos un organizador antes de publicar la jornada.")
-            return _alerta_y_redireccion(request, "/organizador/creacionjornadas/")
+            return redirect('organizador_creacion_jornadas')
 
         jornada.save()
         _enviar_notificaciones_automaticas_jornada(jornada, "creacion")
-        return HttpResponse("""
-            <script>
-                alert('El formulario de jornada se envio correctamente y la jornada fue creada.');
-                window.location.href = '/organizador/creacionjornadas/';
-            </script>
-        """)
+        messages.success(request, "✅ La jornada fue creada correctamente.")
+        return redirect('organizador_creacion_jornadas')
 
     jornadas = Jornada.objects.all().order_by("-fecha")
     return render(request, "organizador/creacionjornadas.html", {
@@ -3727,12 +3759,8 @@ def admi_creacion_jornadas(request):
 
         jornada.save()
         _enviar_notificaciones_automaticas_jornada(jornada, "creacion")
-        return HttpResponse("""
-            <script>
-                alert('El formulario de jornada se envio correctamente y la jornada fue creada.');
-                window.location.href = '/admi/creacionjornadas/';
-            </script>
-        """)
+        messages.success(request, "✅ La jornada fue creada correctamente.")
+        return redirect('admi_creacion_jornadas')
 
     filtro_estado = request.GET.get('estado', '')
     filtro_material = request.GET.get('tipo_material', '')
@@ -3904,11 +3932,7 @@ def organizador_creacion_jornadas(request):
         }
 
         if not _validar_datos_jornada(request, datos_jornada, usuario_actual):
-            jornadas = Jornada.objects.all().order_by("-fecha")
-            return render(request, "organizador/creacionjornadas.html", {
-                "jornadas": jornadas,
-                "barrios": barrios,
-            })
+            return redirect('organizador_creacion_jornadas')
 
         jornada = Jornada(
             titulo=datos_jornada["titulo"],
@@ -3925,16 +3949,12 @@ def organizador_creacion_jornadas(request):
 
         if not _validar_publicacion_jornada(jornada):
             messages.error(request, "Debes asignar al menos un organizador antes de publicar la jornada.")
-            return redirect("organizador_creacion_jornadas")
+            return redirect('organizador_creacion_jornadas')
 
         jornada.save()
         _enviar_notificaciones_automaticas_jornada(jornada, "creacion")
-        return HttpResponse("""
-            <script>
-                alert('El formulario de jornada se envio correctamente y la jornada fue creada.');
-                window.location.href = '/organizador/creacionjornadas/';
-            </script>
-        """)
+        messages.success(request, "✅ La jornada fue creada correctamente.")
+        return redirect('organizador_creacion_jornadas')
 
     # Obtener filtros del GET
     filtro_estado = request.GET.get('estado', '')

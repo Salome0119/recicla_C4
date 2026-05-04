@@ -11,12 +11,26 @@
 {% include 'administrador/header.html' %}
 
 <main>
-  <div class="wrapper">
-    <div class="form-container">
-      <h1>📝 Nueva Publicación en el Foro</h1>
+   <div class="wrapper">
+     <div class="form-container">
+       <h1>📝 Nueva Publicación en el Foro</h1>
 
-      <div class="card">
-        <form action="{% url 'admi_publicacion_foro' %}" method="post" enctype="multipart/form-data">
+       <!-- Mensajes después del formulario -->
+       {% if messages %}
+       <div id="mensajes-formulario" style="margin-top: 20px; margin-bottom: 20px;">
+           {% for message in messages %}
+           <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 12px;
+               background: {% if message.tags == 'error' %}#fdecea{% else %}#e8f5e9{% endif %};
+               color: {% if message.tags == 'error' %}#c0392b{% else %}#27ae60{% endif %};
+               border: 1px solid {% if message.tags == 'error' %}#f5c6cb{% else %}#a3d9a5{% endif %};">
+               {{ message }}
+           </div>
+           {% endfor %}
+       </div>
+       {% endif %}
+
+       <div class="card">
+        <form action="{% url 'admi_publicacion_foro' %}" method="post">
           {% csrf_token %}
 
 <!-- Título -->
@@ -25,25 +39,13 @@
             <input type="text" id="titulo" name="titulo" placeholder="Escribe un título llamativo" required minlength="3" maxlength="100">
           </div>
 
-          <!-- Contenido -->
-          <div class="campo">
-            <label for="contenido">💬 Contenido del mensaje:</label>
-            <textarea id="contenido" name="contenido" placeholder="Escribe aquí tu publicación..." required minlength="10" maxlength="1000"></textarea>
-          </div>
+           <!-- Contenido -->
+           <div class="campo">
+             <label for="contenido">💬 Contenido del mensaje:</label>
+             <textarea id="contenido" name="contenido" placeholder="Escribe aquí tu publicación..." required minlength="10" maxlength="1000"></textarea>
+           </div>
 
-          <!-- Contenido -->
-          <div class="campo">
-            <label for="contenido">💬 Contenido del mensaje:</label>
-            <textarea id="contenido" name="contenido" placeholder="Escribe aquí tu publicación..." required></textarea>
-          </div>
-
-          <!-- Archivo opcional -->
-          <div class="campo">
-            <label for="archivo">📎 Adjuntar archivo (opcional):</label>
-            <input type="file" id="archivo" name="archivo">
-          </div>
-
-          <!-- Botones -->
+           <!-- Botones -->
           <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
             <a href="{% url 'admi_foro_publicaciones' %}" 
               style="background:#ED4E4E; color:white; padding:10px 20px; border-radius:10px; text-decoration:none;">

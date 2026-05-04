@@ -1,0 +1,69 @@
+/* ============================
+   FORO PUBLICAIONES - ORGANIZADOR
+   ============================ */
+
+.foro-actions {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 80px;
+}
+
+.foro-reacciones button,
+.foro-otros button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.btn-like {
+    background: #e1f3ff;
+}
+
+.btn-like:hover {
+    background: #c8e7ff;
+}
+
+.btn-dislike {
+    background: #ffe3e3;
+}
+
+.btn-dislike:hover {
+    background: #ffc7c7;
+}
+
+.btn-love {
+    background: #ffe2f0;
+}
+
+.btn-love:hover {
+    background: #ffc8c2;
+}
+
+.btn-comentar {
+    background: #f2f2f2;
+}
+
+.btn-comentar:hover {
+    background: #e0e0e0;
+}
+
+.btn-denunciar {
+    background: #ffeacc;
+    color: #b33a00;
+    font-weight: bold;
+}
+
+.btn-denunciar:hover {
+    background: #ffd8a1;
+}
