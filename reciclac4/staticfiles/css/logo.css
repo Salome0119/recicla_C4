@@ -1,0 +1,23 @@
+/* ============================
+   SHARED LOGO STYLES
+   ============================ */
+
+.logo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 800;
+}
+
+.logo-text {
+    font-size: 16px;
+}
+
+.logo-subtext {
+    font-size: 11px;
+    color: rgba(0,0,0,0.5);
+}

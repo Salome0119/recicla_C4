@@ -11,12 +11,26 @@
 {% include 'organizador/header.html' %}
 
 <main>
-  <div class="wrapper">
-    <div class="form-container">
-      <h1>📝 Nueva Publicación en el Foro</h1>
+   <div class="wrapper">
+     <div class="form-container">
+       <h1>📝 Nueva Publicación en el Foro</h1>
 
-      <div class="card">
-        <form action="{% url 'organizador_publicacion_foro' %}" method="post" enctype="multipart/form-data">
+       <!-- Mensajes después del formulario -->
+       {% if messages %}
+       <div id="mensajes-formulario" style="margin-top: 20px; margin-bottom: 20px;">
+           {% for message in messages %}
+           <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 12px;
+               background: {% if message.tags == 'error' %}#fdecea{% else %}#e8f5e9{% endif %};
+               color: {% if message.tags == 'error' %}#c0392b{% else %}#27ae60{% endif %};
+               border: 1px solid {% if message.tags == 'error' %}#f5c6cb{% else %}#a3d9a5{% endif %};">
+               {{ message }}
+           </div>
+           {% endfor %}
+       </div>
+       {% endif %}
+
+       <div class="card">
+        <form action="{% url 'organizador_publicacion_foro' %}" method="post">
           {% csrf_token %}
 
 <!-- Título -->
@@ -25,33 +39,21 @@
             <input type="text" id="titulo" name="titulo" placeholder="Escribe un título llamativo" required minlength="3" maxlength="100">
           </div>
 
-          <!-- Contenido -->
-          <div class="campo">
-            <label for="contenido">💬 Contenido del mensaje:</label>
-            <textarea id="contenido" name="contenido" placeholder="Escribe aquí tu publicación..." required minlength="10" maxlength="1000"></textarea>
-          </div>
+           <!-- Contenido -->
+           <div class="campo">
+             <label for="contenido">💬 Contenido del mensaje:</label>
+             <textarea id="contenido" name="contenido" placeholder="Escribe aquí tu publicación..." required minlength="10" maxlength="1000"></textarea>
+           </div>
 
-          <!-- Contenido -->
-          <div class="campo">
-            <label for="contenido">💬 Contenido del mensaje:</label>
-            <textarea id="contenido" name="contenido" placeholder="Escribe aquí tu publicación..." required></textarea>
-          </div>
+           <!-- Botones -->
+           <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
+             <a href="{% url 'organizador_foro_publicaciones' %}" 
+               style="background:#ED4E4E; color:white; padding:10px 20px; border-radius:10px; text-decoration:none;">
+               ❌ Cancelar
+             </a>
 
-          <!-- Archivo opcional -->
-          <div class="campo">
-            <label for="archivo">📎 Adjuntar archivo (opcional):</label>
-            <input type="file" id="archivo" name="archivo">
-          </div>
-
-          <!-- Botones -->
-          <div style="display:flex; gap:15px; justify-content:center; margin-top:20px;">
-            <a href="{% url 'organizador_foro_publicaciones' %}" 
-              style="background:#ED4E4E; color:white; padding:10px 20px; border-radius:10px; text-decoration:none;">
-              ❌ Cancelar
-            </a>
-
-            <button type="submit">✅ Publicar</button>
-          </div>
+             <button type="submit" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 3px 8px rgba(17, 153, 142, 0.25); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(17, 153, 142, 0.35)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 8px rgba(17, 153, 142, 0.25)'">✅ Publicar</button>
+           </div>
         </form>
       </div>
     </div>
