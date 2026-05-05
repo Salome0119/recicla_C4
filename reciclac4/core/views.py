@@ -465,6 +465,45 @@ def admin_users_edit(request, id_usuario):
                 accion="editar",
                 detalle=f"Antes: {viejo}"
             )
+            # Enviar correo de notificación si hubo cambios
+            usuario_actualizado = Usuario.objects.get(id_usuario=id_usuario)
+            cambios = []
+            if viejo["nombre"] != usuario_actualizado.nombre:
+                cambios.append(f"Nombre: {viejo['nombre']} → {usuario_actualizado.nombre}")
+            if viejo["apellido"] != usuario_actualizado.apellido:
+                cambios.append(f"Apellido: {viejo['apellido']} → {usuario_actualizado.apellido}")
+            if viejo["correo"] != usuario_actualizado.correo:
+                cambios.append(f"Correo: {viejo['correo']} → {usuario_actualizado.correo}")
+            if viejo["rol"] != usuario_actualizado.rol:
+                cambios.append(f"Rol: {viejo['rol']} → {usuario_actualizado.rol}")
+            if viejo["estado"] != usuario_actualizado.estado:
+                cambios.append(f"Estado: {viejo['estado']} → {usuario_actualizado.estado}")
+            
+            if cambios:
+                try:
+                    send_mail(
+                        subject="📋 Tu cuenta ha sido actualizada - Recicla Comuna 4",
+                        message=f"""
+Hola {usuario_actualizado.nombre},
+
+Tu cuenta en el sistema Recicla Comuna 4 ha sido actualizada por un administrador.
+
+Cambios realizados:
+{chr(10).join(cambios)}
+
+Si no reconoces estos cambios, por favor contacta al administrador inmediatamente.
+
+Saludos,
+Equipo Recicla Comuna 4
+                        """,
+                        from_email="reciclacomuna@gmail.com",
+                        recipient_list=[usuario_actualizado.correo],
+                        fail_silently=False,
+                    )
+                except Exception as e:
+                    # Log error but don't fail the operation
+                    print(f"Error sending email: {e}")
+            
             messages.success(request, "Usuario actualizado.")
             return redirect("admin_users_list")
     else:
@@ -1778,6 +1817,54 @@ def editar_usuario(request, id):
     usuario = get_object_or_404(Usuario, id_usuario=id)
 
     if request.method == "POST":
+        # Recoger datos del formulario
+        nombre = request.POST.get("nombre", "").strip()
+        apellido = request.POST.get("apellido", "").strip()
+        correo = request.POST.get("correo", "").strip()
+        rol = request.POST.get("rol")
+        estado = request.POST.get("estado")
+        nueva_contra = request.POST.get("nueva_contrasena", "").strip()
+
+        # Validaciones personalizadas
+        errors = []
+
+        if not nombre:
+            errors.append("El nombre no puede estar vacío.")
+        elif len(nombre) < 2:
+            errors.append("El nombre debe tener al menos 2 caracteres.")
+        elif len(nombre) > 50:
+            errors.append("El nombre no puede exceder 50 caracteres.")
+        elif not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', nombre):
+            errors.append("El nombre solo puede contener letras.")
+
+        if not apellido:
+            errors.append("El apellido no puede estar vacío.")
+        elif len(apellido) < 2:
+            errors.append("El apellido debe tener al menos 2 caracteres.")
+        elif len(apellido) > 50:
+            errors.append("El apellido no puede exceder 50 caracteres.")
+        elif not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', apellido):
+            errors.append("El apellido solo puede contener letras.")
+
+        if not correo:
+            errors.append("El correo no puede estar vacío.")
+        elif not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
+            errors.append("Ingrese un correo electrónico válido.")
+        elif Usuario.objects.filter(correo=correo).exclude(id_usuario=id).exists():
+            errors.append("El correo ya está registrado por otro usuario.")
+
+        if not rol:
+            errors.append("Debe seleccionar un rol.")
+
+        if not estado:
+            errors.append("Debe seleccionar un estado.")
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return render(request, "administrador/usuarios_editar.html", {"usuario": usuario})
+
+        # Guardar cambios anteriores para el historial y el correo
         viejo = {
             "nombre": usuario.nombre,
             "apellido": usuario.apellido,
@@ -1786,24 +1873,67 @@ def editar_usuario(request, id):
             "estado": usuario.estado
         }
 
-        usuario.nombre = request.POST.get("nombre")
-        usuario.apellido = request.POST.get("apellido")
-        usuario.correo = request.POST.get("correo")
-        usuario.rol = request.POST.get("rol")
-        usuario.estado = request.POST.get("estado")
+        # Actualizar usuario
+        usuario.nombre = nombre
+        usuario.apellido = apellido
+        usuario.correo = correo
+        usuario.rol = rol
+        usuario.estado = estado
 
-        nueva_contra = request.POST.get("nueva_contrasena")
-        if nueva_contra.strip() != "":
+        if nueva_contra != "":
+            if len(nueva_contra) < 8:
+                messages.error(request, "La contraseña debe tener al menos 8 caracteres.")
+                return render(request, "administrador/usuarios_editar.html", {"usuario": usuario})
             usuario.contrasena = make_password(nueva_contra)
 
         usuario.save()
 
+        # Registrar cambios en el historial
         UserChangeLog.objects.create(
             usuario=usuario,
             quien=f"{usuario_actual.nombre} {usuario_actual.apellido}",
             accion="editar",
             detalle=f"Antes: {viejo}"
         )
+        
+        # Enviar correo de notificación si hubo cambios
+        usuario_actualizado = Usuario.objects.get(id_usuario=id)
+        cambios = []
+        if viejo["nombre"] != usuario_actualizado.nombre:
+            cambios.append(f"Nombre: {viejo['nombre']} → {usuario_actualizado.nombre}")
+        if viejo["apellido"] != usuario_actualizado.apellido:
+            cambios.append(f"Apellido: {viejo['apellido']} → {usuario_actualizado.apellido}")
+        if viejo["correo"] != usuario_actualizado.correo:
+            cambios.append(f"Correo: {viejo['correo']} → {usuario_actualizado.correo}")
+        if viejo["rol"] != usuario_actualizado.rol:
+            cambios.append(f"Rol: {viejo['rol']} → {usuario_actualizado.rol}")
+        if viejo["estado"] != usuario_actualizado.estado:
+            cambios.append(f"Estado: {viejo['estado']} → {usuario_actualizado.estado}")
+        
+        if cambios:
+            try:
+                send_mail(
+                    subject="📋 Tu cuenta ha sido actualizada - Recicla Comuna 4",
+                    message=f"""
+Hola {usuario_actualizado.nombre},
+
+Tu cuenta en el sistema Recicla Comuna 4 ha sido actualizada por un administrador.
+
+Cambios realizados:
+{chr(10).join(cambios)}
+
+Si no reconoces estos cambios, por favor contacta al administrador inmediatamente.
+
+Saludos,
+Equipo Recicla Comuna 4
+                    """,
+                    from_email="reciclacomuna@gmail.com",
+                    recipient_list=[usuario_actualizado.correo],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                # Log error but don't fail the operation
+                print(f"Error sending email: {e}")
 
         messages.success(request, "Usuario actualizado correctamente.")
         return redirect("panel_usuarios")

@@ -9,37 +9,180 @@
 
     <h2 class="title">✏️ Editar Usuario</h2>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="msg-box"
+                 style="
+                     {% if message.tags == 'error' %}
+                         background:#ffebee; color:#c62828; border-color:#ffcdd2;
+                     {% else %}
+                         background:#e8f5e8; color:#2e7d32; border-color:#c8e6c9;
+                     {% endif %}
+             ">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <form method="POST" class="form-card">
         {% csrf_token %}
 
         <label>Nombre</label>
-        <input type="text" name="nombre" value="{{ usuario.nombre }}" required>
+        <input type="text" name="nombre" value="{{ usuario.nombre }}" required minlength="2" maxlength="50" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo letras, 2-50 caracteres">
 
         <label>Apellido</label>
-        <input type="text" name="apellido" value="{{ usuario.apellido }}" required>
+        <input type="text" name="apellido" value="{{ usuario.apellido }}" required minlength="2" maxlength="50" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo letras, 2-50 caracteres">
 
         <label>Correo</label>
         <input type="email" name="correo" value="{{ usuario.correo }}" required>
 
         <label>Rol</label>
-        <select name="rol">
+        <select name="rol" required>
             <option value="residente" {% if usuario.rol == 'residente' %}selected{% endif %}>Residente</option>
             <option value="organizador" {% if usuario.rol == 'organizador' %}selected{% endif %}>Organizador</option>
             <option value="administrador" {% if usuario.rol == 'administrador' %}selected{% endif %}>Administrador</option>
         </select>
 
         <label>Estado</label>
-        <select name="estado">
+        <select name="estado" required>
             <option value="activo" {% if usuario.estado == 'activo' %}selected{% endif %}>Activo</option>
             <option value="suspendido" {% if usuario.estado == 'suspendido' %}selected{% endif %}>Suspendido</option>
         </select>
 
         <label>Nueva contraseña (opcional)</label>
-        <input type="password" name="nueva_contrasena">
+        <input type="password" name="nueva_contrasena" minlength="8" title="Mínimo 8 caracteres">
 
-        <button class="btn-save">Actualizar</button>
+        <button class="btn-save" type="submit">Actualizar</button>
     </form>
 
 </div>
 {% include 'administrador/footer.html' %}
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('editarUsuarioForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            var isValid = true;
+            
+            // Validar nombre
+            var nombreInput = form.querySelector('[name="nombre"]');
+            var nombreValue = nombreInput.value.trim();
+            if (!nombreValue) {
+                showError(nombreInput, 'El nombre no puede estar vacío.');
+                isValid = false;
+            } else if (nombreValue.length < 2) {
+                showError(nombreInput, 'El nombre debe tener al menos 2 caracteres.');
+                isValid = false;
+            } else if (nombreValue.length > 50) {
+                showError(nombreInput, 'El nombre no puede exceder 50 caracteres.');
+                isValid = false;
+            } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombreValue)) {
+                showError(nombreInput, 'El nombre solo puede contener letras.');
+                isValid = false;
+            } else {
+                clearError(nombreInput);
+            }
+            
+            // Validar apellido
+            var apellidoInput = form.querySelector('[name="apellido"]');
+            var apellidoValue = apellidoInput.value.trim();
+            if (!apellidoValue) {
+                showError(apellidoInput, 'El apellido no puede estar vacío.');
+                isValid = false;
+            } else if (apellidoValue.length < 2) {
+                showError(apellidoInput, 'El apellido debe tener al menos 2 caracteres.');
+                isValid = false;
+            } else if (apellidoValue.length > 50) {
+                showError(apellidoInput, 'El apellido no puede exceder 50 caracteres.');
+                isValid = false;
+            } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(apellidoValue)) {
+                showError(apellidoInput, 'El apellido solo puede contener letras.');
+                isValid = false;
+            } else {
+                clearError(apellidoInput);
+            }
+            
+            // Validar correo
+            var correoInput = form.querySelector('[name="correo"]');
+            var correoValue = correoInput.value.trim();
+            if (!correoValue) {
+                showError(correoInput, 'El correo no puede estar vacío.');
+                isValid = false;
+            } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(correoValue)) {
+                showError(correoInput, 'Ingrese un correo electrónico válido.');
+                isValid = false;
+            } else {
+                // Verificar si el correo ya existe (excluyendo el usuario actual)
+                var usuarioId = {{ usuario.id_usuario|default:0 }};
+                // Esta validación se hace en el servidor para evitar exposiciones
+                clearError(correoInput);
+            }
+            
+            // Validar rol
+            var rolInput = form.querySelector('[name="rol"]');
+            if (!rolInput.value) {
+                showError(rolInput, 'Debe seleccionar un rol.');
+                isValid = false;
+            } else {
+                clearError(rolInput);
+            }
+            
+            // Validar estado
+            var estadoInput = form.querySelector('[name="estado"]');
+            if (!estadoInput.value) {
+                showError(estadoInput, 'Debe seleccionar un estado.');
+                isValid = false;
+            } else {
+                clearError(estadoInput);
+            }
+            
+            // Validar contraseña (si se proporciona)
+            var contraInput = form.querySelector('[name="nueva_contrasena"]');
+            var contraValue = contraInput.value;
+            if (contraValue !== '') {
+                if (contraValue.length < 8) {
+                    showError(contraInput, 'La contraseña debe tener al menos 8 caracteres.');
+                    isValid = false;
+                } else {
+                    clearError(contraInput);
+                }
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    }
+    
+    function showError(input, message) {
+        // Limpiar errores previos
+        clearError(input);
+        
+        // Añadir clase de error
+        input.classList.add('is-invalid');
+        
+        // Crear elemento de error si no existe
+        var errorDiv = document.createElement('div');
+        errorDiv.className = 'invalid-feedback d-block';
+        errorDiv.textContent = message;
+        
+        // Insertar después del input
+        input.parentNode.appendChild(errorDiv);
+    }
+    
+    function clearError(input) {
+        // Remover clase de error
+        input.classList.remove('is-invalid');
+        
+        // Remover elementos de error
+        var errorDivs = input.parentNode.querySelectorAll('.invalid-feedback');
+        errorDivs.forEach(function(div) {
+            div.remove();
+        });
+    }
+});
+</script>
 {% endblock %}
