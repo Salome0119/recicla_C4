@@ -119,10 +119,46 @@
         <p style="font-size: 0.8rem; color: #666; margin-top: -10px; margin-bottom: 15px;">Mínimo 8 caracteres (letras, números, símbolos)</p>
 
         <label>Fecha de nacimiento</label>
-        <input type="date" name="fecha_nacimiento">
-
+        <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" required>
+        
         <label>Barrio</label>
-        <input type="text" name="barrio">
+        <select name="barrio" id="barrio" required>
+            <option value="" disabled selected>Selecciona tu barrio</option>
+            <option>Medellín</option>
+            <option>La América</option>
+            <option>La Bolivariana</option>
+            <option>La Cumbre</option>
+            <option>La Florida</option>
+            <option>La Ladera</option>
+            <option>La Palma</option>
+            <option>Los Cóndores</option>
+            <option>El Poblado</option>
+            <option>La Virginia</option>
+            <option>El Tesoro</option>
+            <option>Los Naranjos</option>
+            <option>Belen</option>
+            <option>Boston</option>
+            <option>California</option>
+            <option>La Cumbre</option>
+            <option>Manrique</option>
+            <option>Aranjuez</option>
+            <option>Castilla</option>
+            <option>Robledo</option>
+            <option>La Cumbre</option>
+            <option>San Antonio de Prado</option>
+            <option>Altos del Cielo</option>
+            <option>Santa Elena</option>
+            <option>Guayabal</option>
+            <option>Poblado</option>
+            <option>La Aguacatala</option>
+            <option>El Rodeo</option>
+            <option> Los Olivos</option>
+            <option>El Poblado</option>
+            <option>La Frontera</option>
+            <option>San Javier</option>
+            <option>La Cima</option>
+            <option>El Polo</option>
+        </select>
 
         <label>Rol</label>
         <select name="rol" required>
@@ -147,6 +183,168 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerForm = document.querySelector('form');
+        const nombreInput = registerForm.querySelector('input[name="nombre"]');
+        const apellidoInput = registerForm.querySelector('input[name="apellido"]');
+        const correoInput = registerForm.querySelector('input[name="correo"]');
+        const contrasenaInput = registerForm.querySelector('input[name="contrasena"]');
+        const fechaNacimientoInput = registerForm.querySelector('input[name="fecha_nacimiento"]');
+        const barrioSelect = registerForm.querySelector('select[name="barrio"]');
+
+        function validarEdad() {
+            const fechaNacimiento = new Date(fechaNacimientoInput.value);
+            const hoy = new Date();
+            const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+            const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+            
+            let edadReal = edad;
+            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                edadReal--;
+            }
+            
+            if (edadReal < 14) {
+                mostrarError(fechaNacimientoInput, 'Debes tener al menos 14 años para registrarte');
+                return false;
+            }
+            return true;
+        }
+
+        function validarBarrio() {
+            const valor = barrioSelect.value;
+            const errorDiv = barrioSelect.parentElement.querySelector('.error-msg');
+            if (errorDiv) errorDiv.remove();
+            barrioSelect.classList.remove('input-error');
+            
+            if (!valor || valor === '') {
+                mostrarError(barrioSelect, 'Selecciona un barrio');
+                return false;
+            }
+            return true;
+        }
+
+        function validarNombre(input, nombreLabel) {
+            const valor = input.value.trim();
+            const errorDiv = input.parentElement.querySelector('.error-msg');
+            if (errorDiv) errorDiv.remove();
+            input.classList.remove('input-error');
+
+            if (valor.length < 2) {
+                mostrarError(input, nombreLabel + ' debe tener al menos 2 caracteres');
+                return false;
+            }
+            if (valor.length > 50) {
+                mostrarError(input, nombreLabel + ' debe tener máximo 50 caracteres');
+                return false;
+            }
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(valor)) {
+                mostrarError(input, nombreLabel + ' solo puede contener letras y espacios');
+                return false;
+            }
+            return true;
+        }
+
+        function validarCorreo(input) {
+            const valor = input.value.trim();
+            const errorDiv = input.parentElement.querySelector('.error-msg');
+            if (errorDiv) errorDiv.remove();
+            input.classList.remove('input-error');
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(valor)) {
+                mostrarError(input, 'Ingresa un correo electrónico válido');
+                return false;
+            }
+            return true;
+        }
+
+        function validarContrasena(input) {
+            const valor = input.value;
+            const errorDiv = input.parentElement.querySelector('.error-msg');
+            if (errorDiv) errorDiv.remove();
+            input.classList.remove('input-error');
+
+            if (valor.length < 8) {
+                mostrarError(input, 'La contraseña debe tener al menos 8 caracteres');
+                return false;
+            }
+            if (valor.length > 20) {
+                mostrarError(input, 'La contraseña debe tener máximo 20 caracteres');
+                return false;
+            }
+            if (!/[A-Z]/.test(valor)) {
+                mostrarError(input, 'La contraseña debe tener al menos una mayúscula');
+                return false;
+            }
+            if (!/[a-z]/.test(valor)) {
+                mostrarError(input, 'La contraseña debe tener al menos una minúscula');
+                return false;
+            }
+            if (!/[0-9]/.test(valor)) {
+                mostrarError(input, 'La contraseña debe tener al menos un número');
+                return false;
+            }
+            return true;
+        }
+
+        function mostrarError(input, mensaje) {
+            input.classList.add('input-error');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-msg';
+            errorDiv.style.cssText = 'color: #c62828; font-size: 0.85rem; margin-top: 5px;';
+            errorDiv.textContent = mensaje;
+            input.parentElement.appendChild(errorDiv);
+        }
+
+        if (nombreInput) {
+            nombreInput.addEventListener('blur', function() { validarNombre(this, 'El nombre'); });
+        }
+        if (apellidoInput) {
+            apellidoInput.addEventListener('blur', function() { validarNombre(this, 'El apellido'); });
+        }
+        if (correoInput) {
+            correoInput.addEventListener('blur', function() { validarCorreo(this); });
+        }
+        if (contrasenaInput) {
+            contrasenaInput.addEventListener('blur', function() { validarContrasena(this); });
+        }
+        if (fechaNacimientoInput) {
+            fechaNacimientoInput.addEventListener('change', function() { validarEdad(); });
+        }
+        if (barrioSelect) {
+            barrioSelect.addEventListener('change', function() { validarBarrio(); });
+        }
+
+        registerForm.addEventListener('submit', function(e) {
+            let valido = true;
+
+            if (nombreInput) {
+                if (!validarNombre(nombreInput, 'El nombre')) valido = false;
+            }
+            if (apellidoInput) {
+                if (!validarNombre(apellidoInput, 'El apellido')) valido = false;
+            }
+            if (correoInput) {
+                if (!validarCorreo(correoInput)) valido = false;
+            }
+            if (contrasenaInput) {
+                if (!validarContrasena(contrasenaInput)) valido = false;
+            }
+            if (fechaNacimientoInput) {
+                if (!validarEdad()) valido = false;
+            }
+            if (barrioSelect) {
+                if (!validarBarrio()) valido = false;
+            }
+
+            if (!valido) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

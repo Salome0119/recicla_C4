@@ -529,36 +529,42 @@
                     <div class="form-group">
                         <label>Barrio</label>
                         <select name="barrio" required>
-                            <option disabled selected>Selecciona un barrio</option>
-                            <option>Aranjuez</option>
-                            <option>Manrique</option>
-                            <option>Manrique Central</option>
-                            <option>Campo Valdés</option>
-                            <option>Sevilla</option>
-                            <option>La Piñuela</option>
-                            <option>Las Grutas</option>
-                            <option>El Raizal</option>
-                            <option>El Diamante</option>
-                            <option>Moravia</option>
-                            <option>Campo Amor</option>
-                            <option>San José</option>
-                            <option>San Pedro</option>
-                            <option>El Poblado</option>
-                            <option>La Esperanza</option>
-                            <option>Villa Verde</option>
-                            <option>La Honda</option>
-                            <option>Santa Cruz</option>
-                            <option>La Isla</option>
-                            <option>El Chorrillo</option>
-                            <option>Los Buenos</option>
-                            <option>Palacio de los Deportes</option>
+                            <option value="" disabled selected>Selecciona tu barrio en Medellín</option>
+                            <option>Medellín</option>
                             <option>La América</option>
-                            <option>Estadio</option>
+                            <option>La Bolivariana</option>
+                            <option>La Cumbre</option>
+                            <option>La Florida</option>
+                            <option>La Ladera</option>
+                            <option>La Palma</option>
+                            <option>Los Cóndores</option>
+                            <option>El Poblado</option>
+                            <option>La Virginia</option>
+                            <option>El Tesoro</option>
+                            <option>Los Naranjos</option>
+                            <option>Belen</option>
+                            <option>Boston</option>
+                            <option>California</option>
+                            <option>Manrique</option>
+                            <option>Aranjuez</option>
+                            <option>Castilla</option>
+                            <option>Robledo</option>
+                            <option>San Antonio de Prado</option>
+                            <option>Altos del Cielo</option>
+                            <option>Santa Elena</option>
+                            <option>Guayabal</option>
+                            <option>El Rodeo</option>
+                            <option>Los Olivos</option>
+                            <option>La Frontera</option>
                             <option>San Javier</option>
-                            <option>Valencia</option>
-                            <option>La Liliana</option>
-                            <option>Astillero</option>
+                            <option>La Cima</option>
+                            <option>El Polo</option>
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha de nacimiento</label>
+                        <input type="date" name="fecha_nacimiento" required>
                     </div>
 
                     <div class="form-group">
@@ -612,6 +618,39 @@
             const apellidoInput = registerForm.querySelector('input[name="apellido"]');
             const correoInput = registerForm.querySelector('input[name="correo"]');
             const contrasenaInput = registerForm.querySelector('input[name="contrasena"]');
+            const fechaNacimientoInput = registerForm.querySelector('input[name="fecha_nacimiento"]');
+            const barrioSelect = registerForm.querySelector('select[name="barrio"]');
+
+            function validarEdad() {
+                const fechaNacimiento = new Date(fechaNacimientoInput.value);
+                const hoy = new Date();
+                const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+                const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+                
+                let edadReal = edad;
+                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                    edadReal--;
+                }
+                
+                if (edadReal < 14) {
+                    mostrarError(fechaNacimientoInput, 'Debes tener al menos 14 años para registrarte');
+                    return false;
+                }
+                return true;
+            }
+
+            function validarBarrio() {
+                const valor = barrioSelect.value;
+                const errorDiv = barrioSelect.parentElement.querySelector('.error-msg');
+                if (errorDiv) errorDiv.remove();
+                barrioSelect.classList.remove('input-error');
+                
+                if (!valor || valor === '') {
+                    mostrarError(barrioSelect, 'Selecciona un barrio');
+                    return false;
+                }
+                return true;
+            }
 
             function validarNombre(input, nombreLabel) {
                 const valor = input.value.trim();
@@ -698,6 +737,12 @@
             if (contrasenaInput) {
                 contrasenaInput.addEventListener('blur', function() { validarContrasena(this); });
             }
+            if (fechaNacimientoInput) {
+                fechaNacimientoInput.addEventListener('change', function() { validarEdad(); });
+            }
+            if (barrioSelect) {
+                barrioSelect.addEventListener('change', function() { validarBarrio(); });
+            }
 
             registerForm.addEventListener('submit', function(e) {
                 let valido = true;
@@ -713,6 +758,12 @@
                 }
                 if (contrasenaInput) {
                     if (!validarContrasena(contrasenaInput)) valido = false;
+                }
+                if (fechaNacimientoInput) {
+                    if (!validarEdad()) valido = false;
+                }
+                if (barrioSelect) {
+                    if (!validarBarrio()) valido = false;
                 }
 
                 if (!valido) {
