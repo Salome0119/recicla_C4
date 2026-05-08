@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     #PRIMERA PAGINA
-    path("", views.usuario_inicio, name="usuario_inicio"),
+    path("", views.usuario_inicio, name="index"),
     
     # LOGIN / REGISTRO / SALIR
     path("login/", views.login_view, name="login"),
