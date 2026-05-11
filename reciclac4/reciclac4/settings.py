@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-4pqo=-lc(p=_743py%&ivl(ooac2z80dsad#y&)vb6kg$708)1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['reciclacomuna4.com', 'www.reciclacomuna4.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['recicla-c4.onrender.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
