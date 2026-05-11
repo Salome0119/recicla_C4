@@ -89,7 +89,7 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
-            'ssl': {'ca': 'ca.pem'},
+            'ssl': {'ca': None},
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'connect_timeout': 60,  # Aumenta el tiempo de espera a 60 segundos
 
