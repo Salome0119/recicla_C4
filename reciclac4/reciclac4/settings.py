@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'reciclac4.urls'
@@ -81,13 +82,18 @@ WSGI_APPLICATION = 'reciclac4.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',   # si usas pymysql, dejalo igual (ver nota)
-        'NAME': 'reciclacomuna4',
-        'USER': 'root',         # ajusta
-        'PASSWORD': '',  # ajusta
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"},
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'defaultdb',
+        'USER': 'avnadmin',
+        'PASSWORD': os.getenv('DB_PASSWORD'), # La que viste en la consola de Aiven
+        'HOST': 'mysql-2e7073e1-rc4.k.aivencloud.com',
+        'PORT': '11080',
+        'OPTIONS': {
+            'ssl': {'ca': 'ca.pem'},
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'connect_timeout': 60,  # Aumenta el tiempo de espera a 60 segundos
+
+        }
     }
 }
 
@@ -161,4 +167,6 @@ LOGOUT_REDIRECT_URL = '/login/'             # opcional
 # Archivos de usuario (fotos de perfil, documentos, etc.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 

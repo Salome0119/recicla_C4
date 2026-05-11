@@ -143,7 +143,7 @@ class Inscripcion(models.Model):
 
     class Meta:
         db_table = 'core_inscripcion'
-        managed = False  # ← importante, la tabla ya existe
+        managed = True  # ← importante, la tabla ya existe
 
 
 
