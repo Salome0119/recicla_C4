@@ -88,7 +88,7 @@ DATABASES = {
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT', '25432'), # Usa 25432 por defecto
+        'PORT': os.environ.get('DB_PORT', '11080'), # Usa 25432 por defecto
         'OPTIONS': {
             'ssl': {'ca': None},
             'connect_timeout': 10,
