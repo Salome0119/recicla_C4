@@ -80,20 +80,19 @@ WSGI_APPLICATION = 'reciclac4.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'defaultdb',
-        'USER': 'avnadmin',
-        'PASSWORD': os.getenv('DB_PASSWORD'), # La que viste en la consola de Aiven
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT', '25432'), # Usa 25432 por defecto
         'OPTIONS': {
             'ssl': {'ca': None},
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'connect_timeout': 60,  # Aumenta el tiempo de espera a 60 segundos
-
-        }
+            'connect_timeout': 10,
+        },
     }
 }
 
