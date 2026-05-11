@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+db.sqlite3
+
+# Entornos virtuales
+env/
+venv/
+.env
+
+# Archivos de configuración de VS Code o SO
+.vscode/
+.DS_Store
