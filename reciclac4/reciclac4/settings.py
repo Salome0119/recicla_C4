@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-4pqo=-lc(p=_743py%&ivl(ooac2z80dsad#y&)vb6kg$708)1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['reciclacomuna4.com', 'www.reciclacomuna4.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['recicla-c4.onrender.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -86,10 +86,10 @@ DATABASES = {
         'NAME': 'defaultdb',
         'USER': 'avnadmin',
         'PASSWORD': os.getenv('DB_PASSWORD'), # La que viste en la consola de Aiven
-        'HOST': 'mysql-2e7073e1-rc4.k.aivencloud.com',
-        'PORT': '11080',
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
-            'ssl': {'ca': 'ca.pem'},
+            'ssl': {'ca': None},
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'connect_timeout': 60,  # Aumenta el tiempo de espera a 60 segundos
 
