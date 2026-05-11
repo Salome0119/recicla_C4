@@ -86,8 +86,8 @@ DATABASES = {
         'NAME': 'defaultdb',
         'USER': 'avnadmin',
         'PASSWORD': os.getenv('DB_PASSWORD'), # La que viste en la consola de Aiven
-        'HOST': 'mysql-2e7073e1-rc4.k.aivencloud.com',
-        'PORT': '11080',
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
             'ssl': {'ca': 'ca.pem'},
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
