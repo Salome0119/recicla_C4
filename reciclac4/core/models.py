@@ -41,18 +41,15 @@ class Usuario(models.Model):
     canal_notificacion_correo = models.BooleanField(default=True)
     canal_notificacion_web = models.BooleanField(default=True)
     canal_notificacion_push = models.BooleanField(default=False)
-    
-
 
     rol = models.CharField(max_length=20, choices=ROL_CHOICES)
 
     # CAMBIO IMPORTANTE: Usar choices para el estado
     estado = models.CharField(
-        max_length=20, 
-        choices=ESTADO_CHOICES, 
+        max_length=20,
+        choices=ESTADO_CHOICES,
         default="pendiente"
     )
-    
     foto = models.ImageField(upload_to='fotos_perfil/', blank=True, null=True)
 
     fecha_registro = models.DateTimeField(auto_now_add=True)
@@ -122,6 +119,17 @@ class Jornada(models.Model):
     def __str__(self):
         return self.titulo
 
+    @property
+    def inscritos_activos(self):
+        return Inscripcion.objects.filter(jornada=self, estado='activa').count()
+
+    def esta_inscrito(self, usuario_id):
+        return Inscripcion.objects.filter(
+            jornada=self, 
+            usuario_id=usuario_id, 
+            estado='activa'
+        ).exists()
+
 class Inscripcion(models.Model):
     id_inscripcion = models.AutoField(primary_key=True)  # ← nombre correcto
     usuario = models.ForeignKey(
@@ -145,6 +153,38 @@ class Inscripcion(models.Model):
         db_table = 'core_inscripcion'
         managed = True  # ← importante, la tabla ya existe
 
+
+
+class Comentario(models.Model):
+    id_comentario = models.AutoField(primary_key=True)
+    tema = models.ForeignKey(
+        'TemaForo',
+        on_delete=models.CASCADE,
+        related_name='comentarios'
+    )
+    usuario = models.ForeignKey(
+        'Usuario',
+        on_delete=models.CASCADE,
+        related_name='comentarios'
+    )
+    texto = models.TextField()
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='respuestas'
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    last_update = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'comentario'
+        ordering = ['created_at']
+        managed = True
+
+    def __str__(self):
+        return f"Comentario de {self.usuario.nombre} en {self.tema.titulo}"
 
 
 class TemaForo(models.Model):
@@ -286,19 +326,45 @@ class CanjeRecompensa(models.Model):
     def __str__(self):
         return f"{self.usuario.nombre} - {self.recompensa.titulo}"
 
-# class ContactMessage(models.Model):
-#     nombre = models.CharField(max_length=100)
-#     correo = models.EmailField()
-#     mensaje = models.TextField()
-#     fecha = models.DateTimeField(auto_now_add=True)
-#     rol = models.CharField(max_length=20, blank=True)  # rol que envía el mensaje
-#     leido = models.BooleanField(default=False)
+class TemaSemanal(models.Model):
+    VISTA_CHOICES = [('residente', 'Residente'), ('organizador', 'Organizador')]
+    
+    id_tema = models.AutoField(primary_key=True)
+    titulo = models.CharField(max_length=200)
+    contenido_educativo = models.TextField()
+    preguntas_json = models.JSONField()
+    vista_destino = models.CharField(max_length=20, choices=VISTA_CHOICES, default='residente')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    activo = models.BooleanField(default=False)
+    creado_por = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        null=True,
+        limit_choices_to={'rol': 'administrador'}
+    )
 
-#     class Meta:
-#         db_table = 'core_contact_message'
-#         ordering = ['-fecha']
-#         managed = True
+    class Meta:
+        db_table = 'core_tema_semanal'
+        managed = True
+        ordering = ['-fecha_creacion']
 
-#     def __str__(self):
-#         return f"{self.nombre} - {self.correo}"
+    def __str__(self):
+        return self.titulo
+
+
+class ResultadoEvaluacion(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='evaluaciones')
+    tema = models.ForeignKey(TemaSemanal, on_delete=models.CASCADE, related_name='resultados')
+    puntos_obtenidos = models.IntegerField(default=0)
+    total_preguntas = models.IntegerField(default=5)
+    retroalimentacion = models.TextField(blank=True, null=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'core_resultado_evaluacion'
+        managed = True
+        unique_together = ['usuario', 'tema']
+
+    def __str__(self):
+        return f"{self.usuario.nombre} - {self.tema.titulo}: {self.puntos_obtenidos}p"
 

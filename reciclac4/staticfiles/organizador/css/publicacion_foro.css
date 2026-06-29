@@ -1,6 +1,18 @@
 /* ========================
-   FORO - Página de publicaciones
+    FORO - Página de publicaciones
 ======================== */
+
+:root {
+    --primary: #2ECC71;
+    --secondary: #27AE60;
+    --dark: #1E5631;
+    --light: #D5F5E3;
+    --muted: #586466;
+    --radius: 14px;
+    --bg-1: #eaf9f8;
+    --bg-2: #eef9ec;
+    --accent: #F1C40F;
+}
 
 .foro-page {
     padding-bottom: 40px;

@@ -1,0 +1,45 @@
+/* ============================
+   ERROR PAGES - NO PERMISO
+   ============================ */
+
+.error-page {
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.error-card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 500px;
+}
+
+.error-card h1 {
+    color: #ff4d4f;
+    margin-bottom: 20px;
+}
+
+.error-card p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.error-card a {
+    text-decoration: none;
+    color: #fff;
+    background: #1890ff;
+    padding: 12px 25px;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.error-card a:hover {
+    background: #40a9ff;
+}

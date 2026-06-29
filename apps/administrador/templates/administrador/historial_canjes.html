@@ -1,0 +1,213 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+{% block titulo %}Historial de Canjes{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+<style>
+  .page-container {
+    min-height: calc(100vh - 180px);
+    padding: 20px;
+  }
+  
+  .wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px;
+  }
+  
+  .canje-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .canje-info h3 {
+    margin: 0 0 8px 0;
+    color: var(--dark);
+  }
+  
+  .canje-info p {
+    margin: 4px 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  
+  .canje-fecha {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  
+  .btn-volver {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .btn-volver:hover {
+    background: var(--secondary);
+  }
+  
+  .page-title {
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  
+  .pagination a, .pagination span {
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--dark);
+    background: white;
+    border: 1px solid #ddd;
+  }
+  
+  .pagination a:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  
+  .pagination .active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  
+  .pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .badge-recompensa {
+    background: var(--primary);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+  
+  .total-info {
+    background: #e8f5e9;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: var(--dark);
+  }
+</style>
+{% endblock %}
+
+{% block cuerpo %}
+{% include 'administrador/header.html' %}
+
+<main class="page-container">
+  <div class="wrapper">
+    <a href="{% url 'admi_recompensa' %}" class="btn-volver">← Volver a Recompensas</a>
+    
+    <h1 class="page-title">Historial de Canjes</h1>
+    
+    <div class="total-info">
+      <strong>Total de canjes:</strong> {{ total }}
+    </div>
+    
+    {% if canjes %}
+      {% for canje in canjes %}
+      <div class="canje-card">
+        <div class="canje-info">
+          <h3>{{ canje.usuario.nombre }} {{ canje.usuario.apellido }}</h3>
+          <p><strong>Correo:</strong> {{ canje.usuario.correo }}</p>
+          <p><strong>Recompensa:</strong> <span class="badge-recompensa">{{ canje.recompensa.titulo }}</span></p>
+          <p><strong>Dirección:</strong> {{ canje.direccion|default:"No especificada" }}</p>
+          <p><strong>Barrio:</strong> {{ canje.barrio|default:"No especificado" }}</p>
+          {% if canje.observaciones %}
+            <p><strong>Observaciones:</strong> {{ canje.observaciones }}</p>
+          {% endif %}
+        </div>
+        <div class="canje-fecha">
+          {{ canje.fecha_canje|date:"d/m/Y H:i" }}
+        </div>
+      </div>
+      {% endfor %}
+      
+      {% if canjes.has_other_pages %}
+      <div class="pagination">
+        {% if canjes.has_previous %}
+          <a href="?page={{ canjes.previous_page_number }}">« Anterior</a>
+        {% else %}
+          <span class="disabled">« Anterior</span>
+        {% endif %}
+        
+        {% for num in canjes.paginator.page_range %}
+          {% if canjes.number == num %}
+            <span class="active">{{ num }}</span>
+          {% else %}
+            <a href="?page={{ num }}">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+        
+        {% if canjes.has_next %}
+          <a href="?page={{ canjes.next_page_number }}">Siguiente »</a>
+        {% else %}
+          <span class="disabled">Siguiente »</span>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% else %}
+      <p style="color: var(--muted); text-align: center;">No hay canjes registrados aún.</p>
+    {% endif %}
+  </div>
+</main>
+
+{% include 'administrador/footer.html' %}
+
+<script>
+const openSidebarBtn = document.getElementById('openSidebar');
+const closeSidebarBtn = document.getElementById('closeSidebar');
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.getElementById('mainContent');
+
+function openSidebar() {
+    sidebar.classList.add('active');
+    mainContent.style.transform = 'translateX(260px)';
+}
+function closeSidebar() {
+    sidebar.classList.remove('active');
+    mainContent.style.transform = 'translateX(0)';
+}
+
+openSidebarBtn.addEventListener('click', () => {
+    if(sidebar.classList.contains('active')) closeSidebar();
+    else openSidebar();
+});
+
+if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+
+document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggle.parentElement.classList.toggle('active');
+    });
+});
+
+document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && sidebar.classList.contains('active')) closeSidebar();
+});
+</script>
+{% endblock %}

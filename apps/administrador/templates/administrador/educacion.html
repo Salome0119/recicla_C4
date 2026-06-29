@@ -1,0 +1,370 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+
+{% block titulo %}Recicla Comuna 4 — Educación Ambiental{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+<link rel="stylesheet" href="{% static 'administrador/css/educacion.css' %}">
+{% endblock %}
+
+{% block cuerpo %}
+{% include 'administrador/header.html' %}
+
+<main class="edu-page">
+
+    <!-- HERO -->
+    <section class="edu-hero">
+        <h1>🌱 Educación Ambiental</h1>
+        <p>Transforma tu comunidad a través del reciclaje responsable. Aprende, enseña y lidera el cambio en la Comuna 4.</p>
+    </section>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="edu-stats">
+        <div class="stat-card">
+            <span class="stat-icon">♻️</span>
+            <span class="stat-number">75%</span>
+            <div class="stat-label">de residuos reciclables</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🌍</span>
+            <span class="stat-number">2.4kg</span>
+            <div class="stat-label">promedio por familia</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">💚</span>
+            <span class="stat-number">340</span>
+            <div class="stat-label">familias reciclando</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">📈</span>
+            <span class="stat-number">45%</span>
+            <div class="stat-label">redución de basura</div>
+        </div>
+    </div>
+
+    <!-- POR QUÉ RECICLAR -->
+    <section class="edu-section">
+        <h2>♻ ¿Por qué reciclar?</h2>
+        <p class="edu-intro">
+            El reciclaje es una de las acciones más simples y eficaces para proteger el medio ambiente. 
+            Cada residuo separado correctamente ayuda a prevenir contaminación, reduce el consumo de recursos 
+            naturales y fortalece nuestra economía comunitaria en la Comuna 4.
+        </p>
+
+        <div class="edu-grid">
+            <div class="edu-card">
+                <div class="edu-icon">🌎</div>
+                <h3>Protege el planeta</h3>
+                <p>Reciclar reduce la contaminación del aire, del suelo y del agua. Evita que los residuos lleguen a ríos y quebradas de nuestra comuna.</p>
+            </div>
+
+            <div class="edu-card">
+                <div class="edu-icon">🔥</div>
+                <h3>Menos basura</h3>
+                <p>Cuando clasificamos adecuadamente, disminuimos los residuos que terminan en rellenos sanitarios o quemados ilegalmente.</p>
+            </div>
+
+            <div class="edu-card">
+                <div class="edu-icon">💰</div>
+                <h3>Economía circular</h3>
+                <p>Genera empleo, impulsa negocios verdes y fortalece a recuperadores ambientales de la Comuna 4.</p>
+            </div>
+
+            <div class="edu-card">
+                <div class="edu-icon">🏡</div>
+                <h3>Mejora tu comunidad</h3>
+                <p>Un barrio limpio y organizado mejora la salud, la convivencia y la seguridad de los residentes.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMO RECICLAR -->
+    <section class="edu-section">
+        <h2>📝 ¿Cómo reciclar correctamente?</h2>
+
+        <div class="steps">
+            <div class="step">
+                <span>1</span>
+                <p><strong>Separa en origen:</strong> Diferencia plástico, papel, cartón, vidrio y metal en bolsas separadas desde tu hogar.</p>
+            </div>
+
+            <div class="step">
+                <span>2</span>
+                <p><strong>Limpieza básica:</strong> Lava y seca los envases para evitar malos olores y contaminación del material reciclable.</p>
+            </div>
+
+            <div class="step">
+                <span>3</span>
+                <p><strong>Reduce volumen:</strong> Aplasta botellas y cajas para optimizar el espacio en tu bolsa de reciclaje.</p>
+            </div>
+
+            <div class="step">
+                <span>4</span>
+                <p><strong>Entrega responsable:</strong> Deposita el material en bolsas transparentes y entrégalo en jornadas o puntos autorizados.</p>
+            </div>
+
+            <div class="step">
+                <span>5</span>
+                <p><strong>Evita contaminación:</strong> No mezcles residuos orgánicos con reciclables. Todo debe ir limpio y seco.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUÉ SE RECICLA -->
+    <section class="edu-section">
+        <h2>📦 ¿Qué se recicla y qué no?</h2>
+
+        <div class="recycle-box">
+            <div class="yes">
+                <h3>✔ Reciclables</h3>
+                <ul>
+                    <li>Botellas PET (transparente, verde, azul)</li>
+                    <li>Papel y cartón secos (sin grasa ni comida)</li>
+                    <li>Vidrio (frascos y botellas limpias)</li>
+                    <li>Latas de aluminio y latas de comida</li>
+                    <li>Envases plásticos limpios (código 1, 2, 5)</li>
+                    <li>Chatarra metálica limpia</li>
+                    <li>Tetrapak (cajas de jugo, leche)</li>
+                    <li>Revistas y periódicos en buen estado</li>
+                </ul>
+            </div>
+
+            <div class="no">
+                <h3>✘ No reciclables</h3>
+                <ul>
+                    <li>Servilletas o papeles contaminados con comida</li>
+                    <li>Papel higiénico y toallas húmedas</li>
+                    <li>Icopor sucio o manchado (unicel)</li>
+                    <li>Papel metalizado o aluminio delgado</li>
+                    <li>Desechos orgánicos (comida, cáscaras)</li>
+                    <li>Pañales y productos sanitarios</li>
+                    <li>Cristal roto o cerámica</li>
+                    <li>Baterías y pilas (son residuos peligrosos)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONSEJOS -->
+    <section class="edu-tips">
+        <h2>💡 Consejos rápidos para el día a día</h2>
+
+        <div class="tips-list">
+            <div class="tip-item">
+                <span>🚿</span>
+                <p>Usa poca agua para lavar los envases. Solo enjuaga ligeramente para ahorrar este recurso.</p>
+            </div>
+
+            <div class="tip-item">
+                <span>🛍️</span>
+                <p>Lleva tu propia bolsa reutilizable al mercado y evita usar bolsas plásticas.</p>
+            </div>
+
+            <div class="tip-item">
+                <span>🌱</span>
+                <p>Comienza un pequeño compostaje en casa con tus residuos orgánicos (cáscaras, posos de café).</p>
+            </div>
+
+            <div class="tip-item">
+                <span>📦</span>
+                <p>Guarda cajas y frascos para reutilizarlos en tu hogar para organización.</p>
+            </div>
+
+            <div class="tip-item">
+                <span>🚯</span>
+                <p>No tires colillas, chicles ni envolturas en la calle: también contaminan el suelo.</p>
+            </div>
+
+            <div class="tip-item">
+                <span>👟</span>
+                <p>Dona ropa, calzado y objetos que aún pueden servir a otras personas de la comuna.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- IMPACTO EN LA COMUNA 4 -->
+    <section class="edu-section">
+        <h2>🏘️ Impacto en nuestra comuna</h2>
+        <div class="edu-intro">
+            La Comuna 4 enfrenta retos únicos en gestión de residuos. Como administrador, tu labor es fundamental para:
+        </div>
+        <div class="edu-grid">
+            <div class="edu-card">
+                <div class="edu-icon">🎯</div>
+                <h3>Meta 2026</h3>
+                <p>Lograr que el 60% de las familias de la comuna separen sus residuos correctamente en origen.</p>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">🤝</div>
+                <h3>Alianzas</h3>
+                <p>Fortalecer vínculos con recuperadores locales y cooperativas de reciclaje de la zona.</p>
+            </div>
+            <div class="edu-card">
+                <div class="edu-icon">📊</div>
+                <h3>Monitoreo</h3>
+                <p>Seguimiento semanal de toneladas recicladas y familias participantes activas.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="edu-faq">
+        <h2>❓ Preguntas frecuentes</h2>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Dónde puedo llevar mis reciclables?</div>
+            <div class="faq-answer">Puedes llevarlos a las jornadas programadas o a los puntos verdes autorizados. Consulta la sección de jornadas para ver fechas y ubicaciones.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Los recuperadores cobran por recolectar?</div>
+            <div class="faq-answer">No, el servicio de recolección y acopio es gratuito para las familias participantes de la Comuna 4.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Qué hago con las pilas y baterías?</div>
+            <div class="faq-answer">Las pilas y baterías son residuos peligrosos. Llévalas a puntos especiales de acopio de materiales peligrosos, no las mezcles con reciclables comunes.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">💬 ¿Puedo reciclar cartón pizza?</div>
+            <div class="faq-answer">No, el cartón con grasa o comida no es reciclable. Descarta las partes sucias y solo recicla las partes limpias.</div>
+        </div>
+    </section>
+
+    <!-- RECURSOS ADICIONALES -->
+    <section class="edu-resources">
+        <h2>📚 Recursos adicionales</h2>
+
+        <div class="resources-grid">
+            <div class="resource-card">
+                <span>📄</span>
+                <h4>Guía de separación</h4>
+                <p>Descarga nuestra guía PDF completa con ilustraciones de cómo separar cada tipo de material en casa.</p>
+            </div>
+            <div class="resource-card">
+                <span>🎥</span>
+                <h4>Videos educativos</h4>
+                <p>Accede a nuestra biblioteca de videos sobre técnicas de clasificación y compostaje casero.</p>
+            </div>
+            <div class="resource-card">
+                <span>📱</span>
+                <h4>App móvil</h4>
+                <p>Descarga nuestra aplicación para recibir recordatorios de jornadas y tips diarios de reciclaje.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- TEMAS SEMANALES ACTIVOS -->
+    <section class="edu-section" style="margin-top: 40px;">
+        <h2>📅 Temas Semanales Activos</h2>
+        <p class="edu-intro">Estos son los temas educativos que están actualmente activos para cada rol. Cada rol ve únicamente su propio tema.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+
+            <!-- Tema para Residentes -->
+            <div style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border-top: 4px solid var(--primary);">
+                <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85;">Rol</span>
+                        <h3 style="margin: 4px 0 0; font-size: 1.15rem;">👤 Residente</h3>
+                    </div>
+                    {% if tema_residente %}
+                    <span style="background: rgba(255,255,255,0.25); padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">● Activo</span>
+                    {% else %}
+                    <span style="background: rgba(0,0,0,0.2); padding: 5px 14px; border-radius: 20px; font-size: 0.85rem;">Sin tema</span>
+                    {% endif %}
+                </div>
+                <div style="padding: 20px;">
+                    {% if tema_residente %}
+                    <p style="font-weight: 700; font-size: 1.05rem; color: #222; margin: 0 0 8px;">{{ tema_residente.titulo }}</p>
+                    <p style="color: #666; font-size: 0.88rem; margin: 0 0 16px;">
+                        <i class="fas fa-calendar-alt"></i> Creado: {{ tema_residente.fecha_creacion|date:"d/m/Y" }}
+                        {% if tema_residente.creado_por %} &nbsp;·&nbsp; <i class="fas fa-user"></i> {{ tema_residente.creado_por.nombre }}{% endif %}
+                    </p>
+                    <div style="background: #f5f5f5; border-radius: 8px; padding: 14px; font-size: 0.9rem; color: #444; max-height: 120px; overflow: hidden; position: relative;">
+                        {{ tema_residente.contenido_educativo|safe|truncatewords_html:40 }}
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(transparent, #f5f5f5);"></div>
+                    </div>
+                    <a href="{% url 'admin_tema_semanal' %}?modo=historial" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; color: var(--primary); font-size: 0.88rem; text-decoration: none; font-weight: 600;">
+                        <i class="fas fa-pencil-alt"></i> Cambiar tema de residentes
+                    </a>
+                    {% else %}
+                    <div style="text-align: center; padding: 30px 16px; color: #aaa;">
+                        <i class="fas fa-book-open" style="font-size: 2.5rem; margin-bottom: 10px; display: block;"></i>
+                        <p style="margin: 0 0 4px; font-size: 0.95rem;">No hay tema activo para residentes.</p>
+                        <p style="margin: 0; font-size: 0.85rem;">Genera uno desde el generador IA.</p>
+                    </div>
+                    <a href="{% url 'admin_tema_semanal' %}" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--primary); font-size: 0.88rem; text-decoration: none; font-weight: 600;">
+                        <i class="fas fa-robot"></i> Generar tema para residentes
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tema para Organizadores -->
+            <div style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border-top: 4px solid #3498db;">
+                <div style="background: linear-gradient(135deg, #2980b9, #3498db); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85;">Rol</span>
+                        <h3 style="margin: 4px 0 0; font-size: 1.15rem;">🗂️ Organizador</h3>
+                    </div>
+                    {% if tema_organizador %}
+                    <span style="background: rgba(255,255,255,0.25); padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">● Activo</span>
+                    {% else %}
+                    <span style="background: rgba(0,0,0,0.2); padding: 5px 14px; border-radius: 20px; font-size: 0.85rem;">Sin tema</span>
+                    {% endif %}
+                </div>
+                <div style="padding: 20px;">
+                    {% if tema_organizador %}
+                    <p style="font-weight: 700; font-size: 1.05rem; color: #222; margin: 0 0 8px;">{{ tema_organizador.titulo }}</p>
+                    <p style="color: #666; font-size: 0.88rem; margin: 0 0 16px;">
+                        <i class="fas fa-calendar-alt"></i> Creado: {{ tema_organizador.fecha_creacion|date:"d/m/Y" }}
+                        {% if tema_organizador.creado_por %} &nbsp;·&nbsp; <i class="fas fa-user"></i> {{ tema_organizador.creado_por.nombre }}{% endif %}
+                    </p>
+                    <div style="background: #f5f5f5; border-radius: 8px; padding: 14px; font-size: 0.9rem; color: #444; max-height: 120px; overflow: hidden; position: relative;">
+                        {{ tema_organizador.contenido_educativo|safe|truncatewords_html:40 }}
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(transparent, #f5f5f5);"></div>
+                    </div>
+                    <a href="{% url 'admin_tema_semanal' %}?modo=historial" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; color: #2980b9; font-size: 0.88rem; text-decoration: none; font-weight: 600;">
+                        <i class="fas fa-pencil-alt"></i> Cambiar tema de organizadores
+                    </a>
+                    {% else %}
+                    <div style="text-align: center; padding: 30px 16px; color: #aaa;">
+                        <i class="fas fa-book-open" style="font-size: 2.5rem; margin-bottom: 10px; display: block;"></i>
+                        <p style="margin: 0 0 4px; font-size: 0.95rem;">No hay tema activo para organizadores.</p>
+                        <p style="margin: 0; font-size: 0.85rem;">Genera uno desde el generador IA.</p>
+                    </div>
+                    <a href="{% url 'admin_tema_semanal' %}" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: #2980b9; font-size: 0.88rem; text-decoration: none; font-weight: 600;">
+                        <i class="fas fa-robot"></i> Generar tema para organizadores
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'admin_tema_semanal' %}" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 12px 28px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                <i class="fas fa-robot"></i> Ir al Generador de Temas IA
+            </a>
+        </div>
+    </section>
+
+    <!-- ACCIONES DE ADMINISTRADOR -->
+    <section class="admin-actions">
+        <h3>🛡️ Herramientas de Administración</h3>
+        <p>Como administrador, tienes el poder de transformar la Comuna 4. Utiliza estas herramientas:</p>
+        <div>
+            <a href="{% url 'admi_creacion_jornadas' %}" class="btn-admin-action">📅 Gestionar Jornadas</a>
+            <a href="{% url 'panel_usuarios' %}" class="btn-admin-action">👥 Gestionar Usuarios</a>
+            <a href="{% url 'admi_educacion' %}" class="btn-admin-action">📚 Ver Educación</a>
+            <a href="{% url 'admi_configuracion' %}" class="btn-admin-action">⚙️ Configuración</a>
+        </div>
+    </section>
+
+</main>
+
+{% include 'administrador/footer.html' %}
+{% endblock %}

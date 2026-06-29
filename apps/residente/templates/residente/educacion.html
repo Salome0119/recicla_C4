@@ -1,0 +1,140 @@
+{% extends "residente/base.html" %}
+{% load static %}
+
+{% block titulo %}Recicla Comuna 4 — Semana de Educación Ambiental{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'residente/css/estilos_residentes.css' %}">
+<link rel="stylesheet" href="{% static 'residente/css/educacion.css' %}">
+<script>
+function renderRetroalimentacion(texto) {
+    const lineas = texto.split('<br>');
+    return lineas.map(l => {
+        const esCorrecta = l.includes('✓');
+        return '<div class="retroalimentacion-item ' + (esCorrecta ? 'correcta' : 'incorrecta') + '">' + l + '</div>';
+    }).join('');
+}
+
+function cargarTema() {
+    fetch('/api/educacion/')
+    .then(r => {
+        if (!r.ok) {
+            document.getElementById('temaSemanalContent').innerHTML =
+                '<div style="text-align:center;padding:40px;color:#888;">'
+                + '<i class="fas fa-book-open" style="font-size:3rem;margin-bottom:15px;display:block;"></i>'
+                + '<p style="font-size:1.1rem;">No hay tema educativo activo para residentes en este momento.</p>'
+                + '<p>El administrador publicará un nuevo tema pronto.</p></div>';
+            document.getElementById('evaluacionSection').style.display = 'none';
+            return null;
+        }
+        return r.json();
+    })
+    .then(data => {
+        if (!data) return;
+        if (data.error) {
+            document.getElementById('evaluacionSection').style.display = 'none';
+            document.getElementById('temaSemanalContent').innerHTML =
+                '<p style="color:#888;text-align:center;padding:30px;">' + data.error + '</p>';
+            return;
+        }
+        const contenidoDiv = document.getElementById('temaSemanalContent');
+        contenidoDiv.innerHTML = '<h2>' + data.titulo + '</h2>' + data.contenido;
+        
+        if (data.evaluacion_realizada) {
+            document.getElementById('evaluacionSection').style.display = 'block';
+            document.getElementById('preguntasContainer').innerHTML = 
+                '<div class="evaluacion-completada-mensaje"><i class="fas fa-check-circle"></i> Evaluación realizada</div>';
+            document.getElementById('btnEnviar').style.display = 'none';
+            document.getElementById('resultadoMensaje').innerHTML = 
+                '<div class="retroalimentacion-completada">' +
+                '<h4><i class="fas fa-star"></i> Retroalimentación de tu evaluación</h4>' +
+                '<p>Tu puntaje fue: <strong>' + data.puntos_guardados + '/' + data.max_puntos + '</strong></p>' +
+                '<div class="retroalimentacion-texto">' + renderRetroalimentacion(data.retroalimentacion_guardada) + '</div>' +
+                '</div>';
+            return;
+        }
+        
+        let html = '';
+        if (data.preguntas && data.preguntas.length > 0) {
+            data.preguntas.forEach((p, i) => {
+                html += '<div class="pregunta-card">';
+                html += '<p class="pregunta-texto"><span class="pregunta-numero">' + (i+1) + '</span>' + p.pregunta + '</p>';
+                p.opciones.forEach((op, j) => {
+                    html += '<label class="opcion-label">';
+                    html += '<input type="radio" name="p' + i + '" value="' + j + '">';
+                    html += '<span class="opcion-texto">' + op + '</span>';
+                    html += '</label>';
+                });
+                html += '</div>';
+            });
+        }
+        document.getElementById('preguntasContainer').innerHTML = html;
+        document.getElementById('evaluacionSection').style.display = 'block';
+    })
+    .catch(err => {
+        console.error('Error fetch:', err);
+    });
+}
+function enviarEvaluacion() {
+    const respuestas = {};
+    document.querySelectorAll('input[type=radio]:checked').forEach(el => respuestas[el.name] = parseInt(el.value));
+    fetch('/api/evaluacion/guardar/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({respuestas: respuestas})
+    }).then(r => r.json()).then(d => {
+        if (d.error) {
+            document.getElementById('resultadoMensaje').innerHTML = '<div class="resultado-evaluacion resultado-incorrecto">' + d.error + '</div>';
+            return;
+        }
+        document.getElementById('resultadoMensaje').innerHTML = 
+            '<div class="retroalimentacion-envio">' +
+            '<h4><i class="fas fa-star"></i> Retroalimentación de tu evaluación</h4>' +
+            '<p>Puntuación: <strong>' + d.puntos + '/' + d.max_puntos + '</strong></p>' +
+            '<div class="retroalimentacion-texto">' + renderRetroalimentacion(d.retroalimentacion) + '</div>' +
+            '</div>';
+        document.getElementById('preguntasContainer').innerHTML = 
+            '<div class="evaluacion-completada-mensaje"><i class="fas fa-check-circle"></i> Evaluación realizada</div>';
+        document.getElementById('btnEnviar').style.display = 'none';
+    }).catch(err => console.error('Error fetch:', err));
+}
+document.addEventListener('DOMContentLoaded', cargarTema);
+</script>
+{% endblock %}
+
+{% block cuerpo %}
+{% include 'residente/header.html' %}
+
+<main class="page-container" id="mainContent">
+    <!-- HERO -->
+    <section class="edu-hero">
+        <h1>📚 Semana de Educación Ambiental</h1>
+        <p>Tema educativo semanal sobre reciclaje y sostenibilidad.</p>
+    </section>
+
+    <!-- CONTENIDO EDUCATIVO -->
+    <section class="edu-section" id="contenidoEduSection">
+        <h2>📖 Contenido Educativo</h2>
+        <div id="temaSemanalContent" class="edu-content-wrapper">
+            {% if tema %}
+                <h2>{{ tema.titulo }}</h2>
+                {{ tema.contenido_educativo|safe }}
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- EVALUATION SECTION -->
+    <section class="edu-section" id="evaluacionSection" style="display:none;">
+        <div class="evaluacion-header">
+            <h3>📝 Evaluación del Tema</h3>
+        </div>
+        <form id="evaluacionForm">
+            <div id="preguntasContainer"></div>
+            <button type="button" id="btnEnviar" onclick="enviarEvaluacion()" class="btn-responder">Enviar respuestas</button>
+        </form>
+        <div id="resultadoMensaje"></div>
+    </section>
+</main>
+
+{% include 'residente/footer.html' %}
+{% endblock %}
