@@ -1,0 +1,1002 @@
+[
+{
+  "model": "core.inscripcion",
+  "pk": 1,
+  "fields": {
+    "usuario": 1,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-14T10:18:02Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 2,
+  "fields": {
+    "usuario": 3,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-14T10:18:02Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 3,
+  "fields": {
+    "usuario": 1,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-14T10:18:02Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 6,
+  "fields": {
+    "usuario": 1,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-04T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 7,
+  "fields": {
+    "usuario": 1,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-19T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 8,
+  "fields": {
+    "usuario": 1,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-16T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 9,
+  "fields": {
+    "usuario": 1,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-20T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 10,
+  "fields": {
+    "usuario": 1,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-13T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 11,
+  "fields": {
+    "usuario": 1,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-23T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 13,
+  "fields": {
+    "usuario": 1,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-09T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 14,
+  "fields": {
+    "usuario": 1,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-02T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 15,
+  "fields": {
+    "usuario": 1,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-20T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 16,
+  "fields": {
+    "usuario": 2,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-13T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 17,
+  "fields": {
+    "usuario": 2,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-16T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 18,
+  "fields": {
+    "usuario": 2,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-27T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 19,
+  "fields": {
+    "usuario": 2,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-13T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 20,
+  "fields": {
+    "usuario": 2,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-16T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 21,
+  "fields": {
+    "usuario": 2,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-19T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 23,
+  "fields": {
+    "usuario": 2,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-26T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 24,
+  "fields": {
+    "usuario": 2,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-12T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 25,
+  "fields": {
+    "usuario": 2,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-26T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 26,
+  "fields": {
+    "usuario": 3,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-10T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 27,
+  "fields": {
+    "usuario": 3,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-07-31T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 28,
+  "fields": {
+    "usuario": 3,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-12T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 29,
+  "fields": {
+    "usuario": 3,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-27T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 30,
+  "fields": {
+    "usuario": 3,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-07-31T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 31,
+  "fields": {
+    "usuario": 3,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-07T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 33,
+  "fields": {
+    "usuario": 3,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-25T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 34,
+  "fields": {
+    "usuario": 3,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-08T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 35,
+  "fields": {
+    "usuario": 3,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-19T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 36,
+  "fields": {
+    "usuario": 230,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-04T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 37,
+  "fields": {
+    "usuario": 230,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-11T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 38,
+  "fields": {
+    "usuario": 230,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-28T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 39,
+  "fields": {
+    "usuario": 230,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-02T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 40,
+  "fields": {
+    "usuario": 230,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-16T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 41,
+  "fields": {
+    "usuario": 230,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-07-31T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 43,
+  "fields": {
+    "usuario": 230,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-05T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 44,
+  "fields": {
+    "usuario": 230,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-11T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 45,
+  "fields": {
+    "usuario": 230,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-23T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 46,
+  "fields": {
+    "usuario": 140,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-25T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 47,
+  "fields": {
+    "usuario": 140,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-12T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 48,
+  "fields": {
+    "usuario": 140,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-19T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 49,
+  "fields": {
+    "usuario": 140,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-22T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 50,
+  "fields": {
+    "usuario": 140,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-17T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 51,
+  "fields": {
+    "usuario": 140,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-12T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 53,
+  "fields": {
+    "usuario": 140,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-27T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 54,
+  "fields": {
+    "usuario": 140,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-09T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 55,
+  "fields": {
+    "usuario": 140,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-05T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 56,
+  "fields": {
+    "usuario": 141,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-22T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 57,
+  "fields": {
+    "usuario": 141,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-22T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 58,
+  "fields": {
+    "usuario": 141,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-03T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 59,
+  "fields": {
+    "usuario": 141,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-28T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 60,
+  "fields": {
+    "usuario": 141,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-01T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 61,
+  "fields": {
+    "usuario": 141,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-21T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 63,
+  "fields": {
+    "usuario": 141,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-19T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 64,
+  "fields": {
+    "usuario": 141,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-24T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 65,
+  "fields": {
+    "usuario": 141,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-23T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 66,
+  "fields": {
+    "usuario": 142,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-04T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 67,
+  "fields": {
+    "usuario": 142,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-21T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 68,
+  "fields": {
+    "usuario": 142,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-14T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 69,
+  "fields": {
+    "usuario": 142,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-25T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 70,
+  "fields": {
+    "usuario": 142,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-12T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 71,
+  "fields": {
+    "usuario": 142,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-22T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 73,
+  "fields": {
+    "usuario": 142,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-22T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 74,
+  "fields": {
+    "usuario": 142,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-10T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 75,
+  "fields": {
+    "usuario": 142,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-02T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 76,
+  "fields": {
+    "usuario": 143,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-26T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 77,
+  "fields": {
+    "usuario": 143,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-14T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 78,
+  "fields": {
+    "usuario": 143,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-15T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 79,
+  "fields": {
+    "usuario": 143,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-28T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 80,
+  "fields": {
+    "usuario": 143,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-24T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 81,
+  "fields": {
+    "usuario": 143,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-10T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 83,
+  "fields": {
+    "usuario": 143,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-11T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 84,
+  "fields": {
+    "usuario": 143,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-21T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 85,
+  "fields": {
+    "usuario": 143,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-20T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 86,
+  "fields": {
+    "usuario": 144,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-07-30T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 87,
+  "fields": {
+    "usuario": 144,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-25T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 88,
+  "fields": {
+    "usuario": 144,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-15T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 89,
+  "fields": {
+    "usuario": 144,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-11T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 90,
+  "fields": {
+    "usuario": 144,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-24T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 91,
+  "fields": {
+    "usuario": 144,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-05T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 93,
+  "fields": {
+    "usuario": 144,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-26T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 94,
+  "fields": {
+    "usuario": 144,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-08T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 95,
+  "fields": {
+    "usuario": 144,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-26T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 96,
+  "fields": {
+    "usuario": 145,
+    "jornada": 1,
+    "fecha_inscripcion": "2025-08-22T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 97,
+  "fields": {
+    "usuario": 145,
+    "jornada": 2,
+    "fecha_inscripcion": "2025-08-07T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 98,
+  "fields": {
+    "usuario": 145,
+    "jornada": 9,
+    "fecha_inscripcion": "2025-08-10T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 99,
+  "fields": {
+    "usuario": 145,
+    "jornada": 13,
+    "fecha_inscripcion": "2025-08-12T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 100,
+  "fields": {
+    "usuario": 145,
+    "jornada": 21,
+    "fecha_inscripcion": "2025-08-09T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 101,
+  "fields": {
+    "usuario": 145,
+    "jornada": 53,
+    "fecha_inscripcion": "2025-08-15T09:37:00Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 103,
+  "fields": {
+    "usuario": 145,
+    "jornada": 100,
+    "fecha_inscripcion": "2025-08-09T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 104,
+  "fields": {
+    "usuario": 145,
+    "jornada": 6,
+    "fecha_inscripcion": "2025-08-25T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 105,
+  "fields": {
+    "usuario": 145,
+    "jornada": 15,
+    "fecha_inscripcion": "2025-08-15T09:37:00Z",
+    "estado": "cancelada"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 106,
+  "fields": {
+    "usuario": 242,
+    "jornada": 1,
+    "fecha_inscripcion": "2026-03-18T12:49:17Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 107,
+  "fields": {
+    "usuario": 242,
+    "jornada": 8,
+    "fecha_inscripcion": "2026-03-18T12:52:10Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 108,
+  "fields": {
+    "usuario": 242,
+    "jornada": 125,
+    "fecha_inscripcion": "2026-03-18T13:03:53Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 109,
+  "fields": {
+    "usuario": 242,
+    "jornada": 11,
+    "fecha_inscripcion": "2026-03-18T15:59:36Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 110,
+  "fields": {
+    "usuario": 242,
+    "jornada": 118,
+    "fecha_inscripcion": "2026-03-18T15:59:59Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 112,
+  "fields": {
+    "usuario": 243,
+    "jornada": 8,
+    "fecha_inscripcion": "2026-03-18T19:32:53Z",
+    "estado": "activa"
+  }
+},
+{
+  "model": "core.inscripcion",
+  "pk": 113,
+  "fields": {
+    "usuario": 242,
+    "jornada": 128,
+    "fecha_inscripcion": "2026-04-08T02:02:54Z",
+    "estado": "activa"
+  }
+}
+]

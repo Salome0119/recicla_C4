@@ -1,0 +1,105 @@
+  .page-container {
+    min-height: calc(100vh - 180px);
+    padding: 20px;
+  }
+  
+  .wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px;
+  }
+  
+  .canje-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .canje-info h3 {
+    margin: 0 0 8px 0;
+    color: var(--dark);
+  }
+  
+  .canje-info p {
+    margin: 4px 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  
+  .canje-fecha {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  
+  .btn-volver {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .btn-volver:hover {
+    background: var(--secondary);
+  }
+  
+  .page-title {
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  
+  .pagination a, .pagination span {
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--dark);
+    background: white;
+    border: 1px solid #ddd;
+  }
+  
+  .pagination a:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  
+  .pagination .active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  
+  .pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .badge-recompensa {
+    background: var(--primary);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+  
+  .total-info {
+    background: #e8f5e9;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: var(--dark);
+  }

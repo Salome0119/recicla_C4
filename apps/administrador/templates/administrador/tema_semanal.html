@@ -1,0 +1,987 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+
+{% block titulo %}Tema Semanal - Admin{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+<style>
+    .tema-form {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        padding: 25px;
+        border-radius: var(--radius);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .tema-form label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+        font-size: 1.05rem;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: white;
+    }
+
+    .tema-form input,
+    .tema-form select,
+    .tema-form textarea {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        margin-bottom: 15px;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .tema-form button {
+        background: white;
+        color: var(--primary);
+        padding: 10px 25px;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+    .tema-form button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-guardar {
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        box-shadow: 0 8px 20px rgba(var(--secondary-rgb, 76, 175, 80), 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-guardar:hover {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    .btn-ver-mas {
+        background: var(--secondary);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-ver-mas:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+    .card-actions h3 {
+        color: var(--primary);
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+    }
+
+    .card-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 12px 0;
+        padding: 15px;
+        font-size: 1rem;
+        border-radius: var(--radius);
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .card-actions .btn-historial {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border: none;
+    }
+
+    .card-actions .btn-historial:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-actions .btn-vista {
+        background: white;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+    }
+
+    .card-actions .btn-vista:hover {
+        background: var(--bg-2);
+    }
+
+    .preview-box {
+        background: white;
+        padding: 25px;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .preview-box h2,
+    .preview-box h3 {
+        color: var(--primary);
+        margin-bottom: 15px;
+    }
+
+    .pregunta-preview {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--bg-2);
+        border-radius: var(--radius);
+        border-left: 4px solid var(--primary);
+    }
+
+    .pregunta-preview ul {
+        margin: 8px 0;
+        padding-left: 20px;
+    }
+
+    .pregunta-preview li {
+        margin: 4px 0;
+        color: var(--dark);
+    }
+
+    .alert-error {
+        background: #e74c3c;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+
+    .alert-success {
+        background: var(--primary);
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+
+    .messages {
+        max-width: 100%;
+        margin: 10px 0;
+    }
+
+    .contenido-educativo {
+        line-height: 1.7;
+        color: #333;
+        font-size: 1rem;
+        font-family: 'Calibri', 'Arial', sans-serif;
+    }
+
+    .contenido-educativo h2 {
+        color: var(--primary);
+        margin: 20px 0 10px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        border-bottom: 2px solid var(--secondary);
+        padding-bottom: 6px;
+    }
+
+    .contenido-educativo h3 {
+        color: var(--secondary);
+        margin: 15px 0 8px;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .contenido-educativo p {
+        margin: 12px 0;
+        text-align: justify;
+        color: #444;
+    }
+
+    .contenido-educativo ul,
+    .contenido-educativo ol {
+        margin: 15px 0;
+        padding-left: 30px;
+    }
+
+    .contenido-educativo li {
+        margin: 8px 0;
+        color: #333;
+    }
+
+    .historial-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .historial-table th,
+    .historial-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    .historial-table th {
+        background: var(--primary);
+        color: white;
+        font-weight: 600;
+    }
+
+    .historial-table tr {
+        transition: background 0.3s;
+    }
+
+    .historial-table tr:hover {
+        background: var(--bg-2);
+    }
+
+    .historial-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .historial-table .acciones {
+        white-space: nowrap;
+    }
+
+    .badge-activo {
+        background: var(--primary);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .badge-inactivo {
+        background: #999;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .column-layout {
+        display: flex;
+        gap: 25px;
+        max-width: 1200px;
+        margin: 0 auto 20px;
+    }
+
+    .column-layout .left-column {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .column-layout .right-column {
+        width: 280px;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+        .column-layout {
+            flex-direction: column;
+        }
+
+        .column-layout .right-column {
+            width: 100%;
+        }
+    }
+
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 350px;
+    }
+
+    .toast {
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        animation: slideIn 0.3s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .toast.success {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+
+    .toast.error {
+        background: #e74c3c;
+    }
+
+    .toast.warning {
+        background: #f39c12;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .toast .close {
+        margin-left: auto;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+
+    .detalle-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        display: none;
+    }
+
+    .detalle-card.active {
+        display: block;
+    }
+
+    .detalle-header {
+        background: var(--primary);
+        color: white;
+        padding: 15px 20px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .detalle-content {
+        padding: 20px;
+        max-height: 400px;
+        overflow-y: auto;
+        font-family: 'Calibri', Arial, sans-serif;
+    }
+
+    .detalle-content h4 {
+        color: var(--secondary);
+        margin: 15px 0 10px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .detalle-content p {
+        margin: 8px 0;
+        line-height: 1.6;
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    .pagination-links {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination-links a {
+        display: inline-block;
+        padding: 8px 16px;
+        margin: 0 3px;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        border-radius: 20px;
+        transition: all 0.3s;
+    }
+
+    .pagination-links a:hover {
+        background: var(--secondary);
+    }
+
+    .pagination-links .current {
+        display: inline-block;
+        padding: 8px 16px;
+        margin: 0 3px;
+        background: var(--secondary);
+        color: white;
+        border-radius: 20px;
+    }
+
+    .pagination-links .disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .page-container {
+        min-height: calc(100vh - 200px);
+    }
+</style>
+<script>
+    function toggleDetalle(id) {
+        const card = document.getElementById('detalle-' + id);
+        if (card) {
+            card.classList.toggle('active');
+        }
+    }
+    function showToast(message, type) {
+        const container = document.querySelector('.toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + type;
+        toast.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle') + '"></i>' + message + '<button class="close" onclick="this.parentElement.remove()">×</button>';
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 20000);
+    }
+    function updatePreguntasJson() {
+        const preguntas = [];
+        document.querySelectorAll('.edit-pregunta').forEach((el, idx) => {
+            const opciones = [];
+            const lis = el.querySelectorAll('li');
+            lis.forEach((li, optIdx) => {
+                const texto = li.firstChild.textContent.trim();
+                opciones.push(texto);
+            });
+            const correctaRadio = el.querySelector('input[type="radio"]:checked');
+            const respuesta_correcta = correctaRadio ? parseInt(correctaRadio.value) : 0;
+            preguntas[idx] = {
+                pregunta: el.querySelector('.edit-pregunta-texto').textContent,
+                opciones: opciones,
+                respuesta_correcta: respuesta_correcta,
+                explicacion: ''
+            };
+        });
+        document.getElementById('preguntas-hidden').value = JSON.stringify(preguntas);
+    }
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('edit-pregunta-texto') || e.target.classList.contains('edit-opcion') || e.target.type === 'radio') {
+            updatePreguntasJson();
+        }
+    }, true);
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.toast-data').forEach(el => {
+            const tags = el.dataset.tags || '';
+            const type = tags.includes('error') ? 'error' : (tags.includes('success') ? 'success' : 'warning');
+            showToast(el.dataset.message, type);
+        });
+    });
+</script>
+{% endblock %}
+
+{% block cuerpo %}
+{% include 'administrador/header.html' %}
+
+<div class="toast-container">
+    {% if messages %}
+    {% for message in messages %}
+    <span class="toast-data" data-message="{{ message }}" data-tags="{{ message.tags }}"></span>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<div class="page-container">
+    <div class="column-layout">
+        <div class="left-column">
+            {% if modo == "historial" %}
+            <div class="preview-box">
+                <h2>📚 Historial de Temas Creados</h2>
+                <table class="historial-table">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Fecha</th>
+                            <th>Destino</th>
+                            <th>Estado</th>
+                            <th class="acciones">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tema in temas %}
+                        <tr>
+                            <td>{{ tema.titulo }}</td>
+                            <td>{{ tema.fecha_creacion|date:"d/m/Y" }}</td>
+                            <td>{{ tema.vista_destino|title }}</td>
+                            <td>
+                                {% if tema.activo %}
+                                <span class="badge-activo">Activo</span>
+                                {% else %}
+                                <span class="badge-inactivo">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td class="acciones">
+                                <button type="button" class="btn-ver-mas" onclick="toggleDetalle({{ tema.id_tema }})">
+                                    <i class="fas fa-eye"></i> Ver más
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="padding: 0; border: none;">
+                                <div id="detalle-{{ tema.id_tema }}" class="detalle-card">
+                                    <div class="detalle-header" onclick="toggleDetalle({{ tema.id_tema }})">
+                                        <span><i class="fas fa-info-circle"></i> Detalles del tema</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="detalle-content">
+                                        <h4>📖 Contenido Educativo</h4>
+                                        <div>{{ tema.contenido_educativo|safe }}</div>
+                                        <h4>❓ Preguntas</h4>
+                                        {% if tema.preguntas_json %}
+                                        {% for p in tema.preguntas_json %}
+                                        <div style="margin-bottom: 12px; padding: 10px; background: var(--bg-2); border-radius: 8px;">
+                                            <strong>{{ forloop.counter }}. {{ p.pregunta }}</strong><br>
+                                            <small>Opciones: {{ p.opciones|join:", " }}</small><br>
+                                            <small style="color: var(--primary);">Correcta: {{ p.respuesta_correcta }}</small>
+                                        </div>
+                                        {% endfor %}
+                                        {% else %}
+                                        <p style="color: #999;">No hay preguntas para este tema.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px;">
+                                <p style="color: #999; font-size: 1.1rem;">No hay temas creados aún.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if temas.has_other_pages %}
+                <div class="pagination-links">
+                    {% if temas.has_previous %}
+                    <a href="?modo=historial&page=1">«</a>
+                    <a href="?modo=historial&page={{ temas.previous_page_number }}">‹</a>
+                    {% else %}
+                    <span class="disabled">«</span>
+                    <span class="disabled">‹</span>
+                    {% endif %}
+
+                    {% for num in temas.paginator.page_range %}
+                    {% if temas.number == num %}
+                    <span class="current">{{ num }}</span>
+                    {% elif num > temas.number|add:'-3' and num < temas.number|add:'3' %} <a href="?modo=historial&page={{ num }}">{{ num }}</a>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if temas.has_next %}
+                        <a href="?modo=historial&page={{ temas.next_page_number }}">›</a>
+                        <a href="?modo=historial&page={{ temas.paginator.num_pages }}">»</a>
+                        {% else %}
+                        <span class="disabled">›</span>
+                        <span class="disabled">»</span>
+                        {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% elif modo == "vista_previa" %}
+            <div class="preview-box" style="display: block !important;">
+                <h2>👀 Vista Previa: {{ tema_titulo }}
+                    <a href="?modo=editar&titulo={{ tema_titulo }}&vista={{ vista_destino }}" style="float: right; font-size: 0.8rem; text-decoration: none;">
+                        ✏️ Editar
+                    </a>
+                </h2>
+
+                <div style="margin: 20px 0;">
+<h3>📖 Contenido Educativo</h3>
+                        <div class="contenido-educativo" style="background: #f9f9f9; padding: 15px; border-radius: 8px; min-height: 100px;" data-contenido="{{ preview.contenido|escape }}">
+                            <pre style="color: red; font-size: 10px;">DEBUG preview.contenido = {{ preview.contenido|default:'None' }}</pre>
+                            {% if preview and preview.contenido %}
+                                <em>Cargando...</em>
+                            {% else %}
+                                <p><em>No hay contenido disponible.</em></p>
+                            {% endif %}
+                        </div>
+                        <script>
+                        (function(){
+                            var divs = document.querySelectorAll('.contenido-educativo');
+                            divs.forEach(function(div){
+                                var contenido = div.dataset.contenido;
+                                if (contenido) {
+                                    var partes = contenido.split('\n\n');
+                                    var html = '';
+                                    partes.forEach(function(parte){
+                                        if (parte.trim()) {
+                                            html += '<p>' + parte.trim().replace(/\n/g, '<br>') + '</p>';
+                                        }
+                                    });
+                                    div.innerHTML = html;
+                                }
+                            });
+                        })();
+                        </script>
+                </div>
+
+                <div style="display: flex; gap: 20px; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <h3>❓ Preguntas de Evaluación (5 × 20 pts = 100 pts)</h3>
+                        {% if preview.preguntas and preview.preguntas|length > 0 %}
+                        {% for p in preview.preguntas %}
+                        <div class="pregunta-preview" style="margin-bottom: 20px; padding: 15px; background: var(--bg-2); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                            <p><strong>{{ forloop.counter }}. {{ p.pregunta }} <small style="color: #666;">(rc={{ p.respuesta_correcta }}, idx={{ forloop.counter0 }})</small></strong></p>
+<ul style="margin: 10px 0; padding-left: 20px;" data-rc="{{ p.respuesta_correcta }}">
+{% for opt in p.opciones %}
+                                    <li style="margin: 5px 0;">{{ opt }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <script>
+                                (function(){
+                                    var ul = document.currentScript.previousElementSibling;
+                                    var rc = parseInt(ul.dataset.rc);
+                                    if (!isNaN(rc)) {
+                                        var lis = ul.querySelectorAll('li');
+                                        if (lis[rc]) {
+                                            lis[rc].style.color = '#27ae60';
+                                            lis[rc].style.textDecoration = 'underline';
+                                            lis[rc].style.fontWeight = '500';
+                                            lis[rc].innerHTML += ' &#10004;';
+                                        }
+                                    }
+                                })();
+                                </script>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <p style="color: #999; padding: 20px; text-align: center;">No se generaron preguntas. Intente nuevamente.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 25px; padding: 20px; background: linear-gradient(135deg, var(--bg-2) 0%, #f0f8ff 100%); border-radius: var(--radius); border: 2px dashed var(--primary);">
+                    <p style="color: var(--primary); font-weight: 600; margin-bottom: 10px;">¿Listo para publicar este tema?</p>
+                    <form method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="titulo" value="{{ tema_titulo }}">
+                        <input type="hidden" name="vista_destino" value="{{ vista_destino }}">
+                        <input type="hidden" name="guardar" value="1">
+                        <input type="hidden" name="contenido_guardado" value="{{ preview.contenido|escape }}">
+                        <input type="hidden" name="preguntas_guardadas" value="{{ preview_preguntas_json|escape }}">
+                        <button type="submit" class="btn-guardar">
+                            <i class="fas fa-save"></i> Guardar como Tema Semanal Activo
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% elif modo == "editar" %}
+            <div class="preview-box" style="display: block !important;">
+                <h2 style="color: var(--primary);">✏️ Editar Tema: {{ tema_titulo }}</h2>
+
+                <form method="POST" id="edit-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="titulo" value="{{ tema_titulo }}">
+                    <input type="hidden" name="vista_destino" value="{{ vista_destino }}">
+                    <input type="hidden" name="guardar" value="1">
+
+                    <div style="margin: 20px 0;">
+                        <h3>📖 Contenido Educativo</h3>
+                        <div class="contenido-educativo" style="background: #f9f9f9; padding: 15px; border-radius: 8px; min-height: 100px;" contenteditable="true" oninput="document.getElementById('contenido-hidden').value = this.innerHTML">
+                            {{ preview.contenido|safe }}
+                        </div>
+                        <input type="hidden" name="contenido_guardado" id="contenido-hidden" value="{{ preview.contenido|escape }}">
+                    </div>
+
+                    <div style="display: flex; gap: 20px; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <h3>❓ Preguntas de Evaluación (5 × 20 pts = 100 pts)</h3>
+                            {% if preview.preguntas and preview.preguntas|length > 0 %}
+                            {% for p in preview.preguntas %}
+                            <div class="edit-pregunta" style="margin-bottom: 20px; padding: 15px; background: var(--bg-2); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+<p><strong><span class="edit-pregunta-texto" contenteditable="true">{{ p.pregunta }}</span></strong></p>
+                                <ul style="margin: 10px 0; padding-left: 20px;" data-rc="{{ p.respuesta_correcta }}">
+                                    {% for opt in p.opciones %}
+                                    <li style="margin: 5px 0;" contenteditable="true">{{ opt }}
+                                        <input type="radio" name="correcta_{{ forloop.parentloop.counter0 }}" value="{{ forloop.counter0 }}" style="margin-left: 8px;">
+                                    </li>
+                                    {% endfor %}
+                                    <script>
+                                    (function(){
+                                        var ul = document.currentScript.parentElement;
+                                        var rc = parseInt(ul.dataset.rc);
+                                        if (!isNaN(rc)) {
+                                            var lis = ul.querySelectorAll('li');
+                                            if (lis[rc]) {
+                                                lis[rc].style.color = '#27ae60';
+                                                lis[rc].style.textDecoration = 'underline';
+                                                lis[rc].style.fontWeight = '500';
+                                                var radio = lis[rc].querySelector('input[type="radio"]');
+                                                if (radio) radio.checked = true;
+                                            }
+                                        }
+                                    })();
+                                    </script>
+                                </ul>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <p style="color: #999; padding: 20px; text-align: center;">No se generaron preguntas.</p>
+                            {% endif %}
+                            <input type="hidden" name="preguntas_guardadas" id="preguntas-hidden" value="{{ preview_preguntas_json|escape }}">
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 25px; padding: 20px; background: linear-gradient(135deg, var(--bg-2) 0%, #f0f8ff 100%); border-radius: var(--radius); border: 2px dashed var(--primary);">
+                        <p style="color: var(--primary); font-weight: 600; margin-bottom: 10px;">¿Guardar los cambios realizados?</p>
+                        <button type="submit" class="btn-guardar">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                        <a href="?modo=vista_previa&titulo={{ tema_titulo }}&vista={{ vista_destino }}" class="btn-vista" style="margin-left: 15px; padding: 10px 25px; font-size: 0.95rem; background: white; color: var(--primary); border: 2px solid var(--primary); border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-arrow-left"></i> Volver a vista previa
+                        </a>
+                    </div>
+                </form>
+            </div>
+            {% else %}
+
+            {% if preview %}
+            {# ===== VISTA PREVIA GENERADA (sin formulario) ===== #}
+            <div class="preview-box" id="preview-container">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
+                    <h2 style="margin:0;">👀 Vista Previa: <span id="preview-titulo-display">{{ tema_titulo }}</span></h2>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button type="button" id="btn-editar" onclick="activarEdicion()" style="background:linear-gradient(135deg,#f39c12,#e67e22);color:white;border:none;padding:10px 22px;border-radius:50px;font-weight:700;cursor:pointer;font-size:0.95rem;display:flex;align-items:center;gap:8px;transition:all 0.3s;">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button type="button" id="btn-cancelar-edicion" onclick="cancelarEdicion()" style="display:none;background:#95a5a6;color:white;border:none;padding:10px 22px;border-radius:50px;font-weight:700;cursor:pointer;font-size:0.95rem;align-items:center;gap:8px;transition:all 0.3s;">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <a href="?modo=generar" style="background:white;color:var(--primary);border:2px solid var(--primary);padding:10px 22px;border-radius:50px;font-weight:700;font-size:0.95rem;display:flex;align-items:center;gap:8px;text-decoration:none;transition:all 0.3s;">
+                            <i class="fas fa-redo"></i> Nueva generación
+                        </a>
+                    </div>
+                </div>
+
+                {# --- Contenido educativo --- #}
+                <div style="margin:20px 0;">
+                    <h3>📖 Contenido Educativo</h3>
+
+                    {# Modo lectura #}
+                    <div id="contenido-readonly" class="contenido-educativo" style="background:#f9f9f9;padding:18px;border-radius:8px;min-height:120px;line-height:1.8;">
+                        {{ preview.contenido|safe }}
+                    </div>
+
+                    {# Modo edición (oculto por defecto) #}
+                    <div id="contenido-editable" class="contenido-educativo" contenteditable="true"
+                         style="display:none;background:#fffef5;padding:18px;border-radius:8px;min-height:120px;line-height:1.8;border:2px solid #f39c12;outline:none;">
+                        {{ preview.contenido|safe }}
+                    </div>
+                    <p id="hint-edicion" style="display:none;color:#e67e22;font-size:0.85rem;margin-top:6px;"><i class="fas fa-info-circle"></i> Puedes seleccionar, copiar, editar o borrar el texto directamente.</p>
+                </div>
+
+                {# --- Preguntas --- #}
+                <div>
+                    <h3>❓ Preguntas de Evaluación (5 × 20 pts = 100 pts)</h3>
+                    {% if preview.preguntas and preview.preguntas|length > 0 %}
+                    <div id="preguntas-lista">
+                    {% for p in preview.preguntas %}
+                    <div class="pregunta-preview" data-idx="{{ forloop.counter0 }}" style="margin-bottom:20px;padding:15px;background:var(--bg-2);border-radius:var(--radius);border-left:4px solid var(--primary);">
+
+                        {# Texto pregunta - lectura #}
+                        <p class="pq-texto-ro"><strong>{{ forloop.counter }}. {{ p.pregunta }}</strong></p>
+                        {# Texto pregunta - edición #}
+                        <p class="pq-texto-ed" contenteditable="true" style="display:none;background:#fffef5;padding:6px 8px;border-radius:6px;border:1px solid #f39c12;font-weight:600;outline:none;">{{ p.pregunta }}</p>
+
+                        <ul class="pq-opciones-ro" style="margin:10px 0;padding-left:20px;" data-rc="{{ p.respuesta_correcta }}">
+                            {% for opt in p.opciones %}
+                            <li style="margin:5px 0;">{{ opt }}</li>
+                            {% endfor %}
+                        </ul>
+                        <ul class="pq-opciones-ed" style="display:none;margin:10px 0;padding-left:0;list-style:none;">
+                            {% for opt in p.opciones %}
+                            <li style="margin:6px 0;display:flex;align-items:center;gap:8px;">
+                                <input type="radio" name="rc_{{ forloop.parentloop.counter0 }}" value="{{ forloop.counter0 }}" {% if forloop.counter0 == p.respuesta_correcta %}checked{% endif %}>
+                                <span contenteditable="true" style="background:#fffef5;padding:4px 8px;border-radius:6px;border:1px solid #f39c12;outline:none;flex:1;">{{ opt }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                        <script>
+                        (function(){
+                            var ul = document.currentScript.previousElementSibling.previousElementSibling;
+                            var rc = parseInt(ul.dataset.rc);
+                            if (!isNaN(rc)) {
+                                var lis = ul.querySelectorAll('li');
+                                if (lis[rc]) {
+                                    lis[rc].style.color = '#27ae60';
+                                    lis[rc].style.fontWeight = '600';
+                                    lis[rc].innerHTML += ' &#10004;';
+                                }
+                            }
+                        })();
+                        </script>
+                    </div>
+                    {% endfor %}
+                    </div>
+                    {% else %}
+                    <p style="color:#999;padding:20px;text-align:center;">No se generaron preguntas. Intente nuevamente.</p>
+                    {% endif %}
+                </div>
+
+                {# --- Acciones finales --- #}
+                <div id="actions-readonly" style="text-align:center;margin-top:25px;padding:20px;background:linear-gradient(135deg,var(--bg-2) 0%,#f0f8ff 100%);border-radius:var(--radius);border:2px dashed var(--primary);">
+                    <p style="color:var(--primary);font-weight:600;margin-bottom:10px;">¿Listo para publicar este tema?</p>
+                    <form method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="titulo" value="{{ tema_titulo }}">
+                        <input type="hidden" name="vista_destino" value="{{ vista_destino }}">
+                        <input type="hidden" name="guardar" value="1">
+                        <button type="submit" class="btn-guardar">
+                            <i class="fas fa-save"></i> Guardar como Tema Semanal Activo
+                        </button>
+                    </form>
+                </div>
+
+                {# --- Acciones modo edición --- #}
+                <div id="actions-edicion" style="display:none;text-align:center;margin-top:25px;padding:20px;background:linear-gradient(135deg,#fff9e6,#fffef5);border-radius:var(--radius);border:2px dashed #f39c12;">
+                    <p style="color:#e67e22;font-weight:600;margin-bottom:12px;">✏️ Edición activa — revisa los cambios antes de guardar</p>
+                    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                        <button type="button" onclick="guardarEdicionYPublicar()" class="btn-guardar" style="background:linear-gradient(135deg,#27ae60,#2ecc71);">
+                            <i class="fas fa-save"></i> Guardar cambios y publicar
+                        </button>
+                        <button type="button" onclick="cancelarEdicion()" style="background:white;color:#e67e22;border:2px solid #e67e22;padding:12px 25px;border-radius:50px;font-weight:700;cursor:pointer;font-size:0.95rem;">
+                            <i class="fas fa-times"></i> Cancelar edición
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {# Form oculto para guardar edición #}
+            <form id="form-guardar-edicion" method="POST" style="display:none;">
+                {% csrf_token %}
+                <input type="hidden" name="titulo" value="{{ tema_titulo }}">
+                <input type="hidden" name="vista_destino" value="{{ vista_destino }}">
+                <input type="hidden" name="guardar" value="1">
+                <input type="hidden" name="contenido_editado" id="contenido-editado-hidden">
+                <input type="hidden" name="preguntas_editadas" id="preguntas-editadas-hidden">
+            </form>
+
+            <script>
+            function activarEdicion() {
+                // Contenido
+                var ro = document.getElementById('contenido-readonly');
+                var ed = document.getElementById('contenido-editable');
+                ed.innerHTML = ro.innerHTML;
+                ro.style.display = 'none';
+                ed.style.display = 'block';
+                document.getElementById('hint-edicion').style.display = 'block';
+
+                // Preguntas
+                document.querySelectorAll('.pregunta-preview').forEach(function(div) {
+                    div.querySelector('.pq-texto-ro').style.display = 'none';
+                    var edTxt = div.querySelector('.pq-texto-ed');
+                    edTxt.style.display = 'block';
+
+                    div.querySelector('.pq-opciones-ro').style.display = 'none';
+                    div.querySelector('.pq-opciones-ed').style.display = 'block';
+                });
+
+                // Botones
+                document.getElementById('btn-editar').style.display = 'none';
+                document.getElementById('btn-cancelar-edicion').style.display = 'flex';
+                document.getElementById('actions-readonly').style.display = 'none';
+                document.getElementById('actions-edicion').style.display = 'block';
+            }
+
+            function cancelarEdicion() {
+                var ro = document.getElementById('contenido-readonly');
+                var ed = document.getElementById('contenido-editable');
+                ro.style.display = 'block';
+                ed.style.display = 'none';
+                document.getElementById('hint-edicion').style.display = 'none';
+
+                document.querySelectorAll('.pregunta-preview').forEach(function(div) {
+                    div.querySelector('.pq-texto-ro').style.display = 'block';
+                    div.querySelector('.pq-texto-ed').style.display = 'none';
+                    div.querySelector('.pq-opciones-ro').style.display = 'block';
+                    div.querySelector('.pq-opciones-ed').style.display = 'none';
+                });
+
+                document.getElementById('btn-editar').style.display = 'flex';
+                document.getElementById('btn-cancelar-edicion').style.display = 'none';
+                document.getElementById('actions-readonly').style.display = 'block';
+                document.getElementById('actions-edicion').style.display = 'none';
+            }
+
+            function guardarEdicionYPublicar() {
+                // Recoger contenido editado
+                var contenido = document.getElementById('contenido-editable').innerHTML;
+                document.getElementById('contenido-editado-hidden').value = contenido;
+
+                // Recoger preguntas editadas
+                var preguntas = [];
+                document.querySelectorAll('.pregunta-preview').forEach(function(div, idx) {
+                    var preguntaTxt = div.querySelector('.pq-texto-ed').textContent.trim();
+                    var opciones = [];
+                    div.querySelectorAll('.pq-opciones-ed li').forEach(function(li) {
+                        opciones.push(li.querySelector('span').textContent.trim());
+                    });
+                    var radioChecked = div.querySelector('input[type="radio"]:checked');
+                    var rc = radioChecked ? parseInt(radioChecked.value) : 0;
+                    preguntas.push({ pregunta: preguntaTxt, opciones: opciones, respuesta_correcta: rc, explicacion: '' });
+                });
+                document.getElementById('preguntas-editadas-hidden').value = JSON.stringify(preguntas);
+
+                document.getElementById('form-guardar-edicion').submit();
+            }
+            </script>
+
+            {% else %}
+            {# ===== FORMULARIO DE GENERACIÓN (solo cuando no hay preview) ===== #}
+            <form method="POST" class="tema-form">
+                {% csrf_token %}
+                <h2 style="color: white; margin-bottom: 20px;">🤖 Generador de Tema Semanal IA</h2>
+                <label>📝 Título del Tema</label>
+                <input type="text" name="titulo" value="{{ tema_titulo }}" placeholder="Ej: Contaminación del aire en Colombia" required>
+
+                <label>👥 Vista destino</label>
+                <select name="vista_destino" required>
+                    <option value="residente" {% if vista_destino == "residente" %}selected{% endif %}>👤 Residente</option>
+                    <option value="organizador" {% if vista_destino == "organizador" %}selected{% endif %}>🗂️ Organizador</option>
+                </select>
+
+                <button type="submit">✨ Generar con IA</button>
+            </form>
+            {% endif %}
+
+            {% endif %}
+        </div>
+
+        <div class="right-column">
+            <div class="card-actions">
+                <h3>📋 Opciones</h3>
+                <a href="?modo=generar" class="btn btn-vista">
+                    <i class="fas fa-robot"></i> ✨ Generar Tema
+                </a>
+                <a href="?modo=historial" class="btn btn-historial">
+                    <i class="fas fa-history"></i> 📚 Historial
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'administrador/footer.html' %}
+{% endblock %}

@@ -1,0 +1,241 @@
+{% extends "residente/base.html" %}
+{% load static %}
+{% block titulo %}Recicla Comuna 4 — Canje de Recompensas{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'residente/css/estilos recompensa.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block cuerpo %}
+{% include 'residente/header.html' %}
+
+
+<main class="page-container" id="mainContent">
+  {% if not usuario %}
+  <div class="alert alert-info" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:12px 20px;margin-bottom:20px;text-align:center;">
+    <i class="fas fa-info-circle"></i>
+    <strong>Solo los usuarios registrados</strong> pueden ver información ampliada y canjear recompensas.
+    <a href="{% url 'login' %}" style="color:#1976D2;font-weight:600;">Inicia sesión</a> o
+    <a href="{% url 'registro' %}" style="color:#1976D2;font-weight:600;">regístrate</a> para acceder.
+  </div>
+  {% endif %}
+  
+  <section class="catalogo-section">
+    <canvas id="bgCanvas"></canvas>
+
+    <h1 class="main-title">Catálogo de Recompensas</h1>
+    <p class="main-desc">Acumula puntos con tus acciones de reciclaje y cámbialos por recompensas ecológicas.</p>
+    
+    <div style="text-align:center;">
+        <div class="points-display">
+            <i class="fas fa-coins"></i>
+            <span id="puntos-usuario">{{ usuario.puntaje_total|default:0 }}</span> puntos disponibles
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="catalogo-filtros">
+      <input type="text" id="searchInput" placeholder="Buscar recompensa..." aria-label="Buscar recompensa">
+    </div>
+
+    <!-- Catálogo -->
+    <div class="catalogo" id="catalogo">
+      {% if recompensas %}
+        {% for r in recompensas %}
+        <div class="recompensa-card-catalogo" data-id="{{ r.id_recompensa }}" data-nombre="{{ r.titulo }}" data-puntos="{{ r.puntos_requeridos }}">
+          {% if r.imagen %}
+            <img src="{{ r.imagen.url }}" alt="{{ r.titulo }}">
+          {% else %}
+            <img src="https://picsum.photos/400/200?random={{ forloop.counter }}" alt="{{ r.titulo }}">
+          {% endif %}
+          <div class="recompensa-body">
+            <h3 class="recompensa-title">{{ r.titulo }}</h3>
+            <p class="recompensa-desc">{{ r.descripcion }}</p>
+            <div class="recompensa-meta">
+              <span><i class="fas fa-coins"></i> {{ r.puntos_requeridos }} pts</span>
+              {% if r.cantidad_disponible > 0 %}
+                <span class="estado-activa"><i class="fas fa-check-circle"></i> {{ r.cantidad_disponible }} disponibles</span>
+              {% else %}
+                <span class="estado-inactiva"><i class="fas fa-times-circle"></i> Agotado</span>
+              {% endif %}
+            </div>
+            {% if usuario.puntaje_total >= r.puntos_requeridos and r.cantidad_disponible > 0 %}
+              <button type="button" class="btn-canjear btn-canjear-js" data-id="{{ r.id_recompensa }}" data-puntos="{{ r.puntos_requeridos }}" data-nombre="{{ r.titulo }}" aria-label="Canjear {{ r.titulo }}">Canjear</button>
+            {% else %}
+              <button class="btn-canjear disabled" aria-disabled="true" style="background: #ccc; cursor: not-allowed;">
+                {% if r.cantidad_disponible == 0 %}Agotado{% else %}Puntos insuficientes{% endif %}
+              </button>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="text-align: center; color: #888; grid-column: 1 / -1;">No hay recompensas disponibles actualmente.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <div class="modal fade" id="canjeModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" style="margin-top: 80px;">
+      <div class="modal-content" style="background:#fff;border-radius:14px;">
+        <div class="modal-header" style="border-bottom:1px solid #eee;">
+          <h5 class="modal-title" style="color:#2ECC71;font-weight:700;">Confirmar Canje</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que quieres canjear <strong id="canje-recompensa-nombre"></strong>?</p>
+          <p>Costo: <strong id="canje-recompensa-puntos"></strong> puntos</p>
+          <input type="hidden" id="canje-recompensa-id">
+          <div class="mb-3">
+            <label for="canje-recompensa-direccion" class="form-label" style="font-weight:600;color:#1E5631;">Dirección de entrega *</label>
+            <input type="text" class="form-control" id="canje-recompensa-direccion" placeholder="Ingresa tu dirección">
+          </div>
+          <div class="mb-3">
+            <label for="canje-recompensa-barrio" class="form-label" style="font-weight:600;color:#1E5631;">Barrio *</label>
+            <input type="text" class="form-control" id="canje-recompensa-barrio" placeholder="Ingresa tu barrio">
+          </div>
+          <div class="mb-3">
+            <label for="canje-recompensa-observaciones" class="form-label" style="font-weight:600;color:#1E5631;">Observaciones (opcional)</label>
+            <textarea class="form-control" id="canje-recompensa-observaciones" rows="2" placeholder="Observaciones adicionales"></textarea>
+          </div>
+          <p id="canje-error" class="text-danger small"></p>
+        </div>
+        <div class="modal-footer" style="border-top:1px solid #eee;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius:8px;">Cancelar</button>
+          <button type="button" class="btn btn-success" onclick="procesarCanje()" style="border-radius:8px;background:#2ECC71;border:none;">Confirmar Canje</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+{% include 'residente/footer.html' %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let usuarioActual = { puntos: {{ usuario.puntaje_total|default:0 }} };
+
+function showToast(msg, type = "info") {
+  const toast = document.createElement("div");
+  toast.className = `toast align-items-center text-bg-${type} border-0 show position-fixed bottom-0 end-0 m-3`;
+  toast.role = "alert";
+  toast.innerHTML = `
+    <div class="toast-body">${msg}</div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+  </div>`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+function canjearRecompensa(btn) {
+  console.log('canjearRecompensa called', btn.dataset);
+  const recompensaId = btn.dataset.id;
+  const puntos = parseInt(btn.dataset.puntos);
+  const nombre = btn.dataset.nombre;
+  
+  if (puntos > usuarioActual.puntos) {
+    showToast("No tienes puntos suficientes.", "danger");
+    return;
+  }
+  
+  document.getElementById('canje-recompensa-id').value = recompensaId;
+  document.getElementById('canje-recompensa-nombre').textContent = nombre;
+  document.getElementById('canje-recompensa-puntos').textContent = puntos;
+  document.getElementById('canje-recompensa-direccion').value = '';
+  document.getElementById('canje-recompensa-barrio').value = '';
+  document.getElementById('canje-recompensa-observaciones').value = '';
+  document.getElementById('canje-error').textContent = '';
+  
+  const modal = new bootstrap.Modal(document.getElementById('canjeModal'));
+  modal.show();
+}
+
+document.addEventListener("click", e => {
+  if (e.target.classList.contains("btn-canjear-js")) {
+    canjearRecompensa(e.target);
+  }
+});
+
+document.getElementById('canjeModal').addEventListener('hidden.bs.modal', function () {
+  const recompensaId = document.getElementById('canje-recompensa-id').value;
+  const btn = document.querySelector('.btn-canjear-js[data-id="' + recompensaId + '"]');
+  if (btn && btn.textContent === "Procesando...") {
+    btn.textContent = "Canjear";
+  }
+});
+
+function procesarCanje() {
+  const recompensaId = document.getElementById('canje-recompensa-id').value;
+  const btn = document.querySelector('.btn-canjear-js[data-id="' + recompensaId + '"]');
+  const puntos = parseInt(document.getElementById('canje-recompensa-puntos').textContent);
+  const nombre = document.getElementById('canje-recompensa-nombre').textContent;
+  const direccion = document.getElementById('canje-recompensa-direccion').value.trim();
+  const barrio = document.getElementById('canje-recompensa-barrio').value.trim();
+  const observaciones = document.getElementById('canje-recompensa-observaciones').value.trim();
+  const errorEl = document.getElementById('canje-error');
+  
+  if (!direccion) {
+    errorEl.textContent = "Debes ingresar una dirección.";
+    return;
+  }
+  if (!barrio) {
+    errorEl.textContent = "Debes ingresar un barrio.";
+    return;
+  }
+  
+  const modalEl = document.getElementById('canjeModal');
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  modal.hide();
+  
+  btn.textContent = "Procesando...";
+  
+  fetch("{% url 'residente_canje_recompensa' %}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-CSRFToken": "{{ csrf_token }}"
+    },
+    body: `recompensa_id=${recompensaId}&direccion=${encodeURIComponent(direccion)}&barrio=${encodeURIComponent(barrio)}&observaciones=${encodeURIComponent(observaciones)}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      usuarioActual.puntos -= puntos;
+      document.getElementById("puntos-usuario").textContent = usuarioActual.puntos;
+      showToast(`¡Canje exitoso! Has canjeado: ${nombre}`, "success");
+      
+      const card = btn.closest(".recompensa-card-catalogo");
+      card.style.opacity = "0.5";
+      btn.textContent = "Canjeado";
+      btn.classList.add("disabled");
+      btn.disabled = true;
+      
+      const cantidadSpan = card.querySelector(".estado-activa");
+      if (cantidadSpan) {
+        let cantidad = parseInt(cantidadSpan.textContent);
+        cantidadSpan.textContent = (cantidad - 1) + " disponibles";
+      }
+    } else {
+      showToast(data.error || "Error al canjear la recompensa.", "danger");
+      btn.disabled = false;
+      btn.textContent = "Canjear";
+    }
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    showToast("Error de conexión. Intenta de nuevo.", "danger");
+    btn.disabled = false;
+    btn.textContent = "Canjear";
+  });
+}
+
+document.getElementById("searchInput")?.addEventListener("input", function() {
+  const busqueda = this.value.toLowerCase();
+  document.querySelectorAll(".recompensa-card-catalogo").forEach(card => {
+    const nombre = card.dataset.nombre.toLowerCase();
+    card.style.display = nombre.includes(busqueda) ? "" : "none";
+  });
+});
+</script>
+{% endblock %}

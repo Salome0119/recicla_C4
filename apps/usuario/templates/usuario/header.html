@@ -1,0 +1,37 @@
+<header>
+  <div class="header-left">
+      <div class="logo">
+          <div class="logo-icon">♻</div>
+          <div class="logo-text">
+              <div style="font-size:16px">Recicla <span>Comuna 4</span></div>
+              <div style="font-size:11px;color:rgba(0,0,0,0.5)">Jornadas & Comunidad</div>
+          </div>
+      </div>
+  </div>
+
+  <div class="header-right">
+    <ul class="nav-list">
+      <li><a href="{% url 'index' %}" class="nav-icon" title="Inicio">🏠<span class="menu-text"> Inicio</span></a></li>
+      <li><a href="{% url 'usuario_como_participar' %}" class="nav-icon" title="Cómo participar">📝<span class="menu-text"> Cómo participar</span></a></li>
+      <li><a href="{% url 'usuario_educacion' %}" class="nav-icon" title="Educación">🌟<span class="menu-text"> Educación</span></a></li>
+
+      <li class="submenu-parent">
+        <a href="javascript:void(0);" class="submenu-toggle nav-icon" title="Foro">
+          💬<span class="menu-text"> Foro</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="{% url 'usuario_foro_publicaciones' %}">Publicaciones</a></li>
+        </ul>
+      </li>
+
+      <li><a href="{% url 'usuario_contacto' %}" class="nav-icon" title="Contacto">✉️<span class="menu-text"> Contacto</span></a></li>
+    </ul>
+
+    <a href="{% url 'login' %}" class="btn-profile nav-icon" title="Iniciar sesión">
+      <i class="fas fa-user-circle"></i><span class="menu-text"> Iniciar sesión</span>
+    </a>
+    <a href="{% url 'register' %}" class="btn-profile nav-icon" title="Registrarse">
+      <i class="fas fa-user-plus"></i><span class="menu-text"> Registrarse</span>
+    </a>
+  </div>
+</header>

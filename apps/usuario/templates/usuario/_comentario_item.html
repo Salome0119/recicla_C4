@@ -1,0 +1,16 @@
+<div class="comentario-item{% if comentario.parent %} nested{% endif %}" data-comentario-id="{{ comentario.id_comentario }}">
+    <div class="comentario-header">
+        <span class="comentario-autor">{{ comentario.usuario.nombre }} {{ comentario.usuario.apellido }}</span>
+        <span class="comentario-fecha">{{ comentario.created_at|date:"d/m/Y H:i" }}</span>
+    </div>
+    <div class="comentario-texto">{{ comentario.texto }}</div>
+    <button class="btn-responder" onclick="responderComentario({{ comentario.tema.id_tema }}, {{ comentario.id_comentario }})">↪ Responder</button>
+    
+    {% if comentario.respuestas.exists %}
+        <div class="comentarios-lista">
+            {% for respuesta in comentario.respuestas.all %}
+                {% include 'usuario/_comentario_item.html' with comentario=respuesta %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
