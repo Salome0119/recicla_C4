@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones</title>
+</head>
+<body>
+    <h1>Notificaciones</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    {% for notificacion in notificaciones %}
+        <div>
+            <p><strong>{{ notificacion.fecha_envio|date:"d/m/Y H:i" }}</strong> | {{ notificacion.tipo }} | {{ notificacion.canal }}</p>
+            <p>{{ notificacion.mensaje }}</p>
+            <hr>
+        </div>
+    {% empty %}
+        <p>No tienes notificaciones registradas.</p>
+    {% endfor %}
+</body>
+</html>

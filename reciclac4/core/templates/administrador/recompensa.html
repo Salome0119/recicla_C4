@@ -1,0 +1,234 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+{% block titulo %}Creación de Recompensas{% endblock %}
+
+{% block cabeza_extra %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+<link rel="stylesheet" href="{% static 'administrador/css/estilos recompensa.css' %}">
+<style>
+  .recompensa-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .recompensa-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .recompensa-info {
+    flex: 1;
+  }
+  
+  .recompensa-info h3 {
+    margin: 0 0 8px 0;
+    color: var(--dark);
+  }
+  
+  .recompensa-info p {
+    color: var(--muted);
+    margin: 0 0 8px 0;
+  }
+  
+  .recompensa-puntos {
+    background: var(--primary);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  .recompensa-fecha {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  
+  .recompensa-info .btn-volver {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-top: 10px;
+  }
+  
+  .recompensa-info .btn-volver:hover {
+    background: #2980b9;
+  }
+</style>
+{% endblock %}
+
+{% block cuerpo %}
+{% include 'administrador/header.html' %}
+
+
+<main>
+  <!-- WRAPPER DEL FORMULARIO -->
+  <div class="wrapper">
+    <!-- Panel izquierdo con información -->
+    <div class="left-panel">
+      <h1 class="titulo">Crear Recompensa</h1>
+      <p class="descripcion">
+        Este es el <strong>formulario oficial</strong> para la creación de recompensas.
+        Aquí podrás registrar el <strong>nombre</strong>, los <strong>puntos necesarios</strong>, la <strong>descripción</strong> y una <strong>imagen</strong> de cada recompensa.
+      </p>
+    </div>
+
+    <!-- Panel derecho con formulario -->
+    <div class="form-container">
+      <h2>Formulario de Recompensa</h2>
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
+              background: {% if message.tags == 'error' %}#fdecea{% else %}#e8f5e9{% endif %};
+              color: {% if message.tags == 'error' %}#c0392b{% else %}#27ae60{% endif %};
+              border: 1px solid {% if message.tags == 'error' %}#f5c6cb{% else %}#a3d9a5{% endif %};">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="campo">
+          <label for="titulo">Nombre de la recompensa:</label>
+          <input type="text" id="titulo" name="titulo" required>
+        </div>
+
+        <div class="campo">
+          <label for="puntos_requeridos">Puntos necesarios:</label>
+          <input type="number" id="puntos_requeridos" name="puntos_requeridos" min="1" required>
+        </div>
+
+        <div class="campo">
+          <label for="cantidad_disponible">Cantidad disponible:</label>
+          <input type="number" id="cantidad_disponible" name="cantidad_disponible" min="0" value="0" required>
+        </div>
+
+        <div class="campo">
+          <label for="imagen">Imagen de la recompensa:</label>
+          <input type="file" id="imagen" name="imagen" accept="image/*">
+        </div>
+
+        <div class="campo">
+          <label for="descripcion">Descripción:</label>
+          <textarea id="descripcion" name="descripcion" required></textarea>
+        </div>
+
+        <div style="justify-content:center;">
+          <button type="submit">Crear Recompensa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- HISTORIAL DE RECOMPENSAS -->
+  <div class="wrapper-historial">
+    <div class="form-container">
+      <h2>Recompensas Creadas</h2>
+      
+      {% if recompensas %}
+        {% for r in recompensas %}
+        <div class="recompensa-card">
+          {% if r.imagen %}
+            <img src="{{ r.imagen.url }}" alt="{{ r.titulo }}">
+          {% else %}
+            <div style="width:120px;height:120px;background:#eee;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#aaa;">
+              Sin imagen
+            </div>
+          {% endif %}
+          <div class="recompensa-info">
+            <h3>{{ r.titulo }}</h3>
+            <p>{{ r.descripcion }}</p>
+            <span class="recompensa-puntos">{{ r.puntos_requeridos }} puntos</span>
+            <span class="recompensa-puntos" style="background: #3498db;">{{ r.cantidad_disponible }} disponibles</span>
+            <div class="recompensa-fecha">Creada el: {{ r.fecha_creacion|date:"d/m/Y" }}</div>
+            <a href="{% url 'admi_recompensa_canjes' r.id_recompensa %}" class="btn-volver" style="margin-top: 10px; padding: 8px 16px; font-size: 0.9rem;">Más información</a>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="color: var(--muted); text-align: center;">No hay recompensas creadas aún.</p>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+
+
+{% include 'administrador/footer.html' %}
+
+<script>
+const openSidebarBtn = document.getElementById('openSidebar');
+const closeSidebarBtn = document.getElementById('closeSidebar');
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.getElementById('mainContent');
+
+function openSidebar() {
+    sidebar.classList.add('active');
+    mainContent.style.transform = 'translateX(260px)';
+}
+function closeSidebar() {
+    sidebar.classList.remove('active');
+    mainContent.style.transform = 'translateX(0)';
+}
+
+openSidebarBtn.addEventListener('click', () => {
+    if(sidebar.classList.contains('active')) closeSidebar();
+    else openSidebar();
+});
+
+if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+
+document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggle.parentElement.classList.toggle('active');
+    });
+});
+
+sidebar.querySelectorAll('a').forEach(a => {
+    if(!a.classList.contains('submenu-toggle')) {
+        a.addEventListener('click', closeSidebar);
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && sidebar.classList.contains('active')) closeSidebar();
+});
+
+document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+  const parent = toggle.parentElement;
+  const submenu = parent.querySelector('.submenu');
+
+  toggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    submenu.classList.toggle('active');
+  });
+});
+
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.submenu.active').forEach(sm => {
+    if (!sm.parentElement.contains(e.target)) {
+      sm.classList.remove('active');
+    }
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+<!-- core/templates/administrador/suspender_confirm.html -->
+{% extends "administrador/base.html" %}
+{% load static %}
+{% block cuerpo %}
+<link rel="stylesheet" href="{% static 'administrador/css/estilos.css' %}">
+<link rel="stylesheet" href="{% static 'administrador/css/usuarios.css' %}">
+{% include 'administrador/header.html' %}
+<div class="page-container">
+  <h2>Suspender Usuario</h2>
+  <div class="confirm-box">
+    <p>¿Estás seguro de que deseas suspender al usuario?</p>
+    <div class="user-info">
+      <strong>Nombre:</strong> {{ usuario.nombre }} {{ usuario.apellido }}<br>
+      <strong>Correo:</strong> {{ usuario.correo }}<br>
+      <strong>Rol:</strong> {{ usuario.get_rol_display }}<br>
+      <strong>Estado actual:</strong> {{ usuario.get_estado_display }}
+    </div>
+    <form method="post" action="{% url 'admin_users_suspend' usuario.id_usuario %}">
+      {% csrf_token %}
+      <label for="motivo">Motivo de suspensión:</label>
+      <textarea id="motivo" name="motivo" rows="4" placeholder="Ingrese el motivo de la suspensión..." required></textarea>
+      <div class="form-actions">
+        <button type="submit" class="btn-save">Confirmar Suspensión</button>
+        <a href="{% url 'admin_users_list' %}" class="btn-cancel">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% include 'administrador/footer.html' %}
+{% endblock %}

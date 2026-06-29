@@ -1,0 +1,350 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear cuenta</title>
+
+    <style>
+        :root {
+            --green-dark: #1b4332;   
+            --green-medium: #2e7d32; 
+            --green-bright: #388e3c; 
+            --green-light: #66bb6a;  
+            --green-bg: #dcedc1;     
+            --green-bg-light: #a8e6cf;
+            --text-dark: #2f4f4f;
+            --white: #ffffff;
+            --border-color: #c8e6c9;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, var(--green-bg-light), var(--green-bg));
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            width: 380px;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px #0002;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--green-dark);
+            font-size: 24px;
+        }
+
+        label {
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-top: 15px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #fafffa;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--green-medium);
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: var(--green-dark);
+        }
+
+        p.error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .login-link a {
+            color: var(--green-bright);
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>Crear cuenta</h2>
+
+    <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <label>Nombre</label>
+        <input type="text" name="nombre" required>
+
+        <label>Apellido</label>
+        <input type="text" name="apellido" required>
+
+        <label>Correo</label>
+        <input type="email" name="correo" required>
+
+        <label>Contraseña</label>
+        <input type="password" name="contrasena" required minlength="8" placeholder="Mínimo 8 caracteres">
+        <p style="font-size: 0.8rem; color: #666; margin-top: -10px; margin-bottom: 15px;">Mínimo 8 caracteres (letras, números, símbolos)</p>
+
+        <label>Fecha de nacimiento</label>
+        <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" required>
+        
+        <label>Barrio</label>
+        <select name="barrio" id="barrio" required>
+            <option value="" disabled selected>Selecciona tu barrio</option>
+            <option>Medellín</option>
+            <option>La América</option>
+            <option>La Bolivariana</option>
+            <option>La Cumbre</option>
+            <option>La Florida</option>
+            <option>La Ladera</option>
+            <option>La Palma</option>
+            <option>Los Cóndores</option>
+            <option>El Poblado</option>
+            <option>La Virginia</option>
+            <option>El Tesoro</option>
+            <option>Los Naranjos</option>
+            <option>Belen</option>
+            <option>Boston</option>
+            <option>California</option>
+            <option>La Cumbre</option>
+            <option>Manrique</option>
+            <option>Aranjuez</option>
+            <option>Castilla</option>
+            <option>Robledo</option>
+            <option>La Cumbre</option>
+            <option>San Antonio de Prado</option>
+            <option>Altos del Cielo</option>
+            <option>Santa Elena</option>
+            <option>Guayabal</option>
+            <option>Poblado</option>
+            <option>La Aguacatala</option>
+            <option>El Rodeo</option>
+            <option> Los Olivos</option>
+            <option>El Poblado</option>
+            <option>La Frontera</option>
+            <option>San Javier</option>
+            <option>La Cima</option>
+            <option>El Polo</option>
+        </select>
+
+        <label>Rol</label>
+        <select name="rol" required>
+            <option value="residente">Residente</option>
+            <option value="organizador">Organizador</option>
+            <option value="administrador">Administrador</option>
+        </select>
+
+        <!-- ✔️ MESSAGES DENTRO DEL FORMULARIO -->
+        {% if messages %}
+            {% for message in messages %}
+                <p class="error">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <button type="submit">Crear cuenta</button>
+
+    </form>
+
+    <div class="login-link">
+        ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerForm = document.querySelector('form');
+        const nombreInput = registerForm.querySelector('input[name="nombre"]');
+        const apellidoInput = registerForm.querySelector('input[name="apellido"]');
+        const correoInput = registerForm.querySelector('input[name="correo"]');
+        const contrasenaInput = registerForm.querySelector('input[name="contrasena"]');
+        const fechaNacimientoInput = registerForm.querySelector('input[name="fecha_nacimiento"]');
+        const barrioSelect = registerForm.querySelector('select[name="barrio"]');
+
+        function validarEdad() {
+            const fechaNacimiento = new Date(fechaNacimientoInput.value);
+            const hoy = new Date();
+            const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+            const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+            
+            let edadReal = edad;
+            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                edadReal--;
+            }
+            
+            if (edadReal < 14) {
+                mostrarError(fechaNacimientoInput, 'Debes tener al menos 14 años para registrarte');
+                return false;
+            }
+            return true;
+        }
+
+        function validarBarrio() {
+            const valor = barrioSelect.value;
+            const errorDiv = barrioSelect.parentElement.querySelector('.error-msg');
+            if (errorDiv) errorDiv.remove();
+            barrioSelect.classList.remove('input-error');
+            
+            if (!valor || valor === '') {
+                mostrarError(barrioSelect, 'Selecciona un barrio');
+                return false;
+            }
+            return true;
+        }
+
+        function validarNombre(input, nombreLabel) {
+            const valor = input.value.trim();
+            const errorDiv = input.parentElement.querySelector('.error-msg');
+            if (errorDiv) errorDiv.remove();
+            input.classList.remove('input-error');
+
+            if (valor.length < 2) {
+                mostrarError(input, nombreLabel + ' debe tener al menos 2 caracteres');
+                return false;
+            }
+            if (valor.length > 50) {
+                mostrarError(input, nombreLabel + ' debe tener máximo 50 caracteres');
+                return false;
+            }
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(valor)) {
+                mostrarError(input, nombreLabel + ' solo puede contener letras y espacios');
+                return false;
+            }
+            return true;
+        }
+
+        function validarCorreo(input) {
+            const valor = input.value.trim();
+            const errorDiv = input.parentElement.querySelector('.error-msg');
+            if (errorDiv) errorDiv.remove();
+            input.classList.remove('input-error');
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(valor)) {
+                mostrarError(input, 'Ingresa un correo electrónico válido');
+                return false;
+            }
+            return true;
+        }
+
+        function validarContrasena(input) {
+            const valor = input.value;
+            const errorDiv = input.parentElement.querySelector('.error-msg');
+            if (errorDiv) errorDiv.remove();
+            input.classList.remove('input-error');
+
+            if (valor.length < 8) {
+                mostrarError(input, 'La contraseña debe tener al menos 8 caracteres');
+                return false;
+            }
+            if (valor.length > 20) {
+                mostrarError(input, 'La contraseña debe tener máximo 20 caracteres');
+                return false;
+            }
+            if (!/[A-Z]/.test(valor)) {
+                mostrarError(input, 'La contraseña debe tener al menos una mayúscula');
+                return false;
+            }
+            if (!/[a-z]/.test(valor)) {
+                mostrarError(input, 'La contraseña debe tener al menos una minúscula');
+                return false;
+            }
+            if (!/[0-9]/.test(valor)) {
+                mostrarError(input, 'La contraseña debe tener al menos un número');
+                return false;
+            }
+            return true;
+        }
+
+        function mostrarError(input, mensaje) {
+            input.classList.add('input-error');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-msg';
+            errorDiv.style.cssText = 'color: #c62828; font-size: 0.85rem; margin-top: 5px;';
+            errorDiv.textContent = mensaje;
+            input.parentElement.appendChild(errorDiv);
+        }
+
+        if (nombreInput) {
+            nombreInput.addEventListener('blur', function() { validarNombre(this, 'El nombre'); });
+        }
+        if (apellidoInput) {
+            apellidoInput.addEventListener('blur', function() { validarNombre(this, 'El apellido'); });
+        }
+        if (correoInput) {
+            correoInput.addEventListener('blur', function() { validarCorreo(this); });
+        }
+        if (contrasenaInput) {
+            contrasenaInput.addEventListener('blur', function() { validarContrasena(this); });
+        }
+        if (fechaNacimientoInput) {
+            fechaNacimientoInput.addEventListener('change', function() { validarEdad(); });
+        }
+        if (barrioSelect) {
+            barrioSelect.addEventListener('change', function() { validarBarrio(); });
+        }
+
+        registerForm.addEventListener('submit', function(e) {
+            let valido = true;
+
+            if (nombreInput) {
+                if (!validarNombre(nombreInput, 'El nombre')) valido = false;
+            }
+            if (apellidoInput) {
+                if (!validarNombre(apellidoInput, 'El apellido')) valido = false;
+            }
+            if (correoInput) {
+                if (!validarCorreo(correoInput)) valido = false;
+            }
+            if (contrasenaInput) {
+                if (!validarContrasena(contrasenaInput)) valido = false;
+            }
+            if (fechaNacimientoInput) {
+                if (!validarEdad()) valido = false;
+            }
+            if (barrioSelect) {
+                if (!validarBarrio()) valido = false;
+            }
+
+            if (!valido) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
