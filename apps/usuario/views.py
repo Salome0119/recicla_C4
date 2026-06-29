@@ -95,18 +95,15 @@ def usuario_contacto(request):
     return render(request, "usuario/contacto.html")
 
 def usuario_foro_publicaciones(request):
-    FECHA_CORTE = timezone.datetime(2025, 11, 23, tzinfo=timezone.get_current_timezone())
-    
     sort = request.GET.get('sort', 'newest')
-    
+
     if sort == 'oldest':
         order_by = 'fecha_publicacion'
     else:
         order_by = '-fecha_publicacion'
-    
-    publicaciones_qs = TemaForo.objects.filter(
-        fecha_publicacion__gte=FECHA_CORTE
-    ).order_by(order_by).prefetch_related(
+
+    # Mostrar todas las publicaciones (sin filtro fijo por fecha)
+    publicaciones_qs = TemaForo.objects.all().order_by(order_by).prefetch_related(
         'comentarios__usuario',
         'comentarios__respuestas__usuario'
     )

@@ -1,20 +1,11 @@
-html, body {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative; /* importante para hojas absolutas */
-}
-
-.page-container {
-    flex: 1 0 auto; /* crece para llenar el espacio disponible */
-}
-
-
 /* ---------- Contenido ---------- */
 .page-container {
-    max-width: 1100px; margin: 92px auto 60px; padding:0 20px;
+    max-width: 1100px;
+    margin: 92px auto 60px;
+    padding: 0 20px;
     transition: transform 0.32s ease;
     text-align: center;
+    position: relative;
 }
 
 /* ---------- Hero / Cómo funciona ---------- */
@@ -24,15 +15,89 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
 @keyframes fadeInUp { from {opacity:0; transform: translateY(30px);} to {opacity:1; transform: translateY(0);} }
 @keyframes fadeInDown { from {opacity:0; transform: translateY(-30px);} to {opacity:1; transform: translateY(0);} }
 
-/* ---------- Pasos ---------- */
-.steps { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:24px; margin-top:40px; }
-.step-card { background:white; border-radius: var(--radius); padding:24px; box-shadow: 0 12px 24px rgba(0,0,0,0.08); position:relative; overflow:hidden; cursor:pointer; transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
-.step-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
-.step-icon { font-size:36px; color: var(--primary); margin-bottom:12px; transition: transform 0.3s ease; }
-.step-card:hover .step-icon { transform: rotate(15deg) scale(1.2); }
-.step-number { width:44px; height:44px; border-radius:50%; background: var(--secondary); color:white; display:grid; place-items:center; font-weight:700; margin:0 auto 12px; }
-.step-title { font-size:1.1rem; font-weight:600; margin-bottom:8px; }
-.step-desc { font-size:0.95rem; color: var(--muted); }
+/* ---------- Pasos - Grid responsive ---------- */
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+}
+
+/* Grid adaptativo para diferentes tamaños de pantalla */
+@media (min-width: 1200px) {
+    .steps {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .step-card:nth-child(5) {
+        grid-column: 2 / 3;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+    .steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .steps {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .steps {
+        gap: 16px;
+        margin-top: 30px;
+    }
+    
+    .step-card {
+        padding: 20px;
+    }
+}
+
+.step-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    border: 2px solid transparent;
+    width: 100%;
+    text-align: center;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    border-color: var(--primary);
+}
+
+.step-icon {
+    font-size: 36px;
+    color: var(--primary);
+    margin-bottom: 12px;
+    transition: transform 0.3s ease;
+}
+
+.step-card:hover .step-icon {
+    transform: rotate(15deg) scale(1.2);
+}
+
+.step-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.step-desc {
+    font-size: 0.95rem;
+    color: var(--muted);
+}
 
 /* ---------- Barra de progreso ---------- */
 .progress-container { width: 80%; max-width: 700px; margin: 50px auto 0; height:8px; background: rgba(0,0,0,0.08); border-radius:4px; overflow:hidden; }
@@ -43,17 +108,6 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
 .btn-join:hover { transform: scale(1.05); background: var(--secondary); }
 
 /* ---------- Fondo animado ---------- */
-.leaf { position:absolute; width:24px; height:24px; background: var(--primary); border-radius:50%; opacity:0.6; animation: floatLeaf 6s linear infinite; }
-@keyframes floatLeaf {
-    0% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-30px) rotate(180deg); }
-    100% { transform: translateY(0) rotate(360deg); }
-}
-
-.page-container {
-    position: relative; /* hace que las hojas se posicionen dentro de main */
-}
-
 .leaf {
     position: absolute;
     width: 24px;
@@ -65,6 +119,12 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
     z-index: 10;
 }
 
+@keyframes floatLeaf {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(180deg); }
+    100% { transform: translateY(0) rotate(360deg); }
+}
+
 /* ---------- Modal Flotante Editorial ---------- */
 .modal-overlay {
     display: none;
@@ -73,12 +133,18 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(27, 50, 68, 0.4);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 1000;
     align-items: center;
     justify-content: center;
 }
-.modal-overlay.active { display: flex; }
+
+.modal-overlay.active { 
+    display: flex; 
+}
+
 .modal-content {
     background: #fdfdfd;
     border-radius: 20px;
@@ -88,11 +154,13 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
     max-height: 85vh;
     overflow-y: auto;
     position: relative;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.12);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
     animation: modalFadeIn 0.25s cubic-bezier(0.23, 1, 0.32, 1);
     border: none;
 }
+
 @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
 .modal-close {
     position: absolute;
     top: 20px;
@@ -112,6 +180,7 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
     border-radius: 50%;
     transition: background 0.2s;
 }
+
 .modal-close:hover { background: rgba(0,0,0,0.04); color: #666; }
 
 /* Tipografía editorial */
@@ -122,10 +191,13 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
     margin: 0 0 25px 0;
     color: #222;
 }
+
 .modal-section {
     margin-bottom: 25px;
 }
+
 .modal-section:last-child { margin-bottom: 0; }
+
 .modal-heading {
     font-size: 1.2rem;
     font-weight: 600;
@@ -133,17 +205,20 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
     margin: 0 0 12px 0;
     color: #27AE60;
 }
+
 .modal-text {
     font-size: 1rem;
     line-height: 1.7;
     color: #555;
     margin: 0 0 6px 0;
 }
+
 .modal-icon {
     font-size: 48px;
     margin-bottom: 15px;
     opacity: 0.9;
 }
+
 .modal-content-inner {
     text-align: left;
 }
@@ -163,6 +238,9 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
     cursor: pointer;
     transition: transform 0.2s ease, background 0.2s ease;
     width: 100%;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
 .btn-residente:hover {
@@ -170,3 +248,23 @@ p.main-desc { font-size:1.1rem; color: var(--muted); margin-bottom:40px; animati
     transform: translateY(-2px);
 }
 
+/* Modal responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 24px;
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .modal-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .modal-close {
+        top: 15px;
+        right: 15px;
+        width: 28px;
+        height: 28px;
+        font-size: 20px;
+    }
+}

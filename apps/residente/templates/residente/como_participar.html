@@ -3,8 +3,8 @@
 {% block titulo %}Recicla Comuna 4 — Cómo participar{% endblock %}
 
 {% block cabeza_extra %}
- <link rel="stylesheet" href="{% static 'residente/css/estilos_residentes.css' %}">
- <link rel="stylesheet" href="{% static 'residente/css/comofunciona.css' %}">
+  <link rel="stylesheet" href="{% static 'residente/css/estilos_residentes.css' %}">
+  <link rel="stylesheet" href="{% static 'residente/css/comofunciona.css' %}">
 {% endblock %}
 
 {% block cuerpo %}
@@ -15,36 +15,35 @@
     <p class="main-desc">Hacemos que el reciclaje sea fácil y gratificante. Participa en la transformación de la Comuna 4 hacia la sostenibilidad.</p>
 
     <div class="steps">
-        <div class="step-card" onclick="openModal(0)">
-            <div class="step-number">1</div>
+        <button class="step-card" type="button" data-index="0">
             <div class="step-icon">♻️</div>
             <div class="step-title">Clasifica tus residuos</div>
             <div class="step-desc">Separa plásticos, papel, cartón, vidrio y metales en tu hogar.</div>
-        </div>
-        <div class="step-card" onclick="openModal(1)">
-            <div class="step-number">2</div>
+        </button>
+        
+        <button class="step-card" type="button" data-index="1">
             <div class="step-icon">📝</div>
             <div class="step-title">Registra tu recolección</div>
             <div class="step-desc">Usa nuestro formulario para registrar el material que tienes listo.</div>
-        </div>
-        <div class="step-card" onclick="openModal(2)">
-            <div class="step-number">3</div>
+        </button>
+        
+        <button class="step-card" type="button" data-index="2">
             <div class="step-icon">📍</div>
             <div class="step-title">Participa en jornadas</div>
             <div class="step-desc">Acude a nuestros puntos de recolección y conoce a otros recicladores.</div>
-        </div>
-        <div class="step-card" onclick="openModal(3)">
-            <div class="step-number">4</div>
+        </button>
+        
+        <button class="step-card" type="button" data-index="3">
             <div class="step-icon">⭐</div>
             <div class="step-title">Acumula puntos</div>
             <div class="step-desc">Por cada kg de material reciclado, acumulas puntos canjeables.</div>
-        </div>
-        <div class="step-card" onclick="openModal(4)">
-            <div class="step-number">5</div>
+        </button>
+        
+        <button class="step-card" type="button" data-index="4">
             <div class="step-icon">🌿</div>
             <div class="step-title">Contribuye al ambiente</div>
             <div class="step-desc">Tu esfuerzo ayuda a reducir la contaminación y construir un futuro más verde.</div>
-        </div>
+        </button>
     </div>
 
     <div class="progress-container">
@@ -54,68 +53,118 @@
     <a href="{% url 'registro' %}" class="btn-join">¡Únete Ahora!</a>
 </main>
 
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
-    <div class="modal-content" id="modalContent" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeModal()">×</button>
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+        <button class="modal-close" aria-label="Cerrar" type="button">×</button>
         <div id="modalBody"></div>
-        <button class="btn-residente" id="btnAccion">Ir a sección</button>
     </div>
 </div>
 
 {% include 'residente/footer.html' %}
 <script>
-const progressBar = document.getElementById('progressBar');
-window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY;
-    const docHeight = document.body.scrollHeight - window.innerHeight;
-    const progress = (scrollTop / docHeight) * 100;
-    progressBar.style.width = progress + '%';
+document.addEventListener('DOMContentLoaded', function() {
+    // Progress bar
+    const progressBar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        progressBar.style.width = progress + '%';
+    });
+
+    // Modal data
+    const modalData = [
+    {
+        title: "Clasifica tus residuos",
+        icon: "♻️",
+        content: `
+            <div class="modal-section">
+                <h4 class="modal-heading">Guía de Colores</h4>
+                <p class="modal-text"><strong>Verde:</strong> Vidrio</p>
+                <p class="modal-text"><strong>Amarillo:</strong> Plástico</p>
+                <p class="modal-text"><strong>Azul:</strong> Papel y cartón</p>
+                <p class="modal-text"><strong>Blanco:</strong> Metales</p>
+            </div>
+            <a href="{% url 'residente_recoleccion' %}" class="btn-residente">Empezar a clasificar</a>`
+    },
+    {
+        title: "Registra tu recolección",
+        icon: "📝",
+        content: `
+            <div class="modal-section">
+                <h4 class="modal-heading">Formato de registro</h4>
+                <p class="modal-text">Indica tipo de material, peso estimado y disponibilidad para recolección.</p>
+            </div>
+            <a href="{% url 'residente_recoleccion' %}" class="btn-residente">Registrar ahora</a>`
+    },
+    {
+        title: "Participa en jornadas",
+        icon: "📍",
+        content: `
+            <div class="modal-section">
+                <h4 class="modal-heading">Mapa de Jornadas</h4>
+                <p class="modal-text">Consulta fechas y puntos de recolección más cercanos a tu barrio.</p>
+            </div>
+            <a href="{% url 'residente_lista_jornadas' %}" class="btn-residente">Ver jornadas</a>`
+    },
+    {
+        title: "Acumula puntos",
+        icon: "⭐",
+        content: `
+            <div class="modal-section">
+                <h4 class="modal-heading">Progreso/Puntos</h4>
+                <p class="modal-text">Los puntos se canjean por recompensas eco-friendly. ¡Mira tu ranking!</p>
+            </div>
+            <a href="{% url 'residente_historial_canjes' %}" class="btn-residente">Ver mis puntos</a>`
+    },
+    {
+        title: "Contribuye al ambiente",
+        icon: "🌿",
+        content: `
+            <div class="modal-section">
+                <h4 class="modal-heading">Impacto ambiental</h4>
+                <p class="modal-text">Cada acción suma: CO₂ reducido, residuos reutilizados, comunidad unida.</p>
+            </div>
+            <a href="{% url 'residente_historial_canjes' %}" class="btn-residente">Ver impacto</a>`
+    }
+    ];
+
+    // Modal functions
+    function openModal(index) {
+        const data = modalData[index];
+        document.getElementById('modalBody').innerHTML = `
+            <div class="modal-icon">${data.icon}</div>
+            <h2 class="modal-title">${data.title}</h2>
+            <div class="modal-content-inner">${data.content}</div>
+        `;
+        document.getElementById('modalOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Event listeners
+    document.querySelectorAll('.step-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
+            openModal(index);
+        });
+    });
+
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+
+    document.querySelector('.modal-close').addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', (e) => { 
+        if(e.key === 'Escape') closeModal(); 
+    });
 });
-
-const modalData = [
-{
-    title: "Clasifica tus residuos",
-    icon: "♻️",
-    content: `<div class="modal-section"><h4 class="modal-heading">Guía de Colores</h4><p class="modal-text"><strong>Verde:</strong> Vidrio</p><p class="modal-text"><strong>Amarillo:</strong> Plástico</p><p class="modal-text"><strong>Azul:</strong> Papel y cartón</p><p class="modal-text"><strong>Blanco:</strong> Metales</p></div>`,
-    url: "{% url 'residente_recoleccion' %}"
-},
-{
-    title: "Registra tu recolección",
-    icon: "📝",
-    content: `<div class="modal-section"><h4 class="modal-heading">Formato de registro</h4><p class="modal-text">Indica tipo de material, peso estimado y disponibilidad para recolección.</p></div>`,
-    url: "{% url 'residente_recoleccion' %}"
-},
-{
-    title: "Participa en jornadas",
-    icon: "📍",
-    content: `<div class="modal-section"><h4 class="modal-heading">Mapa de Jornadas</h4><p class="modal-text">Consulta fechas y puntos de recolección más cercanos a tu barrio.</p></div>`,
-    url: "{% url 'residente_lista_jornadas' %}"
-},
-{
-    title: "Acumula puntos",
-    icon: "⭐",
-    content: `<div class="modal-section"><h4 class="modal-heading">Progreso/Puntos</h4><p class="modal-text">Los puntos se canjean por recompensas eco-friendly. ¡Mira tu ranking!</p></div>`,
-    url: "{% url 'residente_historial_canjes' %}"
-},
-{
-    title: "Contribuye al ambiente",
-    icon: "🌿",
-    content: `<div class="modal-section"><h4 class="modal-heading">Impacto ambiental</h4><p class="modal-text">Cada acción suma: CO₂ reducido, residuos reutilizados, comunidad unida.</p></div>`,
-    url: "{% url 'residente_historial_canjes' %}"
-}
-];
-
-function openModal(index) {
-    const data = modalData[index];
-    document.getElementById('modalBody').innerHTML = `<div class="modal-icon">${data.icon}</div><h2 class="modal-title">${data.title}</h2><div class="modal-content-inner">${data.content}</div>`;
-    document.getElementById('btnAccion').onclick = () => { window.location.href = data.url; };
-    document.getElementById('modalOverlay').classList.add('active');
-}
-
-function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('active');
-}
-
-document.addEventListener('keydown', (e) => { if(e.key==='Escape') closeModal(); });
 </script>
 {% endblock %}
